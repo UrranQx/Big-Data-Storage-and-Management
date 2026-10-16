@@ -1,0 +1,114 @@
+[
+  {
+    "name": "audit_minecraft_archived.py",
+    "sha256": "eff5ba752407d80a24001818b934d4c94dbecebe181b59805b29caf49f9ebe01"
+  },
+  {
+    "name": "audit_minecraft_examiners.py",
+    "sha256": "64e0a7dcc096d2aa6515065c5c19df0c49c362dfabd35c0bc074b60eb67b37b5"
+  },
+  {
+    "name": "audit_portal_missing.py",
+    "sha256": "7de3f2f00a12a08fcbe7545cfe91784c1c401fc5a930222b4fc35596723d3f76"
+  },
+  {
+    "name": "audit_smo_any.py",
+    "sha256": "605c2e0bf773c5db934943e0e75ac1e06ae407e9e98f5b5b0f47ec63a30ee288"
+  },
+  {
+    "name": "audit_smo_proof.py",
+    "sha256": "1cbd680b8f26bb5110a8a1d5dc91051b8e48149fada8bee5567c0387e8f16cd0"
+  },
+  {
+    "name": "audit_smo_stats.py",
+    "sha256": "7f42b4e0099535d5caa3eea8317555ff34fbd5d2a2742678dab2058719210694"
+  },
+  {
+    "name": "collect_all.py",
+    "sha256": "4600cdf88484d09ccb4212f892ff445d62abb26fe595ef4f4bd84cd15738525e"
+  },
+  {
+    "name": "collect_games.py",
+    "sha256": "ddd5b6412df8e25c4d7a98149b1ef3b465726599479b4b6aff3ed5949250ad69"
+  },
+  {
+    "name": "collect.py",
+    "sha256": "f8e51d0da24a91e45dcbfae0d3b283de57db9c8112646481574d8a24196706b0"
+  },
+  {
+    "name": "complete_minecraft_archived_ids.py",
+    "sha256": "d874da98d27638f2ce055345e0530867293092978b7e084e3507f16b8ccd054a"
+  },
+  {
+    "name": "finalize_minecraft_audit.py",
+    "sha256": "87703841d32f8f1bbd6dfb3c429c04a6e60351db9fb967aface354c0280b1ccf"
+  },
+  {
+    "name": "inspect_mismatch.py",
+    "sha256": "26139393ae0a248f4ecdcdde10e91aa8e884157ac2dedc1e90012e0eb55b3162"
+  },
+  {
+    "name": "inspect_obsolete_history.py",
+    "sha256": "b90e8fc77abc2dbcbff95b238b742449058e7dd179737b0177ce029db2374f28"
+  },
+  {
+    "name": "probe_celeste.py",
+    "sha256": "33e3fc72d56aefd75476da15ca7d4f4d3fcf6e5be5bf3406115cefa35f0daac0"
+  },
+  {
+    "name": "probe_minecraft_gap.py",
+    "sha256": "88f6e2ca6470182d4333f8fb51640b409b68831e90f3c7de46fabb60332f3b20"
+  },
+  {
+    "name": "probe_orphans.py",
+    "sha256": "8f9d5294ccc505367b8c5bca238e2b8d84ff45db3e7c4eb728eab87fba604954"
+  },
+  {
+    "name": "probe_secondary.py",
+    "sha256": "bef706dd314c31aaa912577d9ea0322b16d0672af1fde1eb2f392b39dc7e5fae"
+  },
+  {
+    "name": "probe_stats_wr.py",
+    "sha256": "d7a6268eaca1da1359e751d71ab80238765f7e883c03acb004828dd3043f2adf"
+  },
+  {
+    "name": "probe_v2_details.py",
+    "sha256": "37974b28ee4f1a41fe3ac49d5642523b129991a4cc5866cb18b9be3f54d8afd7"
+  },
+  {
+    "name": "probe_v2.py",
+    "sha256": "051b21f977bb060004857cad1cc68775a8f2b9d6b517b915ca8663baa3d9fa79"
+  },
+  {
+    "name": "rank_games_two_metrics.py",
+    "sha256": "a629862059470f3d591d855b369ff0dbaff42e2eeafaa709377374d1b395fa0b"
+  },
+  {
+    "name": "rank_games.py",
+    "sha256": "2951fbd3fa812a850df96071b4a8e94b69ba4aa6249c38df42f5643c2cdc0fc1"
+  },
+  {
+    "name": "recover_minecraft_archived_windows.py",
+    "sha256": "c17a0ce6349a2251545ea82a70da902505015ef206da964ad5b1b5c4cd4a3ac1"
+  },
+  {
+    "name": "test_collect_all.py",
+    "sha256": "a2035513aa45f6e4baf016cc06e5de2cceacd90baa8f928740fe4722d535f794"
+  },
+  {
+    "name": "test_collect_games.py",
+    "sha256": "1e1cd0eeb3174c5381a40ce751dae2638932062cb9983e21aa8476b6e9e0467b"
+  },
+  {
+    "name": "test_collect.py",
+    "sha256": "7271b0b429e820e559ea00c839a6cb402b78ca14e68ff68edf51e7c353fe3c64"
+  },
+  {
+    "name": "validate.py",
+    "sha256": "481a7efa10d6f66fd8fb0710c8ac2923698a2931145ae8eca2f4296f51182095"
+  },
+  {
+    "name": "verify_minecraft_archive_block.py",
+    "sha256": "be68bc5415e08a8c47cd98873a88a85291e94c1b264ee4134b976f3f1bb32fe0"
+  }
+]

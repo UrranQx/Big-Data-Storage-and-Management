@@ -1,0 +1,138 @@
+name: speedrun-lab1
+x-airflow: &airflow
+  image: speedrun-lab1-airflow:local
+  user: "50000:0"
+  environment: &airflow-env
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__CORE__PARALLELISM: "2"
+    AIRFLOW__CORE__MAX_ACTIVE_TASKS_PER_DAG: "2"
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "false"
+    AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_USERS: "admin:admin"
+    AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_PASSWORDS_FILE: /opt/airflow/state/auth/passwords.json
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:${AIRFLOW_DB_PASSWORD:?configure}@postgres/airflow
+    AIRFLOW__DATABASE__SQL_ALCHEMY_POOL_SIZE: "3"
+    AIRFLOW__CORE__EXECUTION_API_SERVER_URL: http://api-server:8080/execution/
+    AIRFLOW__API_AUTH__JWT_SECRET: ${AIRFLOW_JWT_SECRET:?configure}
+    AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: "true"
+    AIRFLOW__LOGGING__WORKER_LOG_SERVER_PORT: "8793"
+    AIRFLOW__DAG_PROCESSOR__MIN_FILE_PROCESS_INTERVAL: "30"
+    PGHOST: postgres
+    PGUSER: speedrun_ods
+    PGPASSWORD: ${ODS_DB_PASSWORD:?configure}
+    PGDATABASE: speedrun_ods
+    CONTROL_DB_PASSWORD: ${CONTROL_DB_PASSWORD:?configure}
+    MONGO_PASSWORD: ${MONGO_PASSWORD:?configure}
+    S3_ACCESS_KEY: ${S3_ACCESS_KEY:?configure}
+    S3_SECRET_KEY: ${S3_SECRET_KEY:?configure}
+    AIRFLOW_ADMIN_PASSWORD: ${AIRFLOW_ADMIN_PASSWORD:?configure}
+    ETL_STATE: /opt/airflow/state
+    PYTHONPATH: /opt/project/src
+  volumes:
+    - etl-state:/opt/airflow/state
+    - airflow-logs:/opt/airflow/logs
+    - ./src:/opt/project/src:ro
+    - ./dags/ods:/opt/airflow/dags/ods:ro
+    - ./tests:/opt/project/tests:ro
+  logging:
+    driver: local
+    options:
+      max-size: "10m"
+      max-file: "5"
+  depends_on:
+    init:
+      condition: service_completed_successfully
+
+services:
+  postgres:
+    image: postgres:16@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?configure}
+      AIRFLOW_DB_PASSWORD: ${AIRFLOW_DB_PASSWORD:?configure}
+      ODS_DB_PASSWORD: ${ODS_DB_PASSWORD:?configure}
+      CONTROL_DB_PASSWORD: ${CONTROL_DB_PASSWORD:?configure}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./infra/postgres-init.sh:/docker-entrypoint-initdb.d/01-databases.sh:ro
+    mem_limit: 768m
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U postgres"]
+      interval: 10s
+      retries: 12
+  mongo:
+    image: mongo:8.0@sha256:6657bf2413fefc5be649390318f5b4cd7328e982722f8ce2ac6dfa6f0a42cb03
+    command: [mongod, --wiredTigerCacheSizeGB, "0.25"]
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ods
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:?configure}
+    volumes:
+      - mongo-data:/data/db
+    mem_limit: 768m
+    healthcheck:
+      test: [CMD, mongosh, --quiet, --eval, "quit(db.adminCommand('ping').ok ? 0 : 1)"]
+      interval: 15s
+      retries: 12
+  garage:
+    image: dxflrs/garage:v2.4.1@sha256:9c96caa2612d3411acc5b0e6701fb238dbfba33e533a6d7d3d811a4b12d0d020
+    command: [/garage, server, --single-node, --default-bucket]
+    environment:
+      GARAGE_DEFAULT_ACCESS_KEY: ${S3_ACCESS_KEY:?configure}
+      GARAGE_DEFAULT_SECRET_KEY: ${S3_SECRET_KEY:?configure}
+      GARAGE_DEFAULT_BUCKET: speedrun-ods
+    volumes:
+      - ./infra/garage.local.toml:/etc/garage.toml:ro
+      - garage-meta:/var/lib/garage/meta
+      - garage-data:/var/lib/garage/data
+    mem_limit: 768m
+    healthcheck:
+      test: [CMD, /garage, status]
+      interval: 15s
+      retries: 12
+  init:
+    <<: *airflow
+    build:
+      context: .
+      dockerfile: infra/Dockerfile
+    user: "0:0"
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - "mkdir -p /opt/airflow/state /opt/airflow/logs; chown -R 50000:0 /opt/airflow/state /opt/airflow/logs; exec su airflow -s /bin/bash -c 'python /opt/project/init.py'"
+    depends_on:
+      postgres: {condition: service_healthy}
+      mongo: {condition: service_healthy}
+      garage: {condition: service_healthy}
+    mem_limit: 1g
+  scheduler:
+    <<: *airflow
+    command: [bash, /opt/project/scheduler.sh]
+    mem_limit: 2500m
+    healthcheck:
+      test: [CMD, curl, --fail, http://localhost:8974/health]
+      interval: 20s
+      retries: 12
+  api-server:
+    <<: *airflow
+    command: [api-server, --workers, "1"]
+    ports: ["127.0.0.1:8080:8080"]
+    mem_limit: 1200m
+    healthcheck:
+      test: [CMD, curl, --fail, http://localhost:8080/api/v2/monitor/health]
+      interval: 20s
+      retries: 12
+  dag-processor:
+    <<: *airflow
+    command: dag-processor
+    mem_limit: 1g
+    healthcheck:
+      test: [CMD-SHELL, "airflow jobs check --job-type DagProcessorJob --hostname $${HOSTNAME}"]
+      interval: 30s
+      retries: 12
+
+volumes:
+  postgres-data:
+  mongo-data:
+  garage-meta:
+  garage-data:
+  etl-state:
+  airflow-logs:
