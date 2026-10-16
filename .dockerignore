@@ -17,3 +17,4 @@ reports
 docs
 infra/garage.local.toml
 .uv-cache
+exports

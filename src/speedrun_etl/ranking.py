@@ -2,7 +2,10 @@
 from .source import SourceError
 
 
-def rank_top5(client):
+def rank_games(client, top_n=10):
+    if not 1 <= int(top_n) <= 100:
+        raise ValueError("top_n must be 1..100")
+    top_n = int(top_n)
     candidates, contenders, seen = [], [], set()
     previous = None
     baseline = None
@@ -21,19 +24,25 @@ def rank_top5(client):
                 raise SourceError("Duplicate ranking game")
             seen.add(game["id"])
             previous = total
-            leaders = sorted(contenders, key=lambda g: (-g["verified_full_game_stats"], g["id"]))[:5]
-            if len(leaders) == 5 and total < leaders[-1]["verified_full_game_stats"]:
-                return {"coverage": "verified_public_partitions", "top5": leaders,
+            leaders = sorted(contenders, key=lambda g: (-g["verified_full_game_stats"], g["id"]))[:top_n]
+            if len(leaders) == top_n and total < leaders[-1]["verified_full_game_stats"]:
+                return {"coverage": "verified_public_partitions", "selected": leaders, "top_n": top_n,
+                        **({"top5": leaders} if top_n == 5 else {}),
                         "candidates": candidates,
                         "metric": "GetGameSummary.stats.totalRunsFG (site verified full-game counter)",
                         "boundary": {"next_game_id": game["id"], "catalog_run_count": total,
-                                     "fifth_full_game_count": leaders[-1]["verified_full_game_stats"]},
+                                     "cutoff_full_game_count": leaders[-1]["verified_full_game_stats"]},
                         "limitations": "Non-atomic ranking by site counters, not an independent recount. "
                                         "Bound assumes total catalog runs >= full-game verified count. "
                                         "V2 game.type is retained; no name-based type classification."}
             summary = client.request("GetGameSummary", {"gameId": game["id"]},
                                      "ranking/stats/" + game["id"], {"game_id": game["id"], "kind": "ranking_stats"})["body"]
-            stats = summary["stats"]
+            stats = summary.get("stats")
+            if not isinstance(stats, dict):
+                matches = [s for s in summary.get("gameStats", []) if s.get("gameId") == game["id"]]
+                if len(matches) != 1:
+                    raise SourceError("Unknown game statistics shape")
+                stats = matches[0]
             if stats["gameId"] != game["id"]:
                 raise SourceError("Ranking stats game mismatch")
             fg, il, challenge = (int(stats[k]) for k in ("totalRunsFG", "totalRunsIL", "totalRunsChallenge"))
@@ -48,5 +57,13 @@ def rank_top5(client):
             contenders.append(row)
             print(f"Ranking: {game['name']}: full-game stats={fg}, catalog={total}", flush=True)
         if page >= int(baseline["pages"]):
-            raise SourceError("Directory exhausted before ranking bound was established")
+            selected = sorted(contenders, key=lambda g: (-g["verified_full_game_stats"], g["id"]))[:top_n]
+            return {"coverage": "verified_public_partitions" if len(selected) == top_n else "partial",
+                    "selected": selected, "top_n": top_n, "candidates": candidates,
+                    "boundary": "directory_exhausted", "metric": "GetGameSummary.stats.totalRunsFG",
+                    **({"top5": selected} if top_n == 5 else {})}
         page += 1
+
+
+def rank_top5(client):
+    return rank_games(client, 5)

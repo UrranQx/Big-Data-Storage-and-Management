@@ -1,5 +1,21 @@
 # Speedrun.com ETL — лабораторные работы
 
+**Текущий статус: новый сбор entity-v2 после полного разрешённого сброса стенда.**
+Основные наборы — игры, раны, игроки и WR-история. Версии исходного содержимого
+и компактные checks сохраняют историю без миллионов повторов профилей.
+PostgreSQL/MongoDB используют пакетные операции, Garage — сжатые JSONL-блоки.
+После проверки Half-Life удалены и заново созданы шесть volumes проекта;
+старые raw/checkpoints/история Airflow больше недоступны. Архив data.zip,
+исходники, секреты и отчёты сохранены. Подробности — [DATA_MODEL.md](DATA_MODEL.md)
+и [HANDOFF](docs/HANDOFF.md).
+
+Запущен `half-life-v2-fresh-20261016-001`; фоновый `fresh_cycle` после успеха
+запустит `catalog-v2-fresh-20261016-001`, затем `minecraft-v2-fresh-20261016-001`.
+Он не запускает top-5 и останавливается при ошибке DAG. Журнал в state-volume:
+`/opt/airflow/state/fresh-cycle.log`. Повторно эти ID не создавать.
+Исторические ID в примерах ниже отсутствуют после сброса; для текущей
+демонстрации использовать свежие ID.
+
 Текущий этап — каталог игр и Minecraft после проверенных Portal e2e и Half-Life.
 Срок ЛР1: 2026-10-17 05:00 МСК. Полный сбор ранов всех игр отложен;
 для приёмки нужны завершённые ETL, три ODS, сравнительные замеры и отчёт.
@@ -7,6 +23,27 @@
 Код: `src/speedrun_etl`, три DAG: `dags/ods`, стенд: `compose.yaml`.
 Фактические проверки и ограничения — [отчёт](reports/lab1/REPORT.md).
 Архивные сборщики не подключаются к рабочему ETL.
+
+## Передача и запуск на другом компьютере
+
+Точная инструкция с нуля — [docs/TEAM_HANDOFF.md](docs/TEAM_HANDOFF.md).
+Коллеге не нужны наши volumes или данные: драйвер сам получает свежий каталог,
+выбирает топ-10 по счётчику verified full-game и собирает раны, WR и профили.
+
+```powershell
+docker compose exec -d scheduler python -u -m speedrun_etl.batch run --collection team-top10-001 --top 10 --log
+docker compose exec scheduler python -m speedrun_etl.batch status --collection team-top10-001
+```
+
+Для полного доступного каталога использовать новый ID и `--all` вместо `--top 10`.
+Очередь сохраняется в control DB; повтор команды пропускает готовые игры.
+Через `--hours 8` прекращается запуск новых игр, активная завершается.
+Прогресс страниц/категорий/профилей виден в Airflow collect logs; HTTP-телеметрия
+показывает фактическую скорость отдельно от настроенного pacing.
+Gzip включён. `ETL_MAX_RPM=60` по умолчанию, экспериментально допускается до 90;
+после 420/429 действует устойчивое снижение и Retry-After. Это не обещание
+скорости API v2. На больших ответах Minecraft измерено ~3,7 запроса/мин из-за
+~15 с на ответ, поэтому один лишь больший лимит такую задержку не устраняет.
 
 ## Запуск малого e2e
 
@@ -20,7 +57,7 @@ docker compose build init
 docker compose up -d
 docker compose ps -a
 docker compose exec scheduler python -m unittest discover -s /opt/project/tests -v
-docker compose exec -e ETL_INTEGRATION=1 scheduler python -m unittest discover -s /opt/project/tests -p test_storage_integration.py -v
+docker compose exec -e ETL_INTEGRATION=1 scheduler python -m unittest discover -s /opt/project/tests -p test_entity_storage_integration.py -v
 docker compose exec scheduler python -m speedrun_etl.cli start-e2e --collection portal-e2e-001
 docker compose exec scheduler python -m speedrun_etl.cli status --collection portal-e2e-001
 ```

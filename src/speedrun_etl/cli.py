@@ -52,32 +52,48 @@ def main():
                 response = api("GET", f"/api/v2/dags/{kind}/dagRuns?limit=10&order_by=-start_date", token=token)
                 print(json.dumps({"dag": kind, "runs": [{k: r.get(k) for k in ("dag_run_id", "state", "start_date", "end_date")} for r in response["dag_runs"]]}))
     elif args.command == "evidence":
-        from .ods import Package
         result = {"collection_id": args.collection, "budget": read(Path(state) / "collections" / args.collection / "budget.json"), "snapshots": {}}
         for kind in ("games_metadata", "runs", "players"):
             root = location(state, conf, kind)
             if not (root / "config.json").exists():
                 continue
+            reference = read(root / "extracted.json")
+            from .entity_ods import EntityPackage
+            package = EntityPackage(reference["package_uri"], role=reference["role"])
             result["snapshots"][kind] = {"verification": read(root / "verified.json"),
-                "manifest": list(Package(root / "package").records("manifests"))}
+                "manifest": list(package.records("manifests"))}
+            package.db.close()
         print(dumps(result))
     elif args.command == "replay":
-        from .ods import Package
-        from .storage import load_package
+        from .entity_ods import EntityPackage
+        from .entity_storage import load
         for kind in ("games_metadata", "runs", "players"):
             if not (location(state, conf, kind) / "config.json").exists():
                 continue
+            reference = read(location(state, conf, kind) / "extracted.json")
+            package = EntityPackage(reference["package_uri"], role=reference["role"])
             for store in ("postgres", "mongo", "garage"):
-                result = load_package(store, Package(location(state, conf, kind) / "package"), snapshot_id(conf, kind))
+                result = load(store, package, reference["snapshot_id"], role=reference["role"])
                 print(dumps({"snapshot": snapshot_id(conf, kind), "store": store, "digest": result["digest"]}))
+            package.db.close()
     else:
-        from .storage import STORES
+        from .entity_storage import read_entity
+        from .entity_ods import EntityPackage
         if not args.id:
             parser.error("history requires --id")
-        for name, cls in STORES.items():
-            with cls() as store:
-                history = store.history(args.entity, args.id)
-            print(dumps({"store": name, "count": len(history), "digest": digest(history), "history": history}))
+        dataset = {"run": "runs", "player": "players", "game": "games", "wr_history": "wr_history"}.get(args.entity)
+        if not dataset:
+            parser.error("Unknown entity type")
+        kind = "players" if dataset == "players" else "games_metadata" if dataset == "games" else "runs"
+        reference = read(location(state, conf, kind) / "extracted.json")
+        package = EntityPackage(reference["package_uri"], role=reference["role"])
+        summary = package.summary()
+        package.db.close()
+        for name in ("postgres", "mongo", "garage"):
+            rows = read_entity(name, dataset, args.id, reference["snapshot_id"], summary, role=reference["role"])
+            checks = read_entity(name, "checks", args.id, reference["snapshot_id"], summary, role=reference["role"])
+            value = {"versions": rows, "checks": checks}
+            print(dumps({"store": name, "digest": digest(value), **value}))
 
 
 if __name__ == "__main__":

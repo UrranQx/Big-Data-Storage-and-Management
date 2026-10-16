@@ -35,6 +35,20 @@ class FakeClient:
 
 
 class CollectionTests(unittest.TestCase):
+    def test_repeated_drift_finishes_as_explicit_partial_and_replays(self):
+        class Unstable(FakeClient):
+            def request(self, endpoint, params, key, context):
+                saved = super().request(endpoint, params, key, context)
+                if "/end/" in key:
+                    saved["body"]["runList"][0]["id"] = "changed"
+                return saved
+        with TemporaryDirectory() as temp:
+            client = Unstable()
+            result = partition(client, temp, "g", "c", 1)
+            self.assertEqual("partial", result["coverage"])
+            self.assertFalse(result["intentional_limit"])
+            self.assertEqual(result, partition(client, temp, "g", "c", 1))
+
     def test_empty_wr_response_preserved_and_other_categories_continue(self):
         from unittest.mock import Mock, patch
         from speedrun_etl.collect import collect_runs

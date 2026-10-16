@@ -143,4 +143,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit("Legacy driver disabled. Use: python -m speedrun_etl.batch run --collection team-top10-001 --top 10")

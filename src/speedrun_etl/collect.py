@@ -18,8 +18,21 @@ def validate_conf(conf):
         parent = conf.get("catalog_snapshot_id", "")
         if not re.fullmatch(r"[a-zA-Z0-9_-]{1,110}", parent):
             raise ValueError("Explicit catalog snapshot required")
+        top_n = int(conf.get("top_n", 10))
+        if not 1 <= top_n <= 100:
+            raise ValueError("top_n must be 1..100")
         return {"collection_id": collection, "scope": scope, "catalog_snapshot_id": parent,
-                "request_budget": 100, "adaptive_rate": True}
+                "top_n": top_n, "request_budget": 500, "adaptive_rate": True}
+    if scope == "game":
+        for key in ("game", "game_id", "selection_snapshot_id"):
+            if not re.fullmatch(r"[a-zA-Z0-9_-]{1,110}", conf.get(key, "")):
+                raise ValueError("Game requires explicit source ID, URL and verified selection snapshot")
+        budget = int(conf.get("request_budget", 5000))
+        if not 100 <= budget <= 10000:
+            raise ValueError("Game request budget must be 100..10000")
+        return {"collection_id": collection, "scope": scope,
+                **{k:conf[k] for k in ("game", "game_id", "selection_snapshot_id")},
+                "request_budget": budget, "adaptive_rate": True}
     if scope == "ranked_game":
         for key in ("game", "game_id", "ranking_snapshot_id"):
             if not re.fullmatch(r"[a-zA-Z0-9_-]{1,110}", conf.get(key, "")):
@@ -79,7 +92,23 @@ def partition(client, root, game_id, category_id, status, cap=2):
     path = root / "checkpoints" / (name + ".json")
     progress = read(path) if path.exists() else {"pass": 0, "pages": {}, "complete": False, "resume": 0}
     if progress["complete"]:
+        print(f"Runs: game={game_id} category={category_id} status={STATUSES[status]} checkpoint complete; skipped", flush=True)
         return progress["coverage"]
+    drift_messages = ("Pagination changed within a section", "Boundary IDs changed on resume",
+                      "Boundary IDs changed at end of section", "Repeated IDs across pages")
+    def unstable():
+        coverage = {"game_id": game_id, "category_id": category_id, "status": STATUSES[status],
+            "status_code": status, "coverage": "partial", "intentional_limit": False,
+            "diagnostic": "pagination_unstable_after_one_retry", "pass": progress["pass"],
+            "errors": progress.get("errors", [])}
+        progress.update(complete=True, coverage=coverage)
+        atomic_write(path, progress)
+        print(f"Runs: category={category_id} status={STATUSES[status]} partial: repeated pagination drift", flush=True)
+        return coverage
+    if progress["pass"] > 1:
+        if all(e["error"] in drift_messages for e in progress.get("errors", [])):
+            return unstable()
+        raise SourceError("Previously failed section requires review of filter/source errors")
     params = {"gameId": game_id, "categoryId": category_id, "obsolete": 1,
               "video": 0, "emulator": 1, "verified": status, "values": []}
     context = {"game_id": game_id, "category_id": category_id, "status": STATUSES[status]}
@@ -99,6 +128,8 @@ def partition(client, root, game_id, category_id, status, cap=2):
             baseline = first["body"]["pagination"]
             total_pages = max(1, int(baseline["pages"]))
             limit = total_pages if cap is None else min(total_pages, cap)
+            print(f"Runs: game={game_id} category={category_id} status={STATUSES[status]} "
+                  f"pages={limit}/{total_pages} source_count={baseline['count']} pass={pass_no}", flush=True)
             ids = set()
             for page in range(1, limit + 1):
                 response = first if page == 1 else client.request("GetGameLeaderboard2", {"params": params, "page": page}, f"{name}/pass{pass_no}/page{page}", context)
@@ -108,6 +139,8 @@ def partition(client, root, game_id, category_id, status, cap=2):
                 ids.update(batch)
                 progress["pages"][str(page)] = {"response_id": response["response_id"], "signature": boundary_signature(response["body"])}
                 atomic_write(path, progress)
+                print(f"Runs: category={category_id} status={STATUSES[status]} page={page}/{limit} "
+                      f"unique_runs={len(ids)} checking_boundaries={'next' if page == limit else 'pending'}", flush=True)
             for page in sorted({1, limit}):
                 fresh = client.request("GetGameLeaderboard2", {"params": params, "page": page}, f"{name}/pass{pass_no}/end/{page}", context)
                 validate_page(fresh["body"], page, baseline, game_id, category_id, status)
@@ -120,16 +153,19 @@ def partition(client, root, game_id, category_id, status, cap=2):
                         "pass": pass_no, "boundary_checks": "passed"}
             progress.update(complete=True, coverage=coverage)
             atomic_write(path, progress)
+            print(f"Runs: category={category_id} status={STATUSES[status]} completed coverage={coverage['coverage']}", flush=True)
             return coverage
         except SourceError as error:
             # HTTP/budget errors resume the same pass; only pagination/data drift restarts it.
             if "budget" in str(error).lower() or "attempt" in str(error).lower() or "request failed" in str(error).lower():
                 raise
+            if str(error) not in drift_messages:
+                raise  # Wrong game/status/IL filters are failures, not coverage success.
             progress.setdefault("errors", []).append({"pass": pass_no, "error": str(error)})
             progress.update({"pass": pass_no + 1, "pages": {}, "resume": 0})
             atomic_write(path, progress)
             if progress["pass"] > 1:
-                raise SourceError("Section remains partial after one automatic restart") from error
+                return unstable()
 
 
 def metadata(client, conf):
@@ -145,7 +181,7 @@ def metadata(client, conf):
                 "category_name": categories[0]["name"], "source_game_type": game.get("type"),
                 "coverage": "partial", "intentional_limit": True, "catalog": "not_checked"}
     name = game.get("name", "").strip().casefold()
-    if conf["scope"] == "ranked_game":
+    if conf["scope"] in ("ranked_game", "game"):
         matches = game["id"] == conf["game_id"]
     else:
         matches = name == {"half-life": "half-life", "mc": "minecraft: java edition"}[slug]
@@ -162,30 +198,42 @@ def metadata(client, conf):
 
 
 def collect_runs(client, root, metadata_package):
-    response = next(r for r in metadata_package.records("responses") if r["endpoint"] == "GetGameData" and r["http_status"] == 200)
-    body = restore(metadata_package.get, response)
+    from .entity_ods import EntityPackage
+    if isinstance(metadata_package, EntityPackage):
+        response = next(r for r in metadata_package.records("responses")
+                        if r["metadata"]["endpoint"] == "GetGameData" and r["metadata"]["http_status"] == 200)
+        body = metadata_package.decode(response["body"])
+    else:
+        response = next(r for r in metadata_package.records("responses") if r["endpoint"] == "GetGameData" and r["http_status"] == 200)
+        body = restore(metadata_package.get, response)
     gid = body["game"]["id"]
     conf_path = Path(root) / "config.json"
     conf = read(conf_path)
-    full_game = conf["scope"] in ("full_game", "ranked_game")
+    full_game = conf["scope"] in ("full_game", "ranked_game", "game")
     categories = [c for c in body["categories"] if c.get("isPerLevel") is False and
                   (full_game or c.get("name") == "Inbounds")]
+    if not categories and conf["scope"] == "game":
+        return {"game_id": gid, "coverage": "unavailable", "partitions": [], "wr": [],
+                "diagnostic": "no_full_game_categories_in_source_metadata"}
     if not categories or (not full_game and len(categories) != 1):
         raise SourceError("Requested full-game categories are missing or ambiguous")
     client.request("GetGameSummary", {"gameId": gid}, "stats-before", {"game_id": gid, "phase": "before"})
     coverage = []
-    for category in categories:
+    for category_index, category in enumerate(categories, 1):
         cid = category["id"]
+        print(f"Runs: game={gid} category={category_index}/{len(categories)} id={cid} name={category.get('name')}", flush=True)
         for status in (0, 1, 2):
             coverage.append(partition(client, root, gid, cid, status, cap=None if full_game else 2))
     wr_coverage = []
     for category in categories:
         cid = category["id"]
+        print(f"WR: game={gid} category={cid} fetching source history", flush=True)
         params = {"gameId": gid, "categoryId": cid, "obsolete": 1, "video": 0,
                   "emulator": 1, "verified": 1, "values": []}
         first = client.request("GetGameRecordHistory", {"params": params, "page": 1},
             f"wr/{cid}/page1", {"game_id": gid, "category_id": cid, "kind": "source_wr_history"})
         if first["body"] == {}:
+            print(f"WR: category={cid} unavailable: empty object response", flush=True)
             # Observed v2 response for categories with no public record history.
             # Keep the exact empty response; it does not prove an empty history.
             wr_coverage.append({"category_id": cid, "pages_received": 1,
@@ -199,6 +247,8 @@ def collect_runs(client, root, metadata_package):
         for page in range(2, pages + 1):
             client.request("GetGameRecordHistory", {"params": params, "page": page},
                 f"wr/{cid}/page{page}", {"game_id": gid, "category_id": cid, "kind": "source_wr_history"})
+            print(f"WR: category={cid} page={page}/{pages}", flush=True)
+        print(f"WR: category={cid} received_pages={pages} pagination={'present' if pagination else 'absent'}", flush=True)
         wr_coverage.append({"category_id": cid, "pages_received": pages,
             "coverage": "verified_public_partitions" if full_game and pagination else "partial"})
     client.request("GetGameSummary", {"gameId": gid}, "stats-after", {"game_id": gid, "phase": "after"})

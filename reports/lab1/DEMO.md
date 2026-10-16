@@ -11,21 +11,21 @@ docker compose exec scheduler airflow dags list-import-errors
 
 1. Открыть http://localhost:8080, войти как `admin` с локальным паролем из `.env`.
    Показать графы `games_metadata`, `runs`, `players` и завершённую цепочку
-   `half-life-full-001`. У каждого DAG собственный результат: справочники,
+   `half-life-v2-fresh-20261016-001`. У каждого DAG собственный результат: справочники,
    раны, профили участников. Три ветви загрузки направлены в разные сервисы.
 2. Показать доказательства завершения: манифест, область, coverage, digest
    одинаковых записей в PostgreSQL, MongoDB и Garage. Команда ниже читает
    сохранённые доказательства; новые запросы к Speedrun.com не делает.
 
 ```powershell
-docker compose exec scheduler python -m speedrun_etl.cli evidence --collection half-life-full-001
+docker compose exec scheduler python -m speedrun_etl.cli evidence --collection half-life-v2-fresh-20261016-001
 ```
 
 3. Показать историю одного реального рана во всех трёх ODS. Например, рана
    Muty из сохранённого снимка Half-Life:
 
 ```powershell
-docker compose exec scheduler python -m speedrun_etl.cli history --collection half-life-full-001 --entity run --id y90kxxry
+docker compose exec scheduler python -m speedrun_etl.cli history --collection half-life-v2-fresh-20261016-001 --entity run --id y90kxxry
 ```
 
 4. При необходимости продемонстрировать повторную загрузку пакетов. Выполнять
@@ -34,7 +34,7 @@ docker compose exec scheduler python -m speedrun_etl.cli history --collection ha
    collection ID, поэтому его не следует путать с replay.
 
 ```powershell
-docker compose exec scheduler python -m speedrun_etl.cli replay --collection half-life-full-001
+docker compose exec scheduler python -m speedrun_etl.cli replay --collection half-life-v2-fresh-20261016-001
 ```
 
 5. Показать `measurements.csv`, `summary.csv`, `load_time.png` и
@@ -47,7 +47,7 @@ docker compose exec scheduler python -m speedrun_etl.cli replay --collection hal
    разделы остаются явно отмеченными; это не скрытые удаления данных.
 
 ```powershell
-docker compose exec scheduler python -m speedrun_etl.progress catalog-20261016-001 minecraft-20261016-001
+docker compose exec scheduler python -m speedrun_etl.progress catalog-v2-fresh-20261016-001 minecraft-v2-fresh-20261016-001
 ```
 
 Секреты не показывать на демонстрации. Для штатной остановки использовать

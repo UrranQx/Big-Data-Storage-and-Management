@@ -13,6 +13,7 @@ values = {name: secrets.token_hex(24) for name in (
     "AIRFLOW_JWT_SECRET", "AIRFLOW_ADMIN_PASSWORD",
 )}
 values["S3_ACCESS_KEY"] = "GK" + secrets.token_hex(16)
+values["ETL_MAX_RPM"] = "60"
 config_path.write_text('''metadata_dir = "/var/lib/garage/meta"
 data_dir = "/var/lib/garage/data"
 db_engine = "sqlite"

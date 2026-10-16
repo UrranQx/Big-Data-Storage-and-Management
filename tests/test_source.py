@@ -48,6 +48,37 @@ class RetryAfterTests(unittest.TestCase):
 
 @unittest.skipUnless(os.name == "posix", "Production limiter requires Linux flock; run in Docker")
 class SourceTests(unittest.TestCase):
+    def test_gzip_exact_json_cache_and_wire_size(self):
+        import gzip
+        from decimal import Decimal
+        with TemporaryDirectory() as temp:
+            raw = b'{"value":0.1234567890123456789012345,"unknown":[null,2,2]}'
+            wire = gzip.compress(raw, mtime=0)
+            def transport(request, timeout):
+                self.assertEqual("gzip", request.get_header("Accept-encoding"))
+                response = Response(wire)
+                response.headers = {"Content-Encoding": "gzip"}
+                return response
+            client = Client(temp, "c", "s", transport=transport, initial_pause=0)
+            saved = client.request("GetGameData", {}, "gzip")
+            self.assertEqual(Decimal("0.1234567890123456789012345"), saved["body"]["value"])
+            self.assertEqual(len(wire), saved["network_bytes"])
+            self.assertEqual(len(raw), saved["decoded_bytes"])
+            self.assertEqual(saved, client.request("GetGameData", {}, "gzip"))
+            self.assertEqual(1, read(Path(temp)/"collections/c/telemetry.json")["attempts"])
+
+    def test_optional_90_rpm_ceiling_uses_gradual_steps(self):
+        with TemporaryDirectory() as temp:
+            clock = Clock()
+            client = Client(temp,"c","s",budget=220,transport=lambda *a,**k:Response(b'{}'),
+                            clock=clock.now,sleep=clock.sleep,initial_pause=0,adaptive_rate=True,max_rpm=90)
+            for n in range(211):
+                client.request("GetGameData",{},str(n))
+            self.assertEqual(90,read(Path(temp)/"limiter.json")["rate"]["rpm"])
+            self.assertGreaterEqual(read(Path(temp)/"collections/c/telemetry.json")["observed_rpm"],75)
+        with self.assertRaises(ValueError):
+            Client("unused","c","s",max_rpm=100)
+
     def test_transport_time_counts_towards_spacing(self):
         with TemporaryDirectory() as temp:
             clock = Clock()
