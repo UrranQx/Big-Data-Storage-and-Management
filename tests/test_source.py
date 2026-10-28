@@ -9,7 +9,7 @@ import unittest
 from urllib.error import HTTPError
 
 from speedrun_etl.jsonutil import atomic_write, read
-from speedrun_etl.source import BudgetExceeded, Client, SourceError, retry_after
+from speedrun_etl.source import BudgetExceeded, Client, SourceError, retry_after, advance_rate
 
 
 class Clock:
@@ -38,7 +38,58 @@ def concurrent_call(root, snapshot):
            interval=0.08).request("GetGameData", {}, "same")
 
 
+def concurrent_pages(root, snapshot):
+    def transport(request, timeout):
+        with (Path(root) / "starts.txt").open("a") as handle:
+            handle.write(str(time.time()) + "\n")
+        time.sleep(0.15)
+        return Response(b'{}')
+    Client(root, "collection", snapshot, transport=transport, initial_pause=0,
+           interval=0.08).request_pages("GetGameData", [({"page": n}, str(n), {}) for n in (1, 2)])
+
+
 class RetryAfterTests(unittest.TestCase):
+    def test_repeated_429_backoff_and_one_reviewed_retry_keep_attempt_history(self):
+        clock=Clock()
+        def blocked(request,timeout):
+            raise HTTPError(request.full_url,429,'rate limited',{},io.BytesIO(b'{"error":"rate limited"}'))
+        with TemporaryDirectory() as directory:
+            client=Client(directory,'c','s',transport=blocked,clock=clock.now,sleep=clock.sleep,initial_pause=0)
+            with self.assertRaises(SourceError): client.request('GetGameData',{},'blocked')
+            request_dir=next((Path(directory)/'snapshots/s/requests').iterdir())
+            self.assertEqual(5,read(request_dir/'attempts.state')['count'])
+            attempts=sorted((read(p) for p in request_dir.glob('*.json')),key=lambda r:r['attempt'])
+            self.assertEqual([60,120,240,480,900],[r['backoff_seconds'] for r in attempts])
+            with self.assertRaises(SourceError): client.request('GetGameData',{},'blocked')
+            self.assertEqual(5,read(Path(directory)/'collections/c/budget.json')['used'])
+            atomic_write(request_dir/'attempts.state',{'count':5,'reviewed_extra_attempts':1,
+                                                      'review_reason':'single retry after verified cooldown'})
+            client.transport=lambda request,timeout: Response(b'{}')
+            result=client.request('GetGameData',{},'blocked')
+            self.assertEqual(6,result['attempt'])
+            self.assertEqual(6,read(request_dir/'attempts.state')['count'])
+            self.assertEqual(6,read(Path(directory)/'collections/c/budget.json')['used'])
+            self.assertEqual(6,len(list(request_dir.glob('*.json'))))
+            self.assertEqual(result,client.request('GetGameData',{},'blocked'))
+            client.transport=blocked
+            with self.assertRaises(SourceError): client.request('GetGameData',{},'another-page')
+            self.assertEqual(11,read(Path(directory)/'collections/c/budget.json')['used'])
+
+    def test_recovery_waits_for_time_and_clean_responses_then_probes_in_small_steps(self):
+        rate = {"rpm": 20, "successes": 0, "throttled": True, "recover_not_before": 1300}
+        for _ in range(30): advance_rate(rate, 1200, 60, True)
+        self.assertEqual(20, rate["rpm"])
+        advance_rate(rate, 1300, 60, True)
+        self.assertEqual(25, rate["rpm"])
+        self.assertFalse(rate["throttled"])
+        for _ in range(30): advance_rate(rate, 1350, 60, True)
+        self.assertEqual(25, rate["rpm"])
+        advance_rate(rate, 1420, 60, True)
+        self.assertEqual(30, rate["rpm"])
+        advance_rate(rate, 1540, 60, False)
+        self.assertEqual(0, rate["successes"])
+        self.assertEqual(30, rate["rpm"])
+
     def test_seconds_and_http_date(self):
         self.assertEqual(120, retry_after("120"))
         now = datetime(2026, 10, 15, tzinfo=timezone.utc)
@@ -48,6 +99,141 @@ class RetryAfterTests(unittest.TestCase):
 
 @unittest.skipUnless(os.name == "posix", "Production limiter requires Linux flock; run in Docker")
 class SourceTests(unittest.TestCase):
+    def test_window_overlaps_four_reads_but_paces_starts_and_replays_without_http(self):
+        import threading
+        with TemporaryDirectory() as temp:
+            guard = threading.Lock()
+            active = 0
+            maximum = 0
+            starts = []
+            def transport(request, timeout):
+                nonlocal active, maximum
+                with guard:
+                    active += 1
+                    maximum = max(maximum, active)
+                    starts.append(time.time())
+                time.sleep(0.15)
+                with guard: active -= 1
+                return Response(b'{"ok":true}')
+            client = Client(temp, "c", "s", budget=10, initial_pause=0, interval=0.05, transport=transport)
+            requests = [({"page": n}, f"page{n}", {}) for n in (1, 2, 3, 4)]
+            result = client.request_pages("GetGameLeaderboard2", requests)
+            self.assertGreaterEqual(maximum, 2)
+            self.assertLessEqual(maximum, 4)
+            self.assertTrue(all(b-a>=0.049 for a,b in zip(starts,starts[1:])))
+            self.assertEqual(4, read(Path(temp)/"collections/c/budget.json")["used"])
+            self.assertEqual(result, client.request_pages("GetGameLeaderboard2", requests))
+            self.assertEqual(4, len(starts))
+            self.assertFalse(read(Path(temp)/"limiter.json")["inflight"])
+
+    def test_fast_429_prevents_second_request_and_preserves_backoff(self):
+        with TemporaryDirectory() as temp:
+            starts = []
+            def transport(request, timeout):
+                starts.append(time.time())
+                raise HTTPError(request.full_url,429,"limit",{"Retry-After":"60"},io.BytesIO(b'{}'))
+            client = Client(temp,"c","s",initial_pause=0,interval=0.05,transport=transport,max_attempts=1)
+            with self.assertRaises(SourceError):
+                client.request_pages("GetGameLeaderboard2",[({"page":n},str(n),{}) for n in (1,2)])
+            self.assertEqual(1,len(starts))
+            limiter=read(Path(temp)/"limiter.json")
+            self.assertTrue(limiter["rate"]["throttled"])
+            self.assertFalse(limiter["inflight"])
+            self.assertGreaterEqual(float(limiter["next_at"]),starts[0]+60)
+
+    def test_pair_late_success_cannot_undo_429_and_is_durable(self):
+        import base64
+        from speedrun_etl.jsonutil import loads
+        with TemporaryDirectory() as temp:
+            starts=[]
+            def transport(request,timeout):
+                params=loads(base64.urlsafe_b64decode(request.full_url.split('_r=')[1]+'=='))
+                starts.append(params['page'])
+                time.sleep(0.08 if params['page']==1 else 0.15)
+                if params['page']==1:
+                    raise HTTPError(request.full_url,429,"limit",{"Retry-After":"60"},io.BytesIO(b'{}'))
+                return Response(b'{"saved":true}')
+            client=Client(temp,"c","s",initial_pause=0,interval=0.04,transport=transport,max_attempts=1,adaptive_rate=False)
+            with self.assertRaises(SourceError):
+                client.request_pages("GetGameLeaderboard2",[({"page":n},str(n),{}) for n in (1,2)])
+            limiter=read(Path(temp)/"limiter.json")
+            self.assertEqual(20,limiter["rate"]["rpm"])
+            self.assertTrue(limiter["rate"]["throttled"])
+            self.assertGreater(float(limiter['next_at']),time.time()+59)
+            self.assertEqual({"saved":True},client.request("GetGameLeaderboard2",{"page":2},"2",{})['body'])
+            self.assertEqual([1,2],starts)
+
+    def test_batch_and_another_process_share_start_spacing(self):
+        with TemporaryDirectory() as temp:
+            ctx=multiprocessing.get_context("fork")
+            processes=[ctx.Process(target=concurrent_pages,args=(temp,"batch")),
+                       ctx.Process(target=concurrent_call,args=(temp,"single"))]
+            for process in processes:process.start()
+            for process in processes:
+                process.join(10)
+                self.assertEqual(0,process.exitcode)
+            starts=sorted(map(float,(Path(temp)/"starts.txt").read_text().splitlines()))
+            self.assertEqual(3,len(starts))
+            self.assertTrue(all(b-a>=0.078 for a,b in zip(starts,starts[1:])))
+
+    def test_partial_budget_keeps_success_and_never_exceeds_attempt_cap(self):
+        with TemporaryDirectory() as temp:
+            clock=Clock()
+            starts=[]
+            def transport(request,timeout):
+                starts.append(clock.now())
+                return Response(b'{"kept":true}')
+            client=Client(temp,"c","s",budget=1,initial_pause=0,transport=transport,clock=clock.now,sleep=clock.sleep)
+            with self.assertRaises(BudgetExceeded):
+                client.request_pages("GetGameData",[({"page":n},str(n),{}) for n in (1,2)])
+            self.assertEqual(1,len(starts))
+            self.assertEqual({"kept":True},client.request("GetGameData",{"page":1},"1",{})['body'])
+            self.assertEqual(1,read(Path(temp)/"collections/c/budget.json")['used'])
+
+    def test_post_request_provenance_and_cache_identity_are_distinct_from_get(self):
+        from speedrun_etl.jsonutil import loads
+        with TemporaryDirectory() as temp:
+            clock = Clock()
+            methods = []
+            def transport(request, timeout):
+                methods.append(request.get_method())
+                if request.get_method() == "POST":
+                    self.assertEqual({"gameUrl": "example"}, loads(request.data))
+                    self.assertNotIn("?_r=", request.full_url)
+                return Response(b'{}')
+            for method in ("GET", "POST"):
+                client = Client(temp, "c", "s", transport=transport, clock=clock.now,
+                    sleep=clock.sleep, initial_pause=0, http_method=method)
+                saved = client.request("GetGameData", {"gameUrl": "example"}, "same")
+                self.assertEqual(method, saved["http_method"])
+                self.assertEqual(saved, client.request("GetGameData", {"gameUrl": "example"}, "same"))
+            self.assertEqual(["GET", "POST"], methods)
+
+    def test_throttle_recovery_persists_across_client_restarts_and_rethrottles(self):
+        with TemporaryDirectory() as temp:
+            clock = Clock()
+            fail = [True]
+            def transport(request, timeout):
+                if fail[0]:
+                    fail[0] = False
+                    raise HTTPError(request.full_url, 429, "limit", {"Retry-After": "90"}, io.BytesIO(b'{}'))
+                return Response(b'{}')
+            def client():
+                return Client(temp, "c", "s", budget=100, transport=transport, clock=clock.now,
+                    sleep=clock.sleep, initial_pause=0, adaptive_rate=True)
+            client().request("GetGameData", {}, "initial-throttle")
+            before = read(Path(temp)/"limiter.json")["rate"]
+            self.assertTrue(before["throttled"])
+            clock.sleep(300)
+            for n in range(20): client().request("GetGameData", {}, "clean"+str(n))
+            self.assertEqual(25, read(Path(temp)/"limiter.json")["rate"]["rpm"])
+            fail[0] = True
+            client().request("GetGameData", {}, "throttle-again")
+            after = read(Path(temp)/"limiter.json")["rate"]
+            self.assertEqual(20, after["rpm"])
+            self.assertTrue(after["throttled"])
+            self.assertGreater(after["recover_not_before"], clock.now())
+
     def test_gzip_exact_json_cache_and_wire_size(self):
         import gzip
         from decimal import Decimal
@@ -101,14 +287,14 @@ class SourceTests(unittest.TestCase):
                     raise HTTPError(request.full_url, 429, "limit", {"Retry-After": "90"}, io.BytesIO(b'{}'))
                 return Response(b'{}')
             client = Client(temp, "c", "s", budget=100, transport=transport,
-                            clock=clock.now, sleep=clock.sleep, initial_pause=0, adaptive_rate=True)
+                            clock=clock.now, sleep=clock.sleep, initial_pause=0, adaptive_rate=True, max_rpm=60)
             for n in range(76):
                 client.request("GetGameData", {}, str(n))
             self.assertEqual(60, read(Path(temp) / "limiter.json")["rate"]["rpm"])
             client.request("GetGameData", {}, "throttle")
             self.assertGreaterEqual(clock.starts[77] - clock.starts[76], 90)
             client = Client(temp, "c", "s", budget=100, transport=transport,
-                            clock=clock.now, sleep=clock.sleep, adaptive_rate=True)
+                            clock=clock.now, sleep=clock.sleep, adaptive_rate=True, max_rpm=60)
             client.request("GetGameData", {}, "restart")
             self.assertEqual(20, read(Path(temp) / "limiter.json")["rate"]["rpm"])
             self.assertGreaterEqual(clock.starts[-1] - clock.starts[-2], 3)

@@ -7,12 +7,126 @@ import os
 import sys
 from uuid import uuid4
 
-from speedrun_etl.batch import start,validate_selection
+from speedrun_etl.batch import start,validate_selection,result_state,drift_retry_partitions
 from speedrun_etl.collect import validate_conf
 from speedrun_etl.entity_ods import EntityPackage
 
 
 class BatchTests(unittest.TestCase):
+    @unittest.skipUnless(os.environ.get("ETL_INTEGRATION")=="1","Real control DB opt-in")
+    def test_fresh_date_strategy_uses_one_catalog_and_survives_resume(self):
+        from speedrun_etl.batch import main
+        from speedrun_etl.jsonutil import atomic_write,read
+        batch_id='teststrategy'+uuid4().hex[:10]
+        games=[{'id':'g1','url':'one','name':'One'},{'id':'g2','url':'two','name':'Two'}]
+        starts=[]
+        with TemporaryDirectory() as temp:
+            def fake_start(collection,conf):
+                starts.append((collection,conf))
+                p=EntityPackage(Path(temp)/'snapshots'/(collection+'-runs')/'entity-package')
+                p.put('manifests',{'key':'m','source_result':{'partitions':[{'coverage':'verified_public_partitions'}]}})
+                p.db.commit();p.db.close()
+            argv=['batch','run','--collection',batch_id,'--top','2','--runs-strategy','date-large']
+            with patch.dict(os.environ,{'ETL_STATE':temp}),patch.object(sys,'argv',argv),patch(
+                    'speedrun_etl.batch.start',side_effect=fake_start),patch('speedrun_etl.batch.wait'),patch(
+                    'speedrun_etl.batch.selection',return_value=games):
+                main()
+                self.assertEqual(1,sum(c.endswith('-catalog') for c,conf in starts))
+                requested=[conf for c,conf in starts if '-g-' in c]
+                self.assertEqual(2,len(requested))
+                self.assertTrue(all(c['run_partition_strategy']=='date_large_v1' for c in requested))
+                del argv[-2:]
+                main()
+                self.assertEqual(2,sum('-g-' in c for c,conf in starts))
+                self.assertEqual('date_large_v1',read(Path(temp)/'batches'/batch_id/'config.json')['run_partition_strategy'])
+
+    def test_only_documented_source_drift_can_be_deferred(self):
+        from copy import deepcopy
+        result = {"partitions": [{"coverage": "partial", "category_id": "c", "status_code": 1,
+            "diagnostic": "pagination_unstable_after_one_retry",
+            "errors": [{"error": "Pagination changed within a section"}]}]}
+        self.assertEqual(result["partitions"], drift_retry_partitions(result))
+        for patch_value in ({"stop_reason": "HTTP budget exhausted"}, {"intentional_limit": True}):
+            self.assertIsNone(drift_retry_partitions({**result, **patch_value}))
+        wrong = deepcopy(result)
+        wrong["partitions"][0]["errors"] = [{"error": "Wrong category filter"}]
+        self.assertIsNone(drift_retry_partitions(wrong))
+        wrong["partitions"][0].update(diagnostic="unknown", errors=[])
+        self.assertIsNone(drift_retry_partitions(wrong))
+        wrong["partitions"][0].update(diagnostic="pagination_changed_during_traversal",
+                                      drift={"pagination_changed": True})
+        self.assertEqual(wrong["partitions"], drift_retry_partitions(wrong))
+        wrong["partitions"].append({"coverage": "unavailable"})
+        self.assertIsNone(drift_retry_partitions(wrong))
+
+    @unittest.skipUnless(os.environ.get("ETL_INTEGRATION") == "1", "Real control DB opt-in")
+    def test_reviewed_drift_resume_retains_retry_and_moves_to_next_game_once(self):
+        from speedrun_etl.batch import main
+        from speedrun_etl.storage import pg_connect
+        from speedrun_etl.jsonutil import read, atomic_write
+        from speedrun_etl.progress import batch_progress
+        batch_id = "testdrift" + uuid4().hex[:10]
+        games = [{"id": "g1", "url": "one", "name": "One"}, {"id": "g2", "url": "two", "name": "Two"}]
+        started = []
+        with TemporaryDirectory() as temp:
+            def fake_start(collection, conf):
+                started.append(collection)
+                if "game_id" in conf:
+                    atomic_write(Path(temp) / "snapshots" / (collection + "-games_metadata") / "config.json", conf)
+                result = {"partitions": [{"coverage": "verified_public_partitions"}]}
+                if collection.endswith("-g-g1"):
+                    result = {"partitions": [{"coverage": "partial", "category_id": "c", "status_code": 1,
+                        "diagnostic": "pagination_unstable_after_one_retry",
+                        "errors": [{"error": "Pagination changed within a section"}]}]}
+                package = EntityPackage(Path(temp) / "snapshots" / (collection + "-runs") / "entity-package")
+                package.put("manifests", {"key": "m", "source_result": result})
+                package.db.commit()
+                package.db.close()
+            argv = ["batch", "run", "--collection", batch_id, "--top", "2"]
+            with patch.dict(os.environ, {"ETL_STATE": temp}), patch.object(sys, "argv", argv), patch(
+                    "speedrun_etl.batch.start", side_effect=fake_start), patch("speedrun_etl.batch.wait"), patch(
+                    "speedrun_etl.batch.selection", return_value=games):
+                main()
+                self.assertEqual("coverage_paused", read(Path(temp) / "batches" / batch_id / "status.json")["phase"])
+                argv.append("--continue-on-drift")
+                main()
+                main()
+                report = batch_progress(batch_id)
+                self.assertEqual("complete_with_gaps", report["driver"]["phase"])
+                self.assertEqual((2, 1, 1), (report["games_processed"], report["games_complete"], report["games_partial"]))
+            self.assertEqual(1, started.count(batch_id + "-g-g1"))
+            self.assertEqual(1, started.count(batch_id + "-g-g2"))
+        with pg_connect(True) as conn:
+            rows = conn.execute("SELECT game_id,state,details FROM entity_batch_queue WHERE batch_id=%s", [batch_id]).fetchall()
+        states = {r[0]: (r[1], r[2]) for r in rows}
+        self.assertEqual("partial", states["g1"][0])
+        self.assertEqual("pending_review", states["g1"][1]["coverage_retry"]["state"])
+        self.assertEqual("c", states["g1"][1]["coverage_retry"]["partitions"][0]["category_id"])
+        self.assertEqual("complete", states["g2"][0])
+
+    @unittest.skipUnless(os.environ.get("ETL_INTEGRATION") == "1", "Real control DB opt-in")
+    def test_continue_on_drift_does_not_ignore_failed_dag_or_store(self):
+        from speedrun_etl.batch import main
+        from speedrun_etl.storage import pg_connect
+        batch_id = "teststorefail" + uuid4().hex[:10]
+        games = [{"id": "g1", "url": "one"}, {"id": "g2", "url": "two"}]
+        for game in games:
+            game["name"] = game["url"]
+        started = []
+        def fail_game(collection, kinds):
+            if collection.endswith("-g-g1"):
+                raise RuntimeError("Store acknowledgement missing")
+        with TemporaryDirectory() as temp, patch.dict(os.environ, {"ETL_STATE": temp}), patch.object(
+                sys, "argv", ["batch", "run", "--collection", batch_id, "--top", "2", "--continue-on-drift"]), patch(
+                "speedrun_etl.batch.start", side_effect=lambda collection, conf: started.append(collection)), patch(
+                "speedrun_etl.batch.wait", side_effect=fail_game), patch("speedrun_etl.batch.selection", return_value=games):
+            with self.assertRaisesRegex(RuntimeError, "acknowledgement"):
+                main()
+        self.assertNotIn(batch_id + "-g-g2", started)
+        with pg_connect(True) as conn:
+            states = dict(conn.execute("SELECT game_id,state FROM entity_batch_queue WHERE batch_id=%s", [batch_id]).fetchall())
+        self.assertEqual({"g1": "failed", "g2": "pending"}, states)
+
     @unittest.skipUnless(os.environ.get("ETL_INTEGRATION") == "1", "Real control DB opt-in")
     def test_queue_persists_and_resume_skips_completed_games(self):
         from speedrun_etl.batch import main
@@ -24,7 +138,8 @@ class BatchTests(unittest.TestCase):
             def fake_start(collection,conf):
                 started.append(collection)
                 package=EntityPackage(Path(temp)/"snapshots"/(collection+"-runs")/"entity-package")
-                package.put("manifests",{"key":"m","source_result":{"coverage":"verified_public_partitions"}})
+                package.put("manifests",{"key":"m","source_result":{"coverage":"partial",
+                    "partitions":[{"coverage":"verified_public_partitions"}], "wr":[{"coverage":"partial"}]}})
                 package.db.commit();package.db.close()
             argv=["batch","run","--collection",batch_id,"--top","2"]
             with patch.dict(os.environ,{"ETL_STATE":temp}),patch.object(sys,"argv",argv),patch(
@@ -39,6 +154,73 @@ class BatchTests(unittest.TestCase):
             rows=conn.execute("SELECT state FROM entity_batch_queue WHERE batch_id=%s",[batch_id]).fetchall()
         self.assertEqual(["complete","complete"],sorted(r[0] for r in rows))
 
+    def test_missing_partitions_and_unavailable_are_not_complete(self):
+        self.assertEqual("partial", result_state({"partitions": []}))
+        self.assertEqual("unavailable", result_state({"coverage": "unavailable", "partitions": []}))
+        self.assertEqual("partial", result_state({"partitions": [{"coverage": "partial"}]}))
+        self.assertEqual("complete", result_state({"coverage": "partial",
+            "partitions": [{"coverage": "verified_public_partitions"}], "wr": [{"coverage": "partial"}]}))
+
+    def test_only_explicit_empty_full_game_scope_is_not_applicable(self):
+        result = {'coverage':'unavailable','diagnostic':'no_full_game_categories_in_source_metadata',
+                  'partitions':[],'wr':[]}
+        self.assertEqual('not_applicable',result_state(result))
+        for extra in ({'stop_reason':'budget'},{'partitions':[{'coverage':'partial'}]},
+                      {'diagnostic':'HTTP 404'},{'wr':[{'coverage':'unavailable'}]}):
+            self.assertEqual('unavailable',result_state({**result,**extra}))
+
+    @unittest.skipUnless(os.environ.get('ETL_INTEGRATION')=='1','Real control DB opt-in')
+    def test_level_only_game_does_not_block_next_game_or_repeat_on_resume(self):
+        from speedrun_etl.batch import main
+        from speedrun_etl.storage import pg_connect
+        from speedrun_etl.jsonutil import read
+        batch_id = 'testscope'+uuid4().hex[:10]
+        games = [{'id':'g1','url':'levels','name':'Levels'}, {'id':'g2','url':'full','name':'Full'}]
+        started = []
+        with TemporaryDirectory() as temp:
+            def fake_start(collection,conf):
+                started.append(collection)
+                result = {'partitions':[{'coverage':'verified_public_partitions'}]}
+                if conf.get('game_id') == 'g1':
+                    result = {'coverage':'unavailable','diagnostic':'no_full_game_categories_in_source_metadata',
+                              'partitions':[],'wr':[]}
+                p = EntityPackage(Path(temp)/'snapshots'/(collection+'-runs')/'entity-package')
+                p.put('manifests',{'key':'m','source_result':result});p.db.commit();p.db.close()
+            with patch.dict(os.environ,{'ETL_STATE':temp}),patch.object(sys,'argv',[
+                    'batch','run','--collection',batch_id,'--top','2']),patch(
+                    'speedrun_etl.batch.start',side_effect=fake_start),patch(
+                    'speedrun_etl.batch.wait'),patch('speedrun_etl.batch.selection',return_value=games):
+                main();main()
+            self.assertEqual(2,sum('-g-' in c for c in started))
+            self.assertEqual('complete',read(Path(temp)/'batches'/batch_id/'status.json')['phase'])
+        with pg_connect(True) as conn:
+            states = dict(conn.execute('SELECT game_id,state FROM entity_batch_queue WHERE batch_id=%s',[batch_id]).fetchall())
+        self.assertEqual({'g1':'not_applicable','g2':'complete'},states)
+
+    def test_low_disk_pauses_before_any_airflow_request(self):
+        from types import SimpleNamespace
+        with patch.dict(os.environ, {"ETL_STATE": "/tmp"}), patch(
+            "speedrun_etl.batch.shutil.disk_usage", return_value=SimpleNamespace(total=100 * 1024**3, free=2 * 1024**3)), patch(
+            "speedrun_etl.batch.token") as auth:
+            with self.assertRaisesRegex(RuntimeError, "space"):
+                start("example", {"scope": "catalog", "request_budget": 650})
+            auth.assert_not_called()
+
+    @unittest.skipUnless(os.environ.get("ETL_INTEGRATION") == "1", "Real control DB opt-in")
+    def test_catalog_failure_is_visible_and_driver_lock_released(self):
+        from speedrun_etl.batch import main
+        from speedrun_etl.progress import batch_progress
+        with TemporaryDirectory() as temp:
+            batch_id = "testfailed" + uuid4().hex[:10]
+            with patch.dict(os.environ, {"ETL_STATE": temp}), patch.object(sys, "argv", ["batch", "run", "--collection", batch_id]), patch(
+                "speedrun_etl.batch.start", side_effect=RuntimeError("Test source outage")):
+                with self.assertRaisesRegex(RuntimeError, "Test source outage"):
+                    main()
+                report = batch_progress(batch_id)
+            self.assertEqual("failed", report["driver"]["phase"])
+            self.assertIn("Test source outage", report["driver"]["error"])
+            self.assertFalse(report["driver_running"])
+
     def test_general_game_scope_has_no_old_machine_deadline(self):
         conf=validate_conf({"collection_id":"team-g-123","scope":"game","game":"example",
             "game_id":"game123","selection_snapshot_id":"team-ranking-games_metadata"})
@@ -46,6 +228,39 @@ class BatchTests(unittest.TestCase):
         self.assertEqual(5000,conf["request_budget"])
         with self.assertRaises(ValueError):
             validate_conf({**conf,"game":"../bad"})
+
+    @unittest.skipUnless(os.environ.get("ETL_INTEGRATION") == "1", "Real control DB opt-in")
+    def test_reviewed_selection_repair_preserves_started_chain_and_retires_pending(self):
+        from speedrun_etl.batch import reconcile_selection
+        from speedrun_etl.storage import pg_connect
+        from speedrun_etl.jsonutil import atomic_write
+        batch_id = "testrepair" + uuid4().hex[:10]
+        one = {"id": "g1", "url": "one", "name": "One"}
+        extension = {"id": "g2", "url": "ext", "name": "Extension"}
+        replacement = {"id": "g3", "url": "three", "name": "Three"}
+        with TemporaryDirectory() as temp:
+            with pg_connect(True) as conn:
+                conn.execute("""CREATE TABLE IF NOT EXISTS entity_batch_queue (
+                    batch_id text NOT NULL,position integer NOT NULL,game_id text NOT NULL,collection_id text NOT NULL,
+                    state text NOT NULL DEFAULT 'pending',details jsonb NOT NULL,updated_at timestamptz NOT NULL DEFAULT now(),
+                    PRIMARY KEY(batch_id,game_id))""")
+            reconcile_selection(batch_id, [one, extension], "old-ranking", temp)
+            with pg_connect(True) as conn:
+                conn.execute("UPDATE entity_batch_queue SET state='running' WHERE batch_id=%s AND game_id='g1'", [batch_id])
+            atomic_write(Path(temp) / "snapshots" / (batch_id + "-g-g1-games_metadata") / "config.json", {
+                "game_id": "g1", "game": "one", "selection_snapshot_id": "old-ranking"})
+            with self.assertRaisesRegex(ValueError, "refresh-selection"):
+                reconcile_selection(batch_id, [one, replacement], "new-ranking", temp)
+            with self.assertRaisesRegex(ValueError, "started"):
+                reconcile_selection(batch_id, [replacement], "new-ranking", temp, refresh=True)
+            reconcile_selection(batch_id, [one, replacement], "new-ranking", temp, refresh=True)
+            with pg_connect(True) as conn:
+                rows = conn.execute("SELECT game_id,state,details FROM entity_batch_queue WHERE batch_id=%s", [batch_id]).fetchall()
+            states = {row[0]: (row[1], row[2]) for row in rows}
+            self.assertEqual("running", states["g1"][0])
+            self.assertEqual("old-ranking", states["g1"][1]["selection_snapshot_id"])
+            self.assertEqual("excluded", states["g2"][0])
+            self.assertEqual("new-ranking", states["g3"][1]["selection_snapshot_id"])
 
     def test_game_must_match_selected_id_and_url(self):
         with TemporaryDirectory() as temp:

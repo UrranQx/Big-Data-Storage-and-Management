@@ -8,6 +8,7 @@ import time
 
 from .entity_ods import DATASETS, EntityPackage
 from .jsonutil import digest, dumps, loads, atomic_write
+from .ods import native_safe
 from .storage import pg_connect, Mongo, S3
 
 
@@ -59,6 +60,29 @@ def init_entities(namespace="entity_v2"):
 
 def attrs(row):
     return [row.get(k) for k in ("source_id", "projection", "game_id", "category_id", "status")]
+
+
+def mongo_record(row, raw):
+    """Keep ordinary documents native; preserve unsupported JSON exactly as text."""
+    document = row
+    encoding = {}
+    if not native_safe(row):
+        document = {"encoding": "canonical-json-utf8", "text": raw}
+        # Preserve the existing indexed history lookup for fallback check records.
+        if isinstance(row.get("snapshot_id"), str):
+            document["snapshot_id"] = row["snapshot_id"]
+        encoding = {"document_encoding": "canonical-json-utf8"}
+    return {"document": document, **encoding,
+            **dict(zip(("source_id", "projection", "game_id", "category_id", "status"), attrs(row)))}
+
+
+def mongo_document(record):
+    encoding = record.get("document_encoding")
+    if encoding is None:
+        return record["document"]  # Existing entity-v2 data remain readable.
+    if encoding != "canonical-json-utf8":
+        raise ValueError("Unknown Mongo entity document encoding")
+    return loads(record["document"]["text"])
 
 
 def shard(row):
@@ -129,15 +153,15 @@ def load(name, package, snapshot_id, namespace="entity_v2", role="all", fail_aft
             db = store.client.get_database(namespace, write_concern=WriteConcern(w=1, j=True))
             for dataset in DATASETS:
                 for batch in batches(package.records(dataset)):
-                    db[dataset].bulk_write([UpdateOne({"_id": r["key"]}, {"$setOnInsert": {
-                        "document": r, **dict(zip(("source_id", "projection", "game_id", "category_id", "status"), attrs(r)))
-                    }}, upsert=True) for r, raw in batch], ordered=False)
+                    db[dataset].bulk_write([UpdateOne({"_id": r["key"]},
+                        {"$setOnInsert": mongo_record(r, raw)}, upsert=True) for r, raw in batch], ordered=False)
                     n += len(batch)
                     if fail_after and n >= fail_after:
                         raise RuntimeError("Injected entity-v2 partial load")
                 for batch in batches(package.records(dataset)):
-                    rows = db[dataset].find({"_id": {"$in": [r["key"] for r, raw in batch]}}, {"document": 1})
-                    actual = {r["_id"]: dumps(r["document"]) for r in rows}
+                    rows = db[dataset].find({"_id": {"$in": [r["key"] for r, raw in batch]}},
+                                            {"document": 1, "document_encoding": 1})
+                    actual = {r["_id"]: dumps(mongo_document(r)) for r in rows}
                     if actual != {r["key"]: raw for r, raw in batch}:
                         raise ValueError("Mongo entity readback differs")
     elif name == "garage":
@@ -240,13 +264,13 @@ def read_entity(name, dataset, source_id, snapshot_id, summary, namespace="entit
     if name == "mongo":
         with Mongo() as store:
             db = store.client[namespace]
-            checks = [r["document"] for r in db.checks.find({"source_id": source_id, "document.snapshot_id": check_snapshot})]
+            checks = [mongo_document(r) for r in db.checks.find({"source_id": source_id, "document.snapshot_id": check_snapshot})]
             if snapshot_id.endswith("-players"):
                 checks = [c for c in checks if c["dataset"] == "players"]
             if dataset == "checks":
                 return sorted(checks, key=lambda r:r["key"])
             keys = list({s["version_key"] for c in checks if c["dataset"] == dataset for s in c["states"]})
-            return [r["document"] for r in db[dataset].find({"_id": {"$in": keys}}).sort("_id", 1)]
+            return [mongo_document(r) for r in db[dataset].find({"_id": {"$in": keys}}).sort("_id", 1)]
     with S3() as store:
         key = namespace + "/entity-v2/snapshots/" + snapshot_id + "/" + role + "/" + digest(summary) + ".json"
         response = store.client.get_object(Bucket=store.bucket, Key=key)

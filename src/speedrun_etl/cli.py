@@ -21,26 +21,37 @@ def api(method, path, body=None, token=None):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", choices=["start-e2e", "start-half-life", "start-minecraft", "start-catalog", "status", "evidence", "replay", "history"])
+    parser.add_argument("command", choices=["start-game", "start-e2e", "start-half-life", "start-minecraft", "start-catalog", "status", "evidence", "replay", "history"])
     parser.add_argument("--collection", required=True)
     parser.add_argument("--request-budget", type=int)
     parser.add_argument("--entity", default="run")
     parser.add_argument("--id")
+    identity = parser.add_mutually_exclusive_group()
+    identity.add_argument("--game", help="Exact speedrun.com game URL slug; start-game only")
+    identity.add_argument("--game-id", help="Exact source game ID; start-game only")
+    parser.add_argument("--metadata-only", action="store_true", help="Collect only the selected game card/metadata in three ODS")
+    parser.add_argument("--runs-strategy", choices=("standard", "date-large"), default="standard")
     args = parser.parse_args()
     start_conf = {
         "start-half-life": {"scope": "full_game", "game": "half-life", "request_budget": args.request_budget or 300},
         "start-minecraft": {"scope": "full_game", "game": "mc", "request_budget": args.request_budget or 1500},
         "start-catalog": {"scope": "catalog", "request_budget": args.request_budget or 650},
     }
+    if args.command == "start-game":
+        if not (args.game or args.game_id):
+            parser.error("start-game requires --game or --game-id")
+        start_conf["start-game"]={"scope":"single_game", "request_budget":args.request_budget or (30 if args.metadata_only else 2500),
+            **({"game":args.game} if args.game else {"game_id":args.game_id}),"metadata_only":args.metadata_only,
+            "run_partition_strategy":"date_large_v1" if args.runs_strategy=="date-large" else "standard"}
+    elif args.game or args.game_id or args.metadata_only or args.runs_strategy != "standard":
+        parser.error("Game identity, metadata-only and runs-strategy options require start-game")
     conf = validate_conf({"collection_id": args.collection,
                           **start_conf.get(args.command, {})})
     state = os.environ["ETL_STATE"]
     if args.command.startswith("start-") or args.command == "status":
         if args.command.startswith("start-"):
-            import shutil
-            disk = shutil.disk_usage(state)
-            if disk.free < max(10 * 1024**3, disk.total * 0.2):
-                raise RuntimeError("Insufficient free staging volume space: collection paused")
+            from .capacity import check_capacity
+            check_capacity(state)
         token = api("POST", "/auth/token", {"username": "admin", "password": os.environ["AIRFLOW_ADMIN_PASSWORD"]})["access_token"]
         if args.command.startswith("start-"):
             sid = snapshot_id(conf, "games_metadata")

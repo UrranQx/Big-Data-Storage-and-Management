@@ -8,8 +8,11 @@ DATA_MODEL.md; фактическое состояние автора — docs/H
 |---|---|
 | compose.yaml, infra/ | Docker Compose, один образ Airflow, init, локальная генерация секретов |
 | dags/ods/ | Три тонких DAG games_metadata, runs, players |
-| src/speedrun_etl/source.py | Общий последовательный HTTP-клиент, pacing, retries, gzip, телеметрия |
+| src/speedrun_etl/source.py | Общий HTTP-клиент, до 4 страниц в пакете, pacing, retries, gzip, телеметрия |
+| http_probe.py, http_transport.py | Ограниченные исследования GET/keep-alive/POST и окон, не стартовая команда сбора |
+| v1_research.py | Ограниченный публичный /runs v1 через общий limiter, только исследование, не источник действующих DAG |
 | collect.py, catalog.py, ranking.py | Метаданные, разделы ранов, WR, каталог и рейтинг |
+| date_partitions.py, repair.py | Явный repair неполных разделов, диапазоны дат, сохранение base и подтверждение очереди |
 | entity_ods.py, entity_runtime.py | Версии полных сущностей, checks, упаковка и профили участников |
 | entity_storage.py | Актуальный DDL entity_v2, пакетные PG/Mongo-загрузки, S3-блоки, readback |
 | entity_workflow.py, workflow.py | Задачи и зависимости Airflow, подтверждение трёх загрузок |
@@ -32,4 +35,6 @@ archive/backups/data.zip. .env.example содержит только безоп�
 
 ЛР2 (DDS/SCD/Data Quality) и ЛР3 (витрины/Superset/OpenMetadata) остаются
 следующими этапами. Их заготовки в структуре не означают развёрнутые сервисы.
-GitHub remote пока не задан; коммит и bundle не означают внешнюю публикацию.
+GitHub: https://github.com/UrranQx/Big-Data-Storage-and-Management, main.
+Первичная публикация выполнена; новые локальные изменения не считаются
+опубликованными до отдельного успешного push.

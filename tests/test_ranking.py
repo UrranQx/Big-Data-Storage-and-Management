@@ -1,8 +1,31 @@
 import unittest
-from speedrun_etl.ranking import rank_top5, rank_games
+from speedrun_etl.ranking import rank_top5, rank_games, game_classification
+from speedrun_etl.source import SourceError
 
 
 class RankingTests(unittest.TestCase):
+    def test_extensions_are_excluded_by_type_id_not_name_or_base_game(self):
+        self.assertEqual("category_extensions", game_classification({"type": "game", "name": "Unrelated title", "gameTypeIds": [8]}))
+        self.assertEqual("in_scope", game_classification({"type": "game", "name": "Category Extensions", "gameTypeIds": [2, 13], "baseGameId": "parent"}))
+        for game in ({"type": "other"}, {"type": "game", "gameTypeIds": [999]},
+                     {"type": "game", "gameTypeIds": "8"}, {"type": "game", "gameTypeIds": {}}):
+            with self.assertRaises(SourceError): game_classification(game)
+
+    def test_top_replaces_extension_with_next_in_scope_game(self):
+        class Client:
+            def request(self, endpoint, params, key, context):
+                if endpoint == "GetGameList":
+                    return {"body": {"pagination": {"page": 1, "pages": 1, "count": 4, "per": 200},
+                        "gameList": [{"id": str(i), "url": "game"+str(i), "name": str(i), "type": "game",
+                            "gameTypeIds": [8] if i == 0 else [], "runCount": 100-i*10} for i in range(4)]}}
+                i = int(params["gameId"])
+                if i == 0: raise AssertionError("Excluded game should not need a stats request")
+                return {"body": {"stats": {"gameId": str(i), "totalRunsFG": 100-i*10,
+                    "totalRunsIL": 0, "totalRunsChallenge": 0, "totalRuns": 100-i*10}}}
+        result = rank_games(Client(), 2)
+        self.assertEqual(["1", "2"], [g["id"] for g in result["selected"]])
+        self.assertEqual("0", result["excluded"][0]["id"])
+
     def test_top_ten_and_game_stats_list_shape(self):
         class Client:
             def request(self, endpoint, params, key, context):

@@ -9,6 +9,98 @@ from test_ods import response
 
 
 class EntityODSTests(unittest.TestCase):
+    def test_shared_profile_lists_preserve_raw_order_unknowns_and_a_b_a_history(self):
+        from speedrun_etl.audit_entity_ods import audit
+        with TemporaryDirectory() as temp, patch('speedrun_etl.entity_ods.SHARED_PROFILE_MIN_COUNT',1):
+            root=Path(temp);source=root/'snapshot';bodies=[]
+            for i,name in enumerate(['A']*4+['B']*3+['A']*3):
+                body={'runList':[{'id':'r','playerIds':['p','q']}],
+                      'playerList':[{'id':'p','name':name},{'id':'q','name':'Q'}],
+                      'unknown':{'nested':[None,2,2]}}
+                bodies.append(body)
+                saved=response(body,f'r{i}',f'2026-10-28T00:00:{i:02}+00:00')
+                atomic_write(source/'requests'/str(i)/'response.json',saved)
+            result=build(source,root/'output')
+            self.assertEqual({'lists':10,'groups':3,'entity_visits':12},result['shared_profile_work'])
+            p=EntityPackage(root/'output')
+            encoded=[r['body'] for r in p.records('responses')]
+            self.assertTrue(all(r['encoding']=='json-v1-player-list-ref' for r in encoded))
+            self.assertEqual(2,len(list(p.records('blocks'))))
+            self.assertEqual(bodies,[p.decode(r['body']) for r in sorted(p.records('responses'),key=lambda r:int(r['key'][1:]))])
+            check=next(c for c in p.records('checks') if c['dataset']=='players' and c['source_id']=='p')
+            self.assertEqual(['r0','r4','r7'],[v['response_id'] for v in check['states']])
+            self.assertEqual('r9',check['last_seen']['response_id'])
+            p.db.close()
+            self.assertEqual(2,audit(source,root/'output')['embedded_profile_ids'])
+
+    def test_shared_list_with_duplicate_ids_keeps_every_alternating_profile_state(self):
+        with TemporaryDirectory() as temp, patch('speedrun_etl.entity_ods.SHARED_PROFILE_MIN_COUNT',1):
+            root=Path(temp);source=root/'snapshot'
+            for i in range(3):
+                saved=response({'playerList':[{'id':'p','name':'A'},{'id':'p','name':'B'}]},
+                               str(i),f'2026-10-28T00:00:{i:02}+00:00')
+                atomic_write(source/'requests'/str(i)/'response.json',saved)
+            build(source,root/'output')
+            p=EntityPackage(root/'output');check=next(p.records('checks'))
+            self.assertEqual(6,len(check['states']))
+            self.assertEqual([['playerList',0],['playerList',1]]*3,[s['path'] for s in check['states']])
+            p.db.close()
+
+    def test_date_filtered_rank_and_obsolete_are_separate_raw_projections(self):
+        from speedrun_etl.jsonutil import digest
+        from speedrun_etl.audit_entity_ods import audit
+        with TemporaryDirectory() as directory:
+            root=Path(directory);source=root/'snapshot'
+            params={'gameId':'g','categoryId':'c','obsolete':1,'values':[]}
+            filtered={**params,'minRunDate':{'year':2020,'month':1,'day':1},
+                      'maxRunDate':{'year':2020,'month':12,'day':31}}
+            for index,p in enumerate((params,filtered)):
+                raw=response({'runList':[{'id':'r','obsolete':index==0,'place':str(10-index*9)}]},
+                             str(index),f'2026-10-28T0{index}:00:00+00:00')
+                raw['params']={'params':p,'page':1}
+                atomic_write(source/'requests'/str(index)/'response.json',raw)
+            build(source,root/'output')
+            p=EntityPackage(root/'output');rows=list(p.records('runs'))
+            self.assertEqual(2,len({r['projection'] for r in rows}))
+            dated=next(r for r in rows if r['projection'].startswith('leaderboard_run_date:'))
+            self.assertEqual(filtered,dated['leaderboard_filters'])
+            self.assertFalse(p.decode(dated['raw'])['obsolete'])
+            self.assertEqual(2,len(list(p.records('checks'))));p.db.close()
+            self.assertEqual(2,audit(source,root/'output')['matched_entity_versions'])
+
+    def test_incremental_repair_retains_raw_ids_history_times_and_replays(self):
+        from speedrun_etl.jsonutil import digest
+        from speedrun_etl.audit_entity_ods import audit
+        with TemporaryDirectory() as directory:
+            root=Path(directory); old=root/'base-runs'; fresh=root/'repair-runs'
+            for index,name in enumerate(('A','B','B')):
+                raw=response({'runList':[{'id':'r','playerIds':['p']}], 'playerList':[{'id':'p','name':name}]},
+                             f'old{index}',f'2026-10-16T0{index}:00:00+00:00')
+                atomic_write(old/'requests'/str(index)/'response.json',raw)
+            build(old,old/'entity-package')
+            base=EntityPackage(old/'entity-package'); before=digest(base.summary());base.db.close()
+            raw=response({'runList':[{'id':'r','playerIds':['p']}], 'playerList':[{'id':'p','name':'A'}]},
+                         'fresh','2026-10-28T00:00:00+00:00')
+            atomic_write(fresh/'requests/one/response.json',raw)
+            result={'repair_from_snapshot_id':'base-runs'}
+            summary=build(fresh,fresh/'entity-package',source_result=result,base_root=old/'entity-package')
+            package=EntityPackage(fresh/'entity-package')
+            check=next(c for c in package.records('checks') if c['dataset']=='players')
+            self.assertEqual(['old0','old1','fresh'],[s['response_id'] for s in check['states']])
+            self.assertEqual('old0',check['first_seen']['response_id'])
+            self.assertEqual('fresh',check['last_seen']['response_id'])
+            self.assertEqual('repair-runs',check['snapshot_id'])
+            self.assertEqual(2,len(list(package.records('players'))))
+            self.assertEqual(1,len(list(package.records('manifests'))))
+            self.assertEqual('base-runs',package.get('responses','old0')['snapshot_id'])
+            self.assertEqual(raw, {**package.get('responses','fresh')['metadata'],
+                'body':package.decode(package.get('responses','fresh')['body'])})
+            package.db.close()
+            self.assertEqual(4,audit(fresh,fresh/'entity-package')['source_responses'])
+            self.assertEqual(summary['digest'],build(fresh,fresh/'entity-package',resume=True,
+                source_result=result,base_root=old/'entity-package')['digest'])
+            base=EntityPackage(old/'entity-package');self.assertEqual(before,digest(base.summary()));base.db.close()
+
     def test_empty_wr_filters_and_profile_projections_are_separate(self):
         with TemporaryDirectory() as directory:
             root = Path(directory)

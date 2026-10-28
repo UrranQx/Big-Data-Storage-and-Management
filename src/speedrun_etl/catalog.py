@@ -42,6 +42,8 @@ def collect_catalog(client, root):
             baseline = first["body"]["pagination"]
             validate_catalog_page(first["body"], 1)
             pages = int(baseline["pages"])
+            progress.update(source_pages=pages, pages_planned=pages, source_count=int(baseline['count']))
+            atomic_write(path, progress)
             seen = set()
             for number in range(1, pages + 1):
                 cached = progress["pages"].get(str(number))
@@ -55,6 +57,7 @@ def collect_catalog(client, root):
                     raise SourceError("Duplicate catalog IDs across pages")
                 seen.update(ids)
                 progress["pages"][str(number)] = cached
+                progress["unique_games"] = len(seen)
                 atomic_write(path, progress)
                 if number == 1 or number % 20 == 0 or number == pages:
                     print(f"Catalog: {number}/{pages} pages, {len(seen)} games", flush=True)

@@ -3,6 +3,10 @@ from datetime import timedelta
 import os
 
 
+def needs_child(conf):
+    return conf["scope"] not in ("catalog", "ranking") and not conf.get("metadata_only", False)
+
+
 def make_dag(kind, child=None):
     from airflow.sdk import dag, task, get_current_context
     from airflow.providers.standard.operators.trigger_dagrun import TriggerDagRunOperator
@@ -17,13 +21,18 @@ def make_dag(kind, child=None):
             from .jsonutil import atomic_write, read
             from .entity_storage import ready
             conf = validate_conf(dict(get_current_context()["dag_run"].conf or {}))
-            if conf["scope"] not in ("e2e", "full_game", "catalog", "ranking", "game"):
+            if conf["scope"] not in ("e2e", "full_game", "catalog", "ranking", "game", "single_game"):
                 raise ValueError("Unsupported source scope")
             root = location(os.environ["ETL_STATE"], conf, kind)
             if kind == "games_metadata" and conf["scope"] in ("ranking", "game"):
                 from .batch import validate_selection
                 validate_selection(os.environ["ETL_STATE"], conf)
+                if conf.get("repair_from_snapshot_id"):
+                    from .repair import validate_base
+                    validate_base(os.environ["ETL_STATE"], conf)
             if kind != "games_metadata":
+                if conf.get("metadata_only"):
+                    raise ValueError("Metadata-only collections cannot start runs or players")
                 parent = "games_metadata" if kind == "runs" else "runs"
                 expected = snapshot_id(conf, parent)
                 if get_current_context()["dag_run"].conf.get("input_snapshot_id") != expected:
@@ -76,9 +85,9 @@ def make_dag(kind, child=None):
             load.override(task_id="load_" + name)(reference, name) >> done
         if child:
             @task.short_circuit
-            def needs_child(conf):
-                return conf["scope"] not in ("catalog", "ranking")
-            gate = needs_child(done)
+            def should_trigger_child(conf):
+                return needs_child(conf)
+            gate = should_trigger_child.override(task_id="needs_child")(done)
             trigger = TriggerDagRunOperator(task_id="trigger_" + child, trigger_dag_id=child,
                 trigger_run_id="{{ dag_run.conf['collection_id'] }}-" + child,
                 conf=done, wait_for_completion=False, reset_dag_run=False, skip_when_already_exists=True)

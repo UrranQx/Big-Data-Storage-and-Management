@@ -3,8 +3,39 @@ import argparse
 from collections import defaultdict
 from pathlib import Path
 
-from .entity_ods import EntityPackage
+from .entity_ods import EntityPackage, profile_projection
 from .jsonutil import atomic_write, digest, dumps, read
+
+
+def expected_wr_categories(raw, manifest):
+    categories = {c["id"] for c in raw["categories"] if c.get("isPerLevel") is False}
+    if manifest.get("input_config", {}).get("scope") == "e2e":
+        selected = manifest["source_result"]["category_id"]
+        if selected not in categories:
+            raise ValueError("Selected e2e category absent from full-game metadata")
+        return {selected}
+    return categories
+
+
+def checkpoint_run_ids(checkpoint, responses):
+    """Compare the selected pass, keeping superseded passes as source history."""
+    coverage = checkpoint.get("coverage") or {}
+    pages = checkpoint.get("pages", {})
+    if not checkpoint.get("complete") or not coverage:
+        raise ValueError("Incomplete input partition")
+    if not pages and "unique_runs" not in coverage and coverage.get("coverage") == "partial":
+        return None  # Old repeated-drift checkpoint has no completed final pass.
+    if not pages:
+        raise ValueError("Checkpoint has no saved pages")
+    ids = set()
+    for page in pages.values():
+        rid = page["response_id"]
+        if rid not in responses:
+            raise ValueError("Checkpoint response missing from source journal")
+        ids.update(responses[rid])
+    if len(ids) != coverage.get("unique_runs"):
+        raise ValueError("Checkpoint run count differs")
+    return ids
 
 
 def audit(snapshot, output, metadata=None):
@@ -12,8 +43,27 @@ def audit(snapshot, output, metadata=None):
     package = EntityPackage(output)
     source_ids, run_ids, player_ids = set(), set(), set()
     partitions = defaultdict(set)
+    response_run_ids = {}
     wr_categories, empty_wr = set(), set()
     versions, all_versions, matched = defaultdict(list), set(), set()
+    manifest = next(package.records("manifests"))
+    source_roots = [snapshot]
+    base_id = (manifest.get("source_result") or {}).get("repair_from_snapshot_id")
+    # Repaired packages retain original response documents/IDs, not fabricated HTTP.
+    seen = {snapshot.name}
+    while base_id:
+        import re
+        if not re.fullmatch(r"[a-zA-Z0-9_-]{1,105}-runs", base_id) or base_id in seen:
+            raise ValueError("Invalid repair provenance chain")
+        seen.add(base_id)
+        base_root = snapshot.parent / base_id
+        source_roots.append(base_root)
+        base_package = EntityPackage(base_root / "entity-package")
+        try:
+            base_manifest = next(base_package.records("manifests"))
+            base_id = (base_manifest.get("source_result") or {}).get("repair_from_snapshot_id")
+        finally:
+            base_package.db.close()
     for dataset in ("games", "runs", "players", "wr_history"):
         for row in package.records(dataset):
             versions[dataset, row["source_id"], row["projection"]].append((row["key"], package.decode(row["raw"])))
@@ -28,7 +78,7 @@ def audit(snapshot, output, metadata=None):
                 return
         raise ValueError(f"Missing or modified {dataset} source object: {source_id}")
 
-    for path in (snapshot / "requests").glob("*/*.json"):
+    for path in (p for source_root in source_roots for p in (source_root / "requests").glob("*/*.json")):
         saved = read(path)
         source_ids.add(saved["response_id"])
         stored = package.get("responses", saved["response_id"])
@@ -38,17 +88,22 @@ def audit(snapshot, output, metadata=None):
         if saved["http_status"] != 200 or saved.get("error") or not isinstance(body, dict):
             continue
         endpoint = saved["endpoint"]
+        if endpoint == "GetGameLeaderboard2":
+            response_run_ids[saved["response_id"]] = {r["id"] for r in body.get("runList", [])}
         if isinstance(body.get("game"), dict):
             detail = endpoint == "GetGameData"
             check_entity("games", body["game"].get("id"), "game_detail" if detail else "game_card", body if detail else body["game"])
         for game in body.get("gameList", []):
             check_entity("games", game.get("id"), "game_card", game)
         for run in body.get("runList", []):
-            check_entity("runs", run.get("id"), "leaderboard_run", run)
+            filters = saved.get("params", {}).get("params", {})
+            date_filters = {k: filters[k] for k in ("minRunDate", "maxRunDate") if k in filters}
+            projection = "leaderboard_run_date:" + digest(date_filters) if date_filters else "leaderboard_run"
+            check_entity("runs", run.get("id"), projection, run)
             run_ids.add(run["id"])
             partitions[run.get("categoryId"), run.get("verified")].add(run["id"])
         for profile in body.get("playerList", []):
-            check_entity("players", profile.get("id"), "player:" + digest(sorted(profile)), profile)
+            check_entity("players", profile.get("id"), profile_projection(tuple(sorted(profile))), profile)
             if profile.get("id"):
                 player_ids.add(profile["id"])
         if endpoint == "GetGameRecordHistory":
@@ -66,14 +121,10 @@ def audit(snapshot, output, metadata=None):
     if source_ids != {r["key"] for r in package.records("responses")}:
         raise ValueError("Response identity set differs")
     checkpoint_count = 0
-    for path in (snapshot / "checkpoints").glob("*.json"):
+    for path in (p for source_root in source_roots for p in (source_root / "checkpoints").glob("*.json")):
         checkpoint = read(path)
         coverage = checkpoint.get("coverage")
-        if not checkpoint.get("complete") or not coverage:
-            raise ValueError("Incomplete input partition")
-        key = coverage["category_id"], coverage["status_code"]
-        if len(partitions[key]) != coverage["unique_runs"]:
-            raise ValueError("Checkpoint run count differs")
+        checkpoint_run_ids(checkpoint, response_run_ids)
         checkpoint_count += 1
     for check in package.records("checks"):
         previous = None
@@ -91,12 +142,14 @@ def audit(snapshot, output, metadata=None):
         meta = EntityPackage(metadata)
         detail = next(r for r in meta.records("games") if r["projection"] == "game_detail")
         raw = meta.decode(detail["raw"])
-        expected_categories = {c["id"] for c in raw["categories"] if c.get("isPerLevel") is False}
+        manifest = next(meta.records("manifests"))
+        expected_categories = expected_wr_categories(raw, manifest)
         meta.db.close()
         if wr_categories != expected_categories:
             raise ValueError("WR category coverage differs from metadata")
     result = {"snapshot_id": snapshot.name, "verified_against": "original_journal_and_partition_checkpoints",
         "source_responses": len(source_ids), "leaderboard_unique_run_ids": len(run_ids),
+        "source_snapshot_ids": [r.name for r in source_roots],
         "embedded_profile_ids": len(player_ids), "matched_entity_versions": len(matched),
         "checked_partitions": checkpoint_count, "wr_categories": sorted(wr_categories),
         "empty_wr_categories": sorted(empty_wr), "metadata_categories": sorted(expected_categories) if expected_categories else None,

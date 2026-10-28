@@ -83,11 +83,15 @@ def extract(state, conf, kind):
             try:
                 result = collect_runs(client, root, source)
             except BudgetExceeded as error:
+                if conf.get("repair_from_snapshot_id"):
+                    raise  # A stopped repair must not seal/promote inherited coverage.
                 result = {"coverage": "partial", "stop_reason": str(error),
                           "partitions": [read(p) for p in (root / "checkpoints").glob("*.json")]}
             finally:
                 source.db.close()
-        build(root, output, resume=True, source_result=result, load_role=role)
+        base_root = (Path(state) / "snapshots" / conf["repair_from_snapshot_id"] / "entity-package"
+                     if kind == "runs" and conf.get("repair_from_snapshot_id") else None)
+        build(root, output, resume=True, source_result=result, load_role=role, base_root=base_root)
     package = EntityPackage(output, role=role)
     summary = package.summary()
     package.db.close()

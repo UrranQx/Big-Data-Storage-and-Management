@@ -27,7 +27,8 @@ x-airflow: &airflow
     S3_SECRET_KEY: ${S3_SECRET_KEY:?configure}
     AIRFLOW_ADMIN_PASSWORD: ${AIRFLOW_ADMIN_PASSWORD:?configure}
     ETL_STATE: /opt/airflow/state
-    ETL_MAX_RPM: ${ETL_MAX_RPM:-60}
+    ETL_MAX_RPM: ${ETL_MAX_RPM:-40}
+    ETL_PAGE_CONCURRENCY: ${ETL_PAGE_CONCURRENCY:-4}
     PYTHONPATH: /opt/project/src
   volumes:
     - etl-state:/opt/airflow/state

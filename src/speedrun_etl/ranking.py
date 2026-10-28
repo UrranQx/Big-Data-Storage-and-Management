@@ -1,12 +1,22 @@
-"""Five games by fresh public full-game stats, with a checked directory bound."""
+"""In-scope games by fresh full-game stats, with a checked directory bound."""
 from .source import SourceError
+
+
+def game_classification(game):
+    # v2 GameType enum, corroborated by live mcce card: baseGameId + [8].
+    # https://github.com/ManicJamie/speedruncompy/blob/master/src/speedruncompy/datatypes/enums.py
+    types = game.get("gameTypeIds", [])
+    if game.get("type") != "game" or not isinstance(types, list) or any(
+        type(t) is not int or t not in range(1, 14) for t in types):
+        raise SourceError("Unknown game classification; inspect source type/gameTypeIds")
+    return "category_extensions" if 8 in types else "in_scope"
 
 
 def rank_games(client, top_n=10):
     if not 1 <= int(top_n) <= 100:
         raise ValueError("top_n must be 1..100")
     top_n = int(top_n)
-    candidates, contenders, seen = [], [], set()
+    candidates, contenders, seen, excluded = [], [], set(), []
     previous = None
     baseline = None
     page = 1
@@ -28,13 +38,20 @@ def rank_games(client, top_n=10):
             if len(leaders) == top_n and total < leaders[-1]["verified_full_game_stats"]:
                 return {"coverage": "verified_public_partitions", "selected": leaders, "top_n": top_n,
                         **({"top5": leaders} if top_n == 5 else {}),
-                        "candidates": candidates,
+                        "candidates": candidates, "excluded": excluded, "ranking_policy": "exclude_ce_v1",
                         "metric": "GetGameSummary.stats.totalRunsFG (site verified full-game counter)",
                         "boundary": {"next_game_id": game["id"], "catalog_run_count": total,
                                      "cutoff_full_game_count": leaders[-1]["verified_full_game_stats"]},
                         "limitations": "Non-atomic ranking by site counters, not an independent recount. "
                                         "Bound assumes total catalog runs >= full-game verified count. "
-                                        "V2 game.type is retained; no name-based type classification."}
+                                        "Category Extensions excluded by v2 gameTypeIds=8; no name heuristic."}
+            classification = game_classification(game)
+            if classification == "category_extensions":
+                excluded.append({"id": game["id"], "url": game.get("url"),
+                    "gameTypeIds": game.get("gameTypeIds"), "baseGameId": game.get("baseGameId"),
+                    "reason": classification})
+                print(f"Ranking: excluded id={game['id']} gameTypeIds={game.get('gameTypeIds')}", flush=True)
+                continue
             summary = client.request("GetGameSummary", {"gameId": game["id"]},
                                      "ranking/stats/" + game["id"], {"game_id": game["id"], "kind": "ranking_stats"})["body"]
             stats = summary.get("stats")
@@ -52,14 +69,13 @@ def rank_games(client, top_n=10):
             row.update(catalog_run_count=total, verified_full_game_stats=fg,
                        total_runs_stats=int(stats["totalRuns"]), level_runs_stats=il, challenge_runs_stats=challenge)
             candidates.append(row)
-            if game.get("type") != "game":
-                raise SourceError("Unknown contender classification; ranking requires review")
             contenders.append(row)
             print(f"Ranking: {game['name']}: full-game stats={fg}, catalog={total}", flush=True)
         if page >= int(baseline["pages"]):
             selected = sorted(contenders, key=lambda g: (-g["verified_full_game_stats"], g["id"]))[:top_n]
             return {"coverage": "verified_public_partitions" if len(selected) == top_n else "partial",
                     "selected": selected, "top_n": top_n, "candidates": candidates,
+                    "excluded": excluded, "ranking_policy": "exclude_ce_v1",
                     "boundary": "directory_exhausted", "metric": "GetGameSummary.stats.totalRunsFG",
                     **({"top5": selected} if top_n == 5 else {})}
         page += 1
