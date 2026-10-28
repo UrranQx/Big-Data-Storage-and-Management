@@ -1,0 +1,151 @@
+{
+  "audited_at": "2026-10-28T15:10:37.824464+00:00",
+  "verdict": "lab1_demonstration_and_bounded_resumable_collection_verified",
+  "unattended_complete_site_success_or_fit_guaranteed": false,
+  "source_HTTP_in_this_audit": 0,
+  "deletion_performed_in_this_audit": false,
+  "global_full_started": false,
+  "confirmation_required_before_wipe_and_full": true,
+  "pilot": {
+    "batch_id": "lab1-capacity-pilot-20261028",
+    "source_attempts_in_pilot": 2708,
+    "source_http_results": {
+      "200": 2707,
+      "network_error": 1
+    },
+    "run_partition_coverage": {
+      "verified_public_partitions": 513
+    },
+    "wr_coverage": {
+      "partial": 116,
+      "unavailable": 55
+    },
+    "players_snapshot_coverage": {
+      "verified_public_partitions": 20
+    },
+    "driver_running": false
+  },
+  "verified_snapshot_count": 60,
+  "all_six_services_healthy": true,
+  "airflow_import_errors": 0,
+  "required_artifacts_present": [
+    "compose.yaml",
+    "src/speedrun_etl/entity_workflow.py",
+    "reports/lab1/REPORT.md",
+    "reports/lab1/DEMO.md",
+    "reports/lab1/entity_v2_benchmark_20261028/measurements.csv",
+    "reports/lab1/entity_v2_benchmark_20261028/load_time.png",
+    "reports/lab1/entity_v2_benchmark_20261028/storage_size.png"
+  ],
+  "primary_ODS": "postgres",
+  "benchmark_input_digest": "e3de3610d393379204a5e4eb9b18f54e54f6ac26265282e758a1359f404ab7c2",
+  "checks": {
+    "full_suite_passed": 118,
+    "progress_tests_after_display_fix_passed": 8
+  },
+  "capacity": {
+    "host": {
+      "free_bytes": 59688374272,
+      "measured_at_unix": 1793200150.330889,
+      "minimum_free_bytes": 21474836480,
+      "path": "C:\\Users\\alike\\AppData\\Local\\Docker\\wsl\\disk\\docker_data.vhdx",
+      "producer": "host_disk_watch_v1",
+      "total_bytes": 511003586560
+    },
+    "host_free_now_bytes": 59593928704,
+    "D_free_now_bytes": 264237502464,
+    "vhdx_length_bytes": 51080331264,
+    "vhdx_allocated_bytes": 51080331264,
+    "docker_virtual_disk": {
+      "free": 1004990214144,
+      "total": 1081101176832,
+      "used": 21118607360
+    },
+    "whole_site_fit_proven": false,
+    "portal_only_service_size_to_logical_ratios": {
+      "postgres": 1.4435828010189065,
+      "mongo": 0.5978012682974753,
+      "garage": 0.2474317178436122
+    },
+    "illustrative_staging_plus_three_ODS_bytes": {
+      "mean_projection": 63554662534.21676,
+      "observed_max_scenario": 135457936043.82152,
+      "observed_min_scenario": 27173849165.97829
+    },
+    "illustration_limits": [
+      "Portal ratios are not calibrated for every pilot stratum.",
+      "Service size metrics differ and exclude Docker images, Airflow/control, WAL and Garage physical overhead.",
+      "No guarantee of VHDX shrink or reusable host space after deleting volumes.",
+      "Observed min/max are scenarios, not confidence intervals or hard bounds."
+    ]
+  },
+  "forecast_artifact": "resource_forecast_20261028.json",
+  "mean_global_wall_days": 38.91851528022685,
+  "mean_HTTP_pacing_floor_days_at_40_RPM": 19.46713888888889,
+  "lab1_requires_complete_site": false,
+  "recommendation": "Preserve demonstrated data through the lab submission; global collection is a longer resumable task.",
+  "pending_deletion_scope": {
+    "project_volumes": [
+      "speedrun-lab1_postgres-data",
+      "speedrun-lab1_mongo-data",
+      "speedrun-lab1_garage-meta",
+      "speedrun-lab1_garage-data",
+      "speedrun-lab1_etl-state",
+      "speedrun-lab1_airflow-logs"
+    ],
+    "workspace_paths": [
+      "data/ (contents, currently empty)",
+      "exports/backups/",
+      "exports/current-backup-path.txt",
+      "archive/backups/data.zip",
+      "archive/backups/BD_LAB1.zip"
+    ],
+    "preserve": [
+      "source code",
+      "Git history",
+      "documentation",
+      "reports and small verification evidence",
+      "archive/research source code",
+      ".env",
+      "infra/garage.local.toml",
+      "Docker images"
+    ],
+    "approval": "Not requested or received for execution yet; user requires confirmation before launch; no deletion in this audit."
+  },
+  "proposed_first_full_session_if_confirmed": [
+    "docker",
+    "compose",
+    "exec",
+    "-d",
+    "scheduler",
+    "python",
+    "-u",
+    "-m",
+    "speedrun_etl.batch",
+    "run",
+    "--collection",
+    "lab1-full-20261028",
+    "--all",
+    "--runs-strategy",
+    "date-large",
+    "--continue-on-drift",
+    "--game-request-budget",
+    "5000",
+    "--session-request-budget",
+    "9000",
+    "--hours",
+    "8",
+    "--log"
+  ],
+  "launch_conditions": [
+    "Explicit user confirmation of deleting the listed data and backups and starting a bounded full session.",
+    "Stop only this project; verify all target paths/volume names before any destructive operation.",
+    "Retain source/Git/secrets/reports/images; do not create a new raw-data backup against the requested scope.",
+    "After reset, verify empty ODS/control/staging and healthy services; refresh host watcher before starting.",
+    "Fetch a fresh directory; do not reuse the removed pilot/catalog packages.",
+    "Resume the same queue after session pause; known drift remains partial, other failures stop.",
+    "Eight hours is checked between games; the active chain can exceed it. HTTP reservation can leave unused quota."
+  ],
+  "latest_published_commit": "f70150e6b187bdf876aa03130bb7dfbf1efb6a69",
+  "new_benchmark_forecast_and_docs_published": false
+}

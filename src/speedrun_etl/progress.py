@@ -64,14 +64,23 @@ def progress(collection, http=False):
         for path in (root / "checkpoints").glob("*.json"):
             checkpoint = read(path)
             coverage = checkpoint.get("coverage") or checkpoint.get("result") or {}
-            checkpoints.append({"name": path.stem, "pages": len(checkpoint.get("pages", {})),
+            extra = {}
+            visible_path = path
+            fallback = root / 'date-fallback' / path.stem / 'checkpoints' / path.name
+            attempt = coverage.get('date_subdivision_attempt', coverage)
+            if fallback.exists() and attempt.get('diagnostic') == 'date_partition_coverage_mismatch':
+                checkpoint = read(fallback)
+                coverage = checkpoint.get('coverage') or {}
+                visible_path = fallback
+                extra = {'unfiltered_fallback':True,'original_date_gap':attempt['api_count']-attempt['unique_runs']}
+            checkpoints.append({"name": path.stem, "pages": len(checkpoint.get("pages", {})), **extra,
                 "pages_planned": checkpoint.get("pages_planned", coverage.get("pages_received", coverage.get("pages"))),
                 "source_pages": checkpoint.get("source_pages", coverage.get("api_pages")),
                 "source_count": checkpoint.get("source_count", coverage.get("api_count", coverage.get("unique_games"))),
                 "unique_runs": checkpoint.get("unique_runs", coverage.get("unique_runs")),
                 "unique_games": checkpoint.get("unique_games", coverage.get("unique_games")),
                 "coverage": coverage.get("coverage"), "complete": checkpoint.get("complete"),
-                "pass": checkpoint.get("pass"), "updated_at": datetime.fromtimestamp(path.stat().st_mtime).isoformat()})
+                "pass": checkpoint.get("pass"), "updated_at": datetime.fromtimestamp(visible_path.stat().st_mtime).isoformat()})
         item["checkpoints"] = sorted(checkpoints, key=lambda c: c["updated_at"])
         item["completed_sections"] = sum(bool(c["complete"]) for c in checkpoints)
         item["known_sections"] = len(checkpoints)
@@ -144,20 +153,22 @@ def batch_progress(batch_id):
         exists = conn.execute("SELECT to_regclass('entity_batch_queue')").fetchone()[0]
         rows = conn.execute("SELECT position,game_id,collection_id,state,details FROM entity_batch_queue WHERE batch_id=%s AND state!='excluded' ORDER BY position", [batch_id]).fetchall() if exists else []
     games = [dict(zip(("position", "game_id", "collection_id", "state", "details"), row)) for row in rows]
-    collections = [batch_id + "-catalog", batch_id + "-ranking-v2"]
+    config = read(root / "config.json") if (root / "config.json").exists() else {}
+    collections = [config['catalog_snapshot_id'][:-len('-games_metadata')] if config.get('catalog_snapshot_id') else batch_id + '-catalog']
+    if config.get('mode', 'top') == 'top':
+        collections.append(batch_id + '-ranking-v2')
     collections += [g["collection_id"] for g in games if g["state"] in ("running", "failed", "partial")]
     collections += [retry["repair_collection_id"] for g in games
                     if (retry := g["details"].get("coverage_retry", {})).get("state") == "running"
                     and retry.get("repair_collection_id")]
     reports = {c: progress(c) for c in collections}
-    config = read(root / "config.json") if (root / "config.json").exists() else {}
     return {"batch": batch_id, "driver_running": driver_running(root / "driver.lock"),
         "driver": read(root / "status.json") if (root / "status.json").exists() else {},
         "games_complete": sum(g["state"] == "complete" for g in games),
         "games_partial": sum(g["state"] == "partial" for g in games),
         "games_not_applicable": sum(g["state"] == "not_applicable" for g in games),
         "games_processed": sum(g["state"] in ("complete", "partial", "unavailable", "not_applicable") for g in games),
-        "games_total": max(len(games), config.get("top") or 0) or None,
+        "games_total": max(len(games), config.get("top") or config.get('sample_size') or 0) or None,
         "selection_ready": (root / "selection.json").exists(),
         "games": games, "collections": reports}
 
@@ -196,6 +207,8 @@ def render_collection(report):
             lines.append(f"    sections {item['completed_sections']}/{sections}; latest {latest['name']}: pages {pages}, coverage {latest.get('coverage') or 'in progress'}")
             if latest.get("unique_runs") is not None and latest.get("source_count") is not None:
                 lines.append(f"    unique runs in section: {latest['unique_runs']}/{latest['source_count']} (initial API count)")
+            if latest.get('unfiltered_fallback'):
+                lines.append(f"    automatic unfiltered fallback; original date gap={latest['original_date_gap']}")
             if item.get("coverage_counts"):
                 lines.append("    section coverage: " + ", ".join(f"{k}={v}" for k,v in sorted(item["coverage_counts"].items())))
         if item.get("last_error"):

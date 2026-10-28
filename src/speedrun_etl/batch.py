@@ -1,5 +1,6 @@
 """Portable, resumable Airflow queue: fresh directory plus top N or all games."""
 import argparse
+from datetime import datetime, timezone
 import os
 from pathlib import Path
 import re
@@ -13,7 +14,7 @@ from .collect import validate_conf
 from .capacity import check_capacity
 from .entity_ods import EntityPackage
 from .entity_storage import ready
-from .jsonutil import atomic_write, dumps, file_lock, read, utcnow
+from .jsonutil import atomic_write, digest, dumps, file_lock, read, utcnow
 from .storage import pg_connect
 
 
@@ -100,6 +101,26 @@ def save_status(root, phase, **details):
     atomic_write(root / "status.json", {"phase": phase, "updated_at": utcnow(), **details})
 
 
+def reserve_session(state, root, baseline, collection, maximum, limit):
+    """Conservative reservation: never begin a chain that could exceed the cap."""
+    if collection:
+        baseline.setdefault(collection,0)
+    names = set(baseline) | ({collection} if collection else set())
+    current = {}
+    for name in names:
+        path = state / 'collections' / name / 'budget.json'
+        current[name] = read(path)['used'] if path.exists() else 0
+    used = sum(current[name] - baseline.get(name, 0) for name in names)
+    reserve = max(0, maximum-current.get(collection, 0)) if collection else 0
+    atomic_write(root / 'session-budget.json', {'limit':limit,'used':used,'reserved_next':reserve,
+        'next_collection_id':collection,'policy':'reserve_remaining_per_game_budget','updated_at':utcnow()})
+    if used+reserve > limit:
+        save_status(root,'session_paused',reason='HTTP session budget: insufficient reserve for the next chain',
+                    http_used=used,http_limit=limit,reserved_next=reserve)
+        return False
+    return True
+
+
 def result_state(result):
     if result.get("coverage") == "unavailable":
         if (result.get("diagnostic") == "no_full_game_categories_in_source_metadata"
@@ -154,8 +175,42 @@ def selection(state, snapshot, all_games):
             raw = package.decode(row["raw"])
             from .ranking import game_classification
             if game_classification(raw) == "in_scope" and raw.get("url"):
-                games[raw["id"]] = {k: raw.get(k) for k in ("id", "url", "name", "type")}
+                games[raw["id"]] = {k: raw.get(k) for k in ("id", "url", "name", "type", "runCount")}
         return [games[key] for key in sorted(games)]
+    finally:
+        package.db.close()
+
+
+def counter_band(count):
+    count = int(count)
+    if count < 0:
+        raise ValueError('Negative directory run count')
+    return '0-100' if count <= 100 else '101-1000' if count <= 1000 else '1001-10000' if count <= 10000 else '>10000'
+
+
+def stratified_selection(games, size):
+    """Equal hash-selected samples in four counter bands; counters are not coverage."""
+    groups = {name: [] for name in ('0-100', '101-1000', '1001-10000', '>10000')}
+    for game in games:
+        band = counter_band(game['runCount'])
+        groups[band].append({**game, 'sampling_band': band})
+    return [game for group in groups.values() for game in sorted(group, key=lambda g: digest(g['id']))[:size//4]]
+
+
+def validate_catalog_input(state, snapshot, require_fresh=True):
+    package = parent_package(state, snapshot)
+    try:
+        manifest = next(package.records('manifests'))
+        if (manifest.get('input_config', {}).get('scope') != 'catalog'
+                or manifest.get('source_result', {}).get('coverage') != 'verified_public_partitions'):
+            raise ValueError('A verified complete directory snapshot is required')
+        fetched = [datetime.fromisoformat(r['metadata']['fetched_at']) for r in package.records('responses')
+                   if r['metadata']['endpoint'] == 'GetGameList' and r['metadata']['http_status'] == 200]
+        if not fetched:
+            raise ValueError('Catalog has no successful source timestamps')
+        age = (datetime.now(timezone.utc)-max(fetched)).total_seconds()
+        if require_fresh and not -300 <= age <= 7*86400:
+            raise ValueError('New queue requires a catalog observed within seven days')
     finally:
         package.db.close()
 
@@ -197,7 +252,11 @@ def main():
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--top", type=int, default=10)
     mode.add_argument("--all", action="store_true")
+    mode.add_argument("--sample", type=int, choices=(4, 8, 12, 16, 20), help="Stratified resource pilot, up to five games per counter band")
+    parser.add_argument("--catalog-snapshot", help="Explicit verified input catalog; do not fetch the directory again")
     parser.add_argument("--game-request-budget", type=int, default=5000)
+    parser.add_argument('--session-request-budget',type=int,default=9000,
+                        help='Maximum new HTTP attempts per driver session; reserves the remaining game budget before starting')
     parser.add_argument("--hours", type=float, default=8, help="Stop starting new games after this time; finish the active game")
     parser.add_argument("--log", action="store_true")
     parser.add_argument("--refresh-selection", action="store_true", help="Reviewed repair of pending selection; never replace a started chain")
@@ -210,6 +269,10 @@ def main():
         parser.error("Invalid batch ID, top count or session duration")
     if not 100 <= args.game_request_budget <= 10000:
         parser.error("Per-game budget must be 100..10000")
+    if args.session_request_budget < args.game_request_budget:
+        parser.error('Session HTTP budget must be at least the per-game budget')
+    if args.catalog_snapshot and not re.fullmatch(r'[A-Za-z0-9_-]{1,110}-games_metadata', args.catalog_snapshot):
+        parser.error('Invalid catalog snapshot ID')
     with pg_connect(True) as conn:
         conn.execute("""CREATE TABLE IF NOT EXISTS entity_batch_queue (
             batch_id text NOT NULL,position integer NOT NULL,game_id text NOT NULL,collection_id text NOT NULL,
@@ -226,8 +289,14 @@ def main():
     root.mkdir(parents=True, exist_ok=True)
     if args.log:
         sys.stdout = sys.stderr = (root / "driver.log").open("a", buffering=1)
-    conf = {"mode": "all" if args.all else "top", "top": args.top if not args.all else None,
+    conf = {"mode": "sample" if args.sample else "all" if args.all else "top", "top": args.top if not (args.all or args.sample) else None,
             "game_request_budget": args.game_request_budget}
+    if args.sample:
+        conf['sample_size'] = args.sample
+    if args.catalog_snapshot:
+        conf['catalog_snapshot_id'] = args.catalog_snapshot
+    elif (root / 'config.json').exists() and read(root / 'config.json').get('catalog_snapshot_id'):
+        conf['catalog_snapshot_id'] = read(root / 'config.json')['catalog_snapshot_id']
     if args.runs_strategy:
         conf["run_partition_strategy"] = "date_large_v1" if args.runs_strategy == "date-large" else "standard"
     elif (root / "config.json").exists():
@@ -251,25 +320,40 @@ def run_queue(args, state, root, conf):
         raise ValueError("Batch scope cannot change; use the same options or a new collection ID")
     atomic_write(path, conf)
     atomic_write(root / "runtime-policy.json", {"continue_on_drift": args.continue_on_drift,
+                                               'session_request_budget':args.session_request_budget,
                                                "updated_at": utcnow()})
     session_end = time.monotonic() + args.hours * 3600
-    catalog = args.collection + "-catalog"
-    save_status(root, "catalog", collection_id=catalog)
-    start(catalog, {"scope": "catalog", "request_budget": 650})
-    wait(catalog, ("games_metadata",))
-    parent = catalog + "-games_metadata"
-    if not args.all:
+    with pg_connect(True) as conn:
+        queued = {r[0] for r in conn.execute('SELECT collection_id FROM entity_batch_queue WHERE batch_id=%s',[args.collection])}
+    baseline = {p.parent.name:read(p)['used'] for p in (state/'collections').glob('*/budget.json')
+                if p.parent.name.startswith(args.collection+'-') or p.parent.name in queued}
+    if conf.get('catalog_snapshot_id'):
+        parent = conf['catalog_snapshot_id']
+        validate_catalog_input(state, parent, require_fresh=not (root/'selection.json').exists())
+        save_status(root, 'catalog_reused', input_snapshot_id=parent)
+        print('Verified catalog reused:', parent, flush=True)
+    else:
+        catalog = args.collection + "-catalog"
+        save_status(root, "catalog", collection_id=catalog)
+        if not reserve_session(state,root,baseline,catalog,650,args.session_request_budget):return
+        start(catalog, {"scope": "catalog", "request_budget": 650})
+        wait(catalog, ("games_metadata",))
+        parent = catalog + "-games_metadata"
+    if conf['mode'] == 'top':
         ranking = args.collection + "-ranking-v2"
         save_status(root, "ranking", collection_id=ranking)
+        if not reserve_session(state,root,baseline,ranking,500,args.session_request_budget):return
         start(ranking, {"scope": "ranking", "catalog_snapshot_id": parent, "top_n": args.top,
                         "ranking_policy": "exclude_ce_v1"})
         wait(ranking, ("games_metadata",))
         parent = ranking + "-games_metadata"
-    games = selection(state, parent, args.all)
-    if not games or (not args.all and len(games) != args.top):
+    games = selection(state, parent, conf['mode'] != 'top')
+    if conf['mode'] == 'sample':
+        games = stratified_selection(games, args.sample)
+    if not games or (conf['mode'] == 'top' and len(games) != args.top):
         raise ValueError("Verified selection does not contain the requested number of games")
     reconcile_selection(args.collection, games, parent, state, refresh=args.refresh_selection)
-    atomic_write(root / "selection.json", {"snapshot_id": parent, "policy": "exclude_ce_v1", "game_ids": [g["id"] for g in games]})
+    atomic_write(root / "selection.json", {"snapshot_id": parent, "policy": "stratified_run_count_v1" if args.sample else "exclude_ce_v1", "game_ids": [g["id"] for g in games]})
     for position, game in enumerate(games, 1):
         with pg_connect(True) as conn:
             collection, status, details = conn.execute("SELECT collection_id,state,details FROM entity_batch_queue WHERE batch_id=%s AND game_id=%s", [args.collection,game["id"]]).fetchone()
@@ -283,8 +367,11 @@ def run_queue(args, state, root, conf):
         print(f"Batch: game={position}/{len(games)} name={game['name']} id={game['id']}", flush=True)
         reuse_partial = status == "partial" and args.continue_on_drift
         if not reuse_partial:
+            if not reserve_session(state,root,baseline,collection,args.game_request_budget,args.session_request_budget):return
             with pg_connect(True) as conn:
-                conn.execute("UPDATE entity_batch_queue SET state='running',updated_at=now() WHERE batch_id=%s AND game_id=%s", [args.collection,game["id"]])
+                conn.execute("""UPDATE entity_batch_queue SET state='running',updated_at=now(),
+                    details=details || jsonb_build_object('first_started_at',COALESCE(details->>'first_started_at',%s))
+                    WHERE batch_id=%s AND game_id=%s""", [utcnow(),args.collection,game["id"]])
         try:
             if not reuse_partial:
                 start(collection, {"scope": "game", "game": game["url"], "game_id": game["id"],
@@ -322,6 +409,7 @@ def run_queue(args, state, root, conf):
     with pg_connect(True) as conn:
         totals = dict(conn.execute("SELECT state,count(*) FROM entity_batch_queue WHERE batch_id=%s AND state!='excluded' GROUP BY state",
                                    [args.collection]).fetchall())
+    if not reserve_session(state,root,baseline,None,0,args.session_request_budget):return
     phase = "complete" if sum(totals.get(s, 0) for s in ("complete", "not_applicable")) == len(games) else "complete_with_gaps"
     save_status(root, phase, total=len(games), states=totals)
     print(f"Batch traversal finished: {totals}; source gaps remain in coverage_retry and manifests", flush=True)

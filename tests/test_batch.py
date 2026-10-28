@@ -13,6 +13,81 @@ from speedrun_etl.entity_ods import EntityPackage
 
 
 class BatchTests(unittest.TestCase):
+    def test_hash_sample_is_order_independent_and_covers_four_counter_bands(self):
+        from collections import Counter
+        from speedrun_etl.batch import stratified_selection
+        games=[{'id':f'{band}-{i}','runCount':count} for band,count in enumerate((0,101,1001,10001)) for i in range(8)]
+        selected=stratified_selection(games,20)
+        self.assertEqual(selected,stratified_selection(list(reversed(games)),20))
+        self.assertEqual({'0-100':5,'101-1000':5,'1001-10000':5,'>10000':5},dict(Counter(g['sampling_band'] for g in selected)))
+
+    def test_session_reservation_counts_previous_chains_and_keeps_existing_attempts(self):
+        from speedrun_etl.batch import reserve_session
+        from speedrun_etl.jsonutil import atomic_write,read
+        with TemporaryDirectory() as temp:
+            state=Path(temp);root=state/'batches/b';baseline={}
+            self.assertTrue(reserve_session(state,root,baseline,'b-catalog',100,150))
+            atomic_write(state/'collections/b-catalog/budget.json',{'used':60,'limit':100})
+            self.assertFalse(reserve_session(state,root,baseline,'b-g-next',100,150))
+            self.assertEqual(60,read(root/'session-budget.json')['used'])
+            self.assertEqual(60,read(state/'collections/b-catalog/budget.json')['used'])
+            self.assertEqual('session_paused',read(root/'status.json')['phase'])
+            self.assertTrue(reserve_session(state,root,{'b-catalog':60},'b-g-next',100,150))
+
+    def test_catalog_reuse_checks_source_freshness_and_rejects_ranking(self):
+        from speedrun_etl.batch import validate_catalog_input
+        from speedrun_etl.jsonutil import utcnow
+        with TemporaryDirectory() as temp:
+            root=Path(temp);p=EntityPackage(root/'catalog')
+            manifest={'key':'m','input_config':{'scope':'catalog'},'source_result':{'coverage':'verified_public_partitions'}}
+            p.put('manifests',manifest);p.put('responses',{'key':'r','metadata':{
+                'endpoint':'GetGameList','http_status':200,'fetched_at':utcnow()}});p.db.commit();p.db.close()
+            with patch('speedrun_etl.batch.parent_package',side_effect=lambda *a:EntityPackage(root/'catalog')):
+                validate_catalog_input(root,'catalog-games_metadata')
+                p=EntityPackage(root/'catalog')
+                from speedrun_etl.jsonutil import dumps
+                p.db.execute("UPDATE records SET document=? WHERE dataset='responses'",[dumps({'key':'r','metadata':{
+                    'endpoint':'GetGameList','http_status':200,'fetched_at':'2026-01-01T00:00:00+00:00'}})])
+                p.db.commit();p.db.close()
+                with self.assertRaisesRegex(ValueError,'seven days'):validate_catalog_input(root,'catalog-games_metadata')
+                validate_catalog_input(root,'catalog-games_metadata',require_fresh=False)
+                p=EntityPackage(root/'catalog');manifest['input_config']['scope']='ranking'
+                p.db.execute("UPDATE records SET document=? WHERE dataset='manifests'",[dumps(manifest)])
+                p.db.commit();p.db.close()
+                with self.assertRaisesRegex(ValueError,'directory snapshot'):
+                    validate_catalog_input(root,'catalog-games_metadata',require_fresh=False)
+
+    @unittest.skipUnless(os.environ.get('ETL_INTEGRATION')=='1','Real control DB opt-in')
+    def test_sample_reuses_catalog_and_resumes_pending_games_after_session_budget(self):
+        from speedrun_etl.batch import main
+        from speedrun_etl.storage import pg_connect
+        from speedrun_etl.jsonutil import atomic_write,read
+        batch_id='testpilot'+uuid4().hex[:10]
+        games=[{'id':f'g{i}','url':f'game{i}','name':str(i),'runCount':count}
+               for i,count in enumerate((1,200,2000,20000))]
+        starts=[]
+        with TemporaryDirectory() as temp:
+            def fake_start(collection,conf):
+                starts.append((collection,conf))
+                atomic_write(Path(temp)/'collections'/collection/'budget.json',{'used':60,'limit':100})
+                p=EntityPackage(Path(temp)/'snapshots'/(collection+'-runs')/'entity-package')
+                p.put('manifests',{'key':'m','source_result':{'partitions':[{'coverage':'verified_public_partitions'}]}})
+                p.db.commit();p.db.close()
+            with patch.dict(os.environ,{'ETL_STATE':temp}),patch.object(sys,'argv',[
+                    'batch','run','--collection',batch_id,'--sample','4','--catalog-snapshot','shared-games_metadata',
+                    '--game-request-budget','100','--session-request-budget','150']),patch(
+                    'speedrun_etl.batch.start',side_effect=fake_start),patch('speedrun_etl.batch.wait'),patch(
+                    'speedrun_etl.batch.selection',return_value=games),patch('speedrun_etl.batch.validate_catalog_input'):
+                main()
+                with pg_connect(True) as conn:
+                    states=dict(conn.execute('SELECT game_id,state FROM entity_batch_queue WHERE batch_id=%s',[batch_id]).fetchall())
+                self.assertEqual({'g0':'complete','g1':'pending','g2':'pending','g3':'pending'},states)
+                self.assertEqual('session_paused',read(Path(temp)/'batches'/batch_id/'status.json')['phase'])
+                for _ in range(3):main()
+            self.assertEqual(4,len(starts))
+            self.assertTrue(all(conf['selection_snapshot_id']=='shared-games_metadata' for _,conf in starts))
+            self.assertEqual('complete',read(Path(temp)/'batches'/batch_id/'status.json')['phase'])
+
     @unittest.skipUnless(os.environ.get("ETL_INTEGRATION")=="1","Real control DB opt-in")
     def test_fresh_date_strategy_uses_one_catalog_and_survives_resume(self):
         from speedrun_etl.batch import main

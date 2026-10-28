@@ -1,0 +1,1 @@
+{"multi_object_partial_write":[{"counter":1},{"counter":0}],"schema_invalid_object_accepted":{"counter":-1,"ref":"missing-game"},"schema_optional_field":"Client encoding; no server table schema","stale_etag_write":{"rejected":false,"status":200}}

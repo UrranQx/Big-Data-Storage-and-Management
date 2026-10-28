@@ -10,6 +10,22 @@ from speedrun_etl.progress import progress, render_collection, render_batch, dri
 
 
 class ProgressTests(unittest.TestCase):
+    def test_active_unfiltered_fallback_is_not_shown_as_a_completed_partial_date_section(self):
+        with TemporaryDirectory() as temp,patch.dict(os.environ,{'ETL_STATE':temp}):
+            root=Path(temp)/'snapshots/c-runs'
+            atomic_write(root/'checkpoints/x-verified.json',{'complete':True,'pages':{'dated1':{}},
+                'coverage':{'coverage':'partial','diagnostic':'date_partition_coverage_mismatch',
+                            'api_count':5,'unique_runs':3}})
+            atomic_write(root/'date-fallback/x-verified/checkpoints/x-verified.json',{
+                'complete':False,'pages':{'1':{}},'pages_planned':3,'source_count':5,'unique_runs':2})
+            report=progress('c');item=report['snapshots']['runs']
+            self.assertEqual(0,item['completed_sections'])
+            self.assertEqual({},item['coverage_counts'])
+            self.assertEqual(2,item['checkpoints'][0]['original_date_gap'])
+            text=render_collection(report)
+            self.assertIn('pages 1/3',text)
+            self.assertIn('automatic unfiltered fallback',text)
+
     def test_repair_progress_counts_only_selected_sections_and_shows_date_leaf(self):
         with TemporaryDirectory() as temp, patch.dict(os.environ,{"ETL_STATE":"unused"}):
             os.environ["ETL_STATE"]=temp

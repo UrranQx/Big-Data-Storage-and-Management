@@ -1,0 +1,75 @@
+{
+  "postgres_pk_only": {
+    "nodes": [
+      {
+        "Node Type": "Sort",
+        "Actual Rows": 3
+      },
+      {
+        "Node Type": "Seq Scan",
+        "Actual Rows": 3,
+        "Rows Removed by Filter": 99997
+      }
+    ],
+    "execution_ms": 25.718
+  },
+  "postgres_indexed": {
+    "nodes": [
+      {
+        "Node Type": "Sort",
+        "Actual Rows": 3
+      },
+      {
+        "Node Type": "Bitmap Heap Scan",
+        "Actual Rows": 3
+      },
+      {
+        "Node Type": "Bitmap Index Scan",
+        "Index Name": "runs_properties_idx",
+        "Actual Rows": 3
+      }
+    ],
+    "execution_ms": 0.029
+  },
+  "mongo_pk_only": {
+    "winning_nodes": [
+      {
+        "stage": "PROJECTION_SIMPLE"
+      },
+      {
+        "stage": "FETCH"
+      },
+      {
+        "stage": "IXSCAN",
+        "indexName": "_id_"
+      }
+    ],
+    "executionStats": {
+      "nReturned": 3,
+      "totalDocsExamined": 100000,
+      "totalKeysExamined": 100000
+    }
+  },
+  "mongo_indexed": {
+    "winning_nodes": [
+      {
+        "stage": "SORT"
+      },
+      {
+        "stage": "PROJECTION_SIMPLE"
+      },
+      {
+        "stage": "FETCH"
+      },
+      {
+        "stage": "IXSCAN",
+        "indexName": "properties.platform_id_1"
+      }
+    ],
+    "executionStats": {
+      "nReturned": 3,
+      "totalDocsExamined": 3,
+      "totalKeysExamined": 3
+    }
+  }
+}
