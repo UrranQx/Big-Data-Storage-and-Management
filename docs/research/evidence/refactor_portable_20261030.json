@@ -1,0 +1,60 @@
+{
+  "pre_deploy_commit": "3d9136660c6cd71d1f90c15edb8a8c0bfe5130bb",
+  "integrated_commit": "3db2e751bc921c0ba5fd9c66e21c3b2d296286d7",
+  "tests": 169,
+  "test_failures": 0,
+  "test_skipped": 0,
+  "final_backup_tests": 6,
+  "restored_filesystems": [
+    {
+      "name": "postgres-data",
+      "sha256_verified": true,
+      "extracted_and_tar_compared": true,
+      "seconds": 52.88
+    },
+    {
+      "name": "mongo-data",
+      "sha256_verified": true,
+      "extracted_and_tar_compared": true,
+      "seconds": 42.3
+    },
+    {
+      "name": "garage-meta",
+      "sha256_verified": true,
+      "extracted_and_tar_compared": true,
+      "seconds": 1.39
+    },
+    {
+      "name": "garage-data",
+      "sha256_verified": true,
+      "extracted_and_tar_compared": true,
+      "seconds": 13.94
+    },
+    {
+      "name": "etl-state",
+      "sha256_verified": true,
+      "extracted_and_tar_compared": true,
+      "seconds": 241.67
+    },
+    {
+      "name": "airflow-logs",
+      "sha256_verified": true,
+      "extracted_and_tar_compared": true,
+      "seconds": 1.78
+    }
+  ],
+  "storage_baseline_equal": true,
+  "rehearsal_UI_healthy": true,
+  "primary_baseline_equal": true,
+  "baseline_run_ids": 934836,
+  "baseline_player_ids": 269010,
+  "baseline_games": {
+    "complete": 114,
+    "partial": 1,
+    "not_applicable": 1
+  },
+  "production_resumed": true,
+  "until": "2026-11-02T00:51:41.916756+00:00",
+  "network_copy_status": "in_progress",
+  "contains_secrets": false
+}

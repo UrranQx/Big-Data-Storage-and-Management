@@ -1,35 +1,30 @@
 # Передача контекста: реализация ЛР1
 
-## 30 октября: внедрение рефакторинга и перенос на ноутбук В ПРОЦЕССЕ
+## 30 октября: рефакторинг внедрён, переносимый стенд проверен
 
-Пользователь явно разрешил: коммит до, безопасная остановка, внедрение;
-также схемы ODS и перенос данных для очной защиты завтра. Один агент.
-Ноутбук Windows/16GB/Docker/100GB свободно. NAS доступен; точный privateпуть
-и все текущие процессы/действия записаны в exports/refactor-deploy-20261030/PLAN.md.
-MAIN pre-deploy commit3d9136660c6cd71d1f90c15edb8a8c0bfe5130bb.
-После116игрыMetroidDread batch/controller мягко stopped;0activeDAG/tasks,
-четыреDAGpaused, всеproductionсервисыstopped. Ничего не вайпалось.
-Baseline entity_v3:934836runID/269010playerID;114complete+1partial+1not_applicable.
-Until остаётся2026-11-02T00:51:41.916756+00:00, не продлевать.
+Pre-deploy commit3d91366; внедрение main3db2e75 после мягкой паузы, холодной
+копии и169тестов с3изолированнымиODS (0errors/skip). Финальные6backup-тестов
+также прошли. Полная репетиция: все6файловыхсистем извлечены/сравнены, baseline
+PG/Mongo/S3 совпал, Airflow UI открылся. Затем удалены ТОЛЬКО6созданных копий
+с проверенными уникальными labels, productionvolumes не удалялись.
+Основнойстенд поднят на новомобразе, baseline934836runID/269010playerID,
+1395receipts/14827S3objects совпал ДОвозобновления. Все4DAG unpaused,
+batch+keep_running возобновлены сПРЕЖНИМ until2026-11-02T00:51:41.916756+00:00.
 
-Кандидат speedrun-lab1-airflow:refactor-candidate-20261030 собран ОДИН раз;
-169тестов с3реальными ИЗОЛИРОВАННЫМИ ODS прошли38,759с/0skip/ошибок.
-Сравнительные3сервиса снова stopped. Основнойsrc внедрён изa4989f0 приSTOPPEDсервисах; запускпослерепетиции.
-ХолодныйbackupD: ЗАВЕРШЁН,6.27GiB/6volumes/код/образы; pointer=exports/refactor-deploy-20261030/backup-path.txt.
-СтараяпроверкаstagingчерезWindowsbind быламедленной; еёчитательпослеROпроверки
-штатноостановлен, готовыеархивынетронуты. Финализаторexec17832 ЗАВЕРШИЛСЯ; повторноиспользовал
-4проверенныхархиваи проверяетготовыйetl-state.tar.gz черезLinuxкэш. Не запускать
-оригинальныесервисыдозавершениякопии. Более подробная очередь действий — PLAN.md.
-Mermaidэкспортexec32137;2схемы/PNG/SVG, не runtimeзависимость.
+Приватная coldкопия: D:/ETL_backups/pre-refactor-20261030T173354Z;
+комплектноутбука: D:/ETL_backups/lab1-demo-20261030T175946Z (~6.3GiB).
+Содержит.env/локальныеключи,ТОЛЬКОprivateпередача. NASкопируетсяиSHAпроверяется
+фоновымfinish_deployment.py;фактическийитогexports/refactor-deploy-20261030/deployment.json,
+job82993. Не запускать второй. Код и инструкции публикуются до окончания NAS;
+послеcomplete финализатор добавит подтверждение SHA отдельным коммитом.
+Прежниеpaused/завершённыеjobномераниже исторические,неповторятьбэкап/репетицию.
 
-В candidateworktree добавлены: v3backupinventory, приватный portablepacker,
-restore_portable с6новымиvolumes/проверкой/офлайнобразами/localhostUI,
-проверенный переносимыйWindowsPython, Gitoptional. Архив не копировать
-пользователю до реального восстановления и проверки UI на изолированной копии.
-ПримерPortal yv2r2oom восстановлен изresponse,SHAпрошёл,3ODSравны,0sourceHTTP.
-Публичные7JSON/README — reports/lab1/ods_example_20261030, схемыDATA_MODEL,
-инструкцияноутбукаdocs/LAPTOP_DEMO. Пакеты .envсодержаттолькоprivateпередачу,
-неGit/неpubliccloud. До завершения смотреть приватный PLAN, не начинать заново.
+НоутбукWindows16GiB/Docker100GiB: скопироватьвеськомплектлокально,START.cmd.
+ПереносимыйWindowsPython включён/проверен,GitдляUIнеобязателен. Очередьи4DAG
+напереносимойкопииpaused,нетautoглобальногосбора. docs/LAPTOP_DEMO.md.
+Новаямодель/2Mermaid+PNG/SVG:DATA_MODEL.md;реальныйPortalпримерс3ODS/SHA:
+reports/lab1/ods_example_20261030. Отчётсравнения и8Matplotlibрисунков сохранён.
+Доказательство:docs/research/evidence/refactor_portable_20261030.json.
 
 ## 30 октября: глубокое сравнение хранилищ завершено
 
