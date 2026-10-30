@@ -5,7 +5,7 @@
 - 30окт рефакторинг ВНЕДРЁН: pre3d91366 -> main3db2e75,169тестов3ODS,
  6финальныхbackupтестов;полнаярепетиция6volumes/3ODS/UIпрошла. Production
  baselineпроверен,сбор+keep_runningВОЗОБНОВЛЕНЫ,прежнийuntilNov2непродлён.
- Приватныйноутбучныйкомплект6.3GiB копируетсянаNASjob82993;смотреть
+ Приватныйноутбучныйкомплект6.3GiB наNAS,9SHAпроверены;смотреть
  exports/refactor-deploy-20261030/deployment.json,началоHANDOFF. НЕповторять
  бэкап/репетицию/вайп. START.cmd,инструкцияdocs/LAPTOP_DEMO.md. НеGitсекреты.
 - 30 октября глубокое сравнение ЗАВЕРШЕНО: reports/lab1/comparison_20261030,

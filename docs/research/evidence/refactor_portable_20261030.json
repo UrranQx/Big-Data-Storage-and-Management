@@ -55,6 +55,7 @@
   },
   "production_resumed": true,
   "until": "2026-11-02T00:51:41.916756+00:00",
-  "network_copy_status": "in_progress",
-  "contains_secrets": false
+  "network_copy_status": "verified",
+  "contains_secrets": false,
+  "network_SHA_verified": true
 }
