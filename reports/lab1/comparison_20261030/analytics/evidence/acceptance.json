@@ -1,0 +1,28 @@
+{
+  "complete": true,
+  "measurements": 576,
+  "statistical_groups": 180,
+  "trials": 36,
+  "png": 6,
+  "svg": 6,
+  "input_relations_and_materializations_verified": true,
+  "postprocessing": {
+    "measurement_rows": 576,
+    "trials": 36,
+    "proof_groups": 36,
+    "cross_store_delta_equal": true
+  },
+  "source_HTTP_in_measurement_window": 0,
+  "unchanged_deadline": "2026-11-02T00:51:41.916756+00:00",
+  "production_resumed_after_measurement": true,
+  "subsequent_user_instruction": "Stop collection and prepare the report",
+  "current_production_state": "manual_pause",
+  "active_DAGs": 0,
+  "active_tasks": 0,
+  "queue_counts": {
+    "not_applicable": 1,
+    "partial": 1,
+    "pending": 365,
+    "complete": 133
+  }
+}

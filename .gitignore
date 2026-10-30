@@ -7,6 +7,8 @@ __pycache__/
 data/
 !/reports/lab1/comparison_20261030/data/
 !/reports/lab1/comparison_20261030/data/*.csv
+!/reports/lab1/comparison_20261030/analytics/data/
+!/reports/lab1/comparison_20261030/analytics/data/*.csv
 logs/
 volumes/
 .pytest_cache/

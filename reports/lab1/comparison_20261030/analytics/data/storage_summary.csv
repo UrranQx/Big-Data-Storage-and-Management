@@ -1,0 +1,13 @@
+size,store,method,data_bytes,index_bytes,reported_bytes,retained_all_objects_bytes
+1000,postgres,"table/TOAST + indexes, excludes *_full; after test updates",1409024.0,622592.0,2031616.0,
+1000,mongo,"storageSize + indexes after fsync, excludes *_full; after test updates",716800.0,802816.0,1519616.0,
+1000,garage,current referenced object bodies + snapshot index; all retained bodies separately; no volume overhead,219160.0,,219160.0,412525.0
+10000,postgres,"table/TOAST + indexes, excludes *_full; after test updates",9183232.0,3162112.0,12345344.0,
+10000,mongo,"storageSize + indexes after fsync, excludes *_full; after test updates",4669440.0,3354624.0,8036352.0,
+10000,garage,current referenced object bodies + snapshot index; all retained bodies separately; no volume overhead,1703453.0,,1703453.0,3436375.0
+100000,postgres,"table/TOAST + indexes, excludes *_full; after test updates",59367424.0,21364736.0,80732160.0,
+100000,mongo,"storageSize + indexes after fsync, excludes *_full; after test updates",31879168.0,19468288.0,51306496.0,
+100000,garage,current referenced object bodies + snapshot index; all retained bodies separately; no volume overhead,12610747.0,,12610747.0,23914150.0
+968899,postgres,"table/TOAST + indexes, excludes *_full; after test updates",440762368.0,152698880.0,593461248.0,
+968899,mongo,"storageSize + indexes after fsync, excludes *_full; after test updates",265138176.0,134832128.0,399843328.0,
+968899,garage,current referenced object bodies + snapshot index; all retained bodies separately; no volume overhead,91561611.0,,91561611.0,167368226.0

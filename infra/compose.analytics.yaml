@@ -1,0 +1,15 @@
+# Дополнение к compose.comparison.yaml: только код, без production .env/state.
+services:
+  runner:
+    mem_limit: 3072m
+    environment:
+      ETL_EXPERIMENT_ID: analytics-20261030
+    volumes: !override
+      - ../src:/opt/project/src:ro
+      - ../tests:/opt/project/tests:ro
+      - ../dags/ods:/opt/project/dags/ods:ro
+      - state:/opt/airflow/state
+volumes:
+  state:
+    external: true
+    name: speedrun-analytics-20261030-state

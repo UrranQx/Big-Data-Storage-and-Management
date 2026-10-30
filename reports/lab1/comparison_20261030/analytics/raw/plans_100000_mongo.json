@@ -1,0 +1,1422 @@
+{
+  "geography": {
+    "explainVersion": "1",
+    "stages": [
+      {
+        "$cursor": {
+          "queryPlanner": {
+            "namespace": "test_wl_an_20261030202817_100000_0.runs",
+            "parsedQuery": {},
+            "indexFilterSet": false,
+            "queryHash": "CDA0DDD5",
+            "planCacheShapeHash": "CDA0DDD5",
+            "planCacheKey": "1D1AB0B1",
+            "optimizationTimeMillis": 0,
+            "maxIndexedOrSolutionsReached": false,
+            "maxIndexedAndSolutionsReached": false,
+            "maxScansToExplodeReached": false,
+            "prunedSimilarIndexes": false,
+            "winningPlan": {
+              "isCached": false,
+              "stage": "PROJECTION_SIMPLE",
+              "transformBy": {
+                "board_id": 1,
+                "key": 1,
+                "_id": 0
+              },
+              "inputStage": {
+                "stage": "COLLSCAN",
+                "direction": "forward"
+              }
+            },
+            "rejectedPlans": []
+          }
+        }
+      },
+      {
+        "$lookup": {
+          "from": "boards",
+          "as": "b",
+          "localField": "board_id",
+          "foreignField": "_id",
+          "unwinding": {
+            "preserveNullAndEmptyArrays": true
+          }
+        }
+      },
+      {
+        "$lookup": {
+          "from": "categories",
+          "as": "c",
+          "localField": "b.category_key",
+          "foreignField": "_id",
+          "unwinding": {
+            "preserveNullAndEmptyArrays": true
+          }
+        }
+      },
+      {
+        "$lookup": {
+          "from": "games",
+          "as": "g",
+          "localField": "c.game_id",
+          "foreignField": "_id",
+          "unwinding": {
+            "preserveNullAndEmptyArrays": true
+          }
+        }
+      },
+      {
+        "$lookup": {
+          "from": "run_players",
+          "as": "rp",
+          "localField": "key",
+          "foreignField": "run_id",
+          "unwinding": {
+            "preserveNullAndEmptyArrays": true
+          }
+        }
+      },
+      {
+        "$lookup": {
+          "from": "players",
+          "as": "p",
+          "localField": "rp.player_id",
+          "foreignField": "_id",
+          "unwinding": {
+            "preserveNullAndEmptyArrays": true
+          }
+        }
+      },
+      {
+        "$group": {
+          "_id": {
+            "game": "$g.key",
+            "name": "$g.name",
+            "area": {
+              "$ifNull": [
+                "$p.area",
+                {
+                  "$const": "unknown"
+                }
+              ]
+            }
+          },
+          "runs": {
+            "$addToSet": "$key"
+          },
+          "players": {
+            "$addToSet": {
+              "$cond": [
+                "$p.resolved",
+                "$p.key",
+                {
+                  "$const": null
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "$project": {
+          "n_runs": {
+            "$size": [
+              "$runs"
+            ]
+          },
+          "n_players": {
+            "$size": [
+              {
+                "$setDifference": [
+                  "$players",
+                  {
+                    "$const": [
+                      null
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "game_id": "$_id.game",
+          "key": {
+            "$concat": [
+              "$_id.game",
+              {
+                "$const": ":"
+              },
+              "$_id.area"
+            ]
+          },
+          "game_name": "$_id.name",
+          "area": "$_id.area",
+          "_id": false
+        }
+      }
+    ],
+    "queryShapeHash": "D0ED3CAD957BF37F72D4F4F7FDB131263A83382E9B6CD43677A2EC91749ADC2F",
+    "serverInfo": {
+      "host": "f447119a3a20",
+      "port": 27017,
+      "version": "8.0.34",
+      "gitVersion": "51db4515a6597aedcf6188ee4e48a27e65b065ae"
+    },
+    "serverParameters": {
+      "internalQueryFacetBufferSizeBytes": 104857600,
+      "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+      "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+      "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+      "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+      "internalQueryProhibitBlockingMergeOnMongoS": 0,
+      "internalQueryMaxAddToSetBytes": 104857600,
+      "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+      "internalQueryFrameworkControl": "trySbeRestricted",
+      "internalQueryPlannerIgnoreIndexWithCollationForRegex": 1
+    },
+    "command": {
+      "aggregate": "runs",
+      "pipeline": [
+        {
+          "$lookup": {
+            "from": "boards",
+            "localField": "board_id",
+            "foreignField": "_id",
+            "as": "b"
+          }
+        },
+        {
+          "$unwind": {
+            "path": "$b",
+            "preserveNullAndEmptyArrays": true
+          }
+        },
+        {
+          "$lookup": {
+            "from": "categories",
+            "localField": "b.category_key",
+            "foreignField": "_id",
+            "as": "c"
+          }
+        },
+        {
+          "$unwind": {
+            "path": "$c",
+            "preserveNullAndEmptyArrays": true
+          }
+        },
+        {
+          "$lookup": {
+            "from": "games",
+            "localField": "c.game_id",
+            "foreignField": "_id",
+            "as": "g"
+          }
+        },
+        {
+          "$unwind": {
+            "path": "$g",
+            "preserveNullAndEmptyArrays": true
+          }
+        },
+        {
+          "$lookup": {
+            "from": "run_players",
+            "localField": "key",
+            "foreignField": "run_id",
+            "as": "rp"
+          }
+        },
+        {
+          "$unwind": {
+            "path": "$rp",
+            "preserveNullAndEmptyArrays": true
+          }
+        },
+        {
+          "$lookup": {
+            "from": "players",
+            "localField": "rp.player_id",
+            "foreignField": "_id",
+            "as": "p"
+          }
+        },
+        {
+          "$unwind": {
+            "path": "$p",
+            "preserveNullAndEmptyArrays": true
+          }
+        },
+        {
+          "$group": {
+            "_id": {
+              "game": "$g.key",
+              "name": "$g.name",
+              "area": {
+                "$ifNull": [
+                  "$p.area",
+                  "unknown"
+                ]
+              }
+            },
+            "runs": {
+              "$addToSet": "$key"
+            },
+            "players": {
+              "$addToSet": {
+                "$cond": [
+                  "$p.resolved",
+                  "$p.key",
+                  null
+                ]
+              }
+            }
+          }
+        },
+        {
+          "$project": {
+            "_id": 0,
+            "n_runs": {
+              "$size": "$runs"
+            },
+            "n_players": {
+              "$size": {
+                "$setDifference": [
+                  "$players",
+                  [
+                    null
+                  ]
+                ]
+              }
+            },
+            "game_id": "$_id.game",
+            "key": {
+              "$concat": [
+                "$_id.game",
+                ":",
+                "$_id.area"
+              ]
+            },
+            "game_name": "$_id.name",
+            "area": "$_id.area"
+          }
+        }
+      ],
+      "cursor": {},
+      "$db": "test_wl_an_20261030202817_100000_0"
+    },
+    "ok": 1.0
+  },
+  "best": {
+    "explainVersion": "1",
+    "stages": [
+      {
+        "$cursor": {
+          "queryPlanner": {
+            "namespace": "test_wl_an_20261030202817_100000_0.runs",
+            "parsedQuery": {
+              "eligible": {
+                "$eq": true
+              }
+            },
+            "indexFilterSet": false,
+            "queryHash": "7AD342C1",
+            "planCacheShapeHash": "7AD342C1",
+            "planCacheKey": "3E16B33A",
+            "optimizationTimeMillis": 0,
+            "maxIndexedOrSolutionsReached": false,
+            "maxIndexedAndSolutionsReached": false,
+            "maxScansToExplodeReached": false,
+            "prunedSimilarIndexes": false,
+            "winningPlan": {
+              "isCached": false,
+              "stage": "PROJECTION_SIMPLE",
+              "transformBy": {
+                "board_id": 1,
+                "key": 1,
+                "time_ns": 1,
+                "_id": 0
+              },
+              "inputStage": {
+                "stage": "FETCH",
+                "inputStage": {
+                  "stage": "IXSCAN",
+                  "keyPattern": {
+                    "eligible": 1,
+                    "board_id": 1
+                  },
+                  "indexName": "eligible_1_board_id_1",
+                  "isMultiKey": false,
+                  "multiKeyPaths": {
+                    "eligible": [],
+                    "board_id": []
+                  },
+                  "isUnique": false,
+                  "isSparse": false,
+                  "isPartial": false,
+                  "indexVersion": 2,
+                  "direction": "forward",
+                  "indexBounds": {
+                    "eligible": [
+                      "[true, true]"
+                    ],
+                    "board_id": [
+                      "[MinKey, MaxKey]"
+                    ]
+                  }
+                }
+              }
+            },
+            "rejectedPlans": []
+          }
+        }
+      },
+      {
+        "$lookup": {
+          "from": "run_players",
+          "as": "rp",
+          "localField": "key",
+          "foreignField": "run_id",
+          "unwinding": {
+            "preserveNullAndEmptyArrays": false
+          }
+        }
+      },
+      {
+        "$lookup": {
+          "from": "players",
+          "as": "p",
+          "localField": "rp.player_id",
+          "foreignField": "_id",
+          "unwinding": {
+            "preserveNullAndEmptyArrays": true
+          }
+        }
+      },
+      {
+        "$match": {
+          "p.resolved": {
+            "$eq": true
+          }
+        }
+      },
+      {
+        "$group": {
+          "_id": {
+            "board": "$board_id",
+            "player": "$rp.player_id"
+          },
+          "time_ns": {
+            "$min": "$time_ns"
+          }
+        }
+      },
+      {
+        "$project": {
+          "time_ns": true,
+          "key": {
+            "$concat": [
+              "$_id.board",
+              {
+                "$const": ":"
+              },
+              "$_id.player"
+            ]
+          },
+          "board_id": "$_id.board",
+          "player_id": "$_id.player",
+          "_id": false
+        }
+      }
+    ],
+    "queryShapeHash": "CA6463C6D73222D6E242935EB8DFA5E6E2CF285E9347045A5621246E9F26067C",
+    "serverInfo": {
+      "host": "f447119a3a20",
+      "port": 27017,
+      "version": "8.0.34",
+      "gitVersion": "51db4515a6597aedcf6188ee4e48a27e65b065ae"
+    },
+    "serverParameters": {
+      "internalQueryFacetBufferSizeBytes": 104857600,
+      "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+      "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+      "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+      "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+      "internalQueryProhibitBlockingMergeOnMongoS": 0,
+      "internalQueryMaxAddToSetBytes": 104857600,
+      "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+      "internalQueryFrameworkControl": "trySbeRestricted",
+      "internalQueryPlannerIgnoreIndexWithCollationForRegex": 1
+    },
+    "command": {
+      "aggregate": "runs",
+      "pipeline": [
+        {
+          "$match": {
+            "eligible": true
+          }
+        },
+        {
+          "$lookup": {
+            "from": "run_players",
+            "localField": "key",
+            "foreignField": "run_id",
+            "as": "rp"
+          }
+        },
+        {
+          "$unwind": "$rp"
+        },
+        {
+          "$lookup": {
+            "from": "players",
+            "localField": "rp.player_id",
+            "foreignField": "_id",
+            "as": "p"
+          }
+        },
+        {
+          "$unwind": {
+            "path": "$p",
+            "preserveNullAndEmptyArrays": true
+          }
+        },
+        {
+          "$match": {
+            "p.resolved": true
+          }
+        },
+        {
+          "$group": {
+            "_id": {
+              "board": "$board_id",
+              "player": "$rp.player_id"
+            },
+            "time_ns": {
+              "$min": "$time_ns"
+            }
+          }
+        },
+        {
+          "$project": {
+            "_id": 0,
+            "key": {
+              "$concat": [
+                "$_id.board",
+                ":",
+                "$_id.player"
+              ]
+            },
+            "board_id": "$_id.board",
+            "player_id": "$_id.player",
+            "time_ns": 1
+          }
+        }
+      ],
+      "cursor": {},
+      "$db": "test_wl_an_20261030202817_100000_0"
+    },
+    "ok": 1.0
+  },
+  "ranked": {
+    "explainVersion": "1",
+    "stages": [
+      {
+        "$cursor": {
+          "queryPlanner": {
+            "namespace": "test_wl_an_20261030202817_100000_0.best",
+            "parsedQuery": {},
+            "indexFilterSet": false,
+            "queryHash": "A06E52DD",
+            "planCacheShapeHash": "A06E52DD",
+            "planCacheKey": "F1A25309",
+            "optimizationTimeMillis": 0,
+            "maxIndexedOrSolutionsReached": false,
+            "maxIndexedAndSolutionsReached": false,
+            "maxScansToExplodeReached": false,
+            "prunedSimilarIndexes": false,
+            "winningPlan": {
+              "isCached": false,
+              "stage": "SORT",
+              "sortPattern": {
+                "board_id": 1,
+                "time_ns": 1
+              },
+              "memLimit": 104857600,
+              "type": "simple",
+              "inputStage": {
+                "stage": "PROJECTION_SIMPLE",
+                "transformBy": {
+                  "_order": 1,
+                  "board_id": 1,
+                  "key": 1,
+                  "player_id": 1,
+                  "time_ns": 1,
+                  "_id": 0
+                },
+                "inputStage": {
+                  "stage": "COLLSCAN",
+                  "direction": "forward"
+                }
+              }
+            },
+            "rejectedPlans": []
+          }
+        }
+      },
+      {
+        "$_internalSetWindowFields": {
+          "partitionBy": "$board_id",
+          "sortBy": {
+            "time_ns": 1
+          },
+          "output": {
+            "place": {
+              "$rank": {}
+            },
+            "n_players": {
+              "$sum": {
+                "$const": 1
+              },
+              "window": {
+                "documents": [
+                  "unbounded",
+                  "unbounded"
+                ]
+              }
+            }
+          }
+        }
+      },
+      {
+        "$set": {
+          "_order": {
+            "time": "$time_ns",
+            "player": "$player_id"
+          }
+        }
+      },
+      {
+        "$sort": {
+          "sortKey": {
+            "board_id": 1,
+            "_order": 1
+          }
+        }
+      },
+      {
+        "$_internalSetWindowFields": {
+          "partitionBy": "$board_id",
+          "sortBy": {
+            "_order": 1
+          },
+          "output": {
+            "seq": {
+              "$documentNumber": {}
+            }
+          }
+        }
+      },
+      {
+        "$project": {
+          "key": true,
+          "board_id": true,
+          "player_id": true,
+          "time_ns": true,
+          "place": true,
+          "seq": true,
+          "n_players": true,
+          "_id": false
+        }
+      }
+    ],
+    "queryShapeHash": "7078AC9E5DAC00DF6EE2ADA56B234CFEFC8B3589D706AD2662BDAC3CDE94233A",
+    "serverInfo": {
+      "host": "f447119a3a20",
+      "port": 27017,
+      "version": "8.0.34",
+      "gitVersion": "51db4515a6597aedcf6188ee4e48a27e65b065ae"
+    },
+    "serverParameters": {
+      "internalQueryFacetBufferSizeBytes": 104857600,
+      "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+      "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+      "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+      "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+      "internalQueryProhibitBlockingMergeOnMongoS": 0,
+      "internalQueryMaxAddToSetBytes": 104857600,
+      "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+      "internalQueryFrameworkControl": "trySbeRestricted",
+      "internalQueryPlannerIgnoreIndexWithCollationForRegex": 1
+    },
+    "command": {
+      "aggregate": "best",
+      "pipeline": [
+        {
+          "$setWindowFields": {
+            "partitionBy": "$board_id",
+            "sortBy": {
+              "time_ns": 1
+            },
+            "output": {
+              "place": {
+                "$rank": {}
+              },
+              "n_players": {
+                "$count": {},
+                "window": {
+                  "documents": [
+                    "unbounded",
+                    "unbounded"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "$set": {
+            "_order": {
+              "time": "$time_ns",
+              "player": "$player_id"
+            }
+          }
+        },
+        {
+          "$setWindowFields": {
+            "partitionBy": "$board_id",
+            "sortBy": {
+              "_order": 1
+            },
+            "output": {
+              "seq": {
+                "$documentNumber": {}
+              }
+            }
+          }
+        },
+        {
+          "$project": {
+            "_id": 0,
+            "key": 1,
+            "board_id": 1,
+            "player_id": 1,
+            "time_ns": 1,
+            "place": 1,
+            "seq": 1,
+            "n_players": 1
+          }
+        }
+      ],
+      "cursor": {},
+      "$db": "test_wl_an_20261030202817_100000_0"
+    },
+    "ok": 1.0
+  },
+  "features": {
+    "explainVersion": "2",
+    "stages": [
+      {
+        "$cursor": {
+          "queryPlanner": {
+            "namespace": "test_wl_an_20261030202817_100000_0.ranked",
+            "parsedQuery": {},
+            "indexFilterSet": false,
+            "queryHash": "A1B43BCE",
+            "planCacheShapeHash": "A1B43BCE",
+            "planCacheKey": "C929564E",
+            "optimizationTimeMillis": 0,
+            "maxIndexedOrSolutionsReached": false,
+            "maxIndexedAndSolutionsReached": false,
+            "maxScansToExplodeReached": false,
+            "prunedSimilarIndexes": false,
+            "winningPlan": {
+              "isCached": false,
+              "queryPlan": {
+                "stage": "GROUP",
+                "planNodeId": 3,
+                "inputStage": {
+                  "stage": "COLLSCAN",
+                  "planNodeId": 1,
+                  "filter": {},
+                  "direction": "forward"
+                }
+              },
+              "slotBasedPlan": {
+                "slots": "$$RESULT=s20 env: {  }",
+                "stages": "[3] project [s20 = newObj(\"_id\", s11, \"n_players\", s16, \"best_ns\", s17, \"median_ns\", s18, \"top_ns\", s19)] \n[3] project [s16 = (s12 ?: null), s17 = (s13 ?: null), s18 = (s14 ?: null), s19 = (s15 ?: null)] \n[3] group [s11] [s12 = max(fillType(s2, 1088, Nothing)), s13 = min(fillType(s4, 1088, Nothing)), s14 = max(fillType(\n    if \n        let [\n            l6.0 = \n                let [\n                    l7.0 = \n                        if (typeMatch(s2, 1088) ?: true) \n                        then null \n                        else \n                            if isNumber(s2) \n                            then (s2 / 2) \n                            else fail(7157719, \"$divide only supports numeric types\") \n                ] \n                in \n                    if (typeMatch(l7.0, 1088) ?: true) \n                    then null \n                    else \n                        if isNumber(l7.0) \n                        then ceil(move(l7.0)) \n                        else fail(7157702, \"$ceil only supports numeric types\") \n        ] \n        in (((s3 <=> l6.0) == 0) ?: ((exists(s3) && typeMatch(s3, -65)) == (exists(l6.0) && typeMatch(l6.0, -65)))) \n    \n    then s4 \n    else null \n, 1088, Nothing)), s15 = max(fillType(\n    if (((s3 <=> 100) <= 0) ?: ((exists(s3) && typeMatch(s3, -65)) <= true)) \n    then s4 \n    else null \n, 1088, Nothing))] spillSlots[s7, s8, s9, s10] mergingExprs[max(fillType(s7, 1088, Nothing)), min(fillType(s8, 1088, Nothing)), max(fillType(s9, 1088, Nothing)), max(fillType(s10, 1088, Nothing))] \n[3] project [s11 = (s1 ?: null)] \n[1] scan s5 s6 none none none none none none lowPriority [s1 = board_id, s2 = n_players, s3 = seq, s4 = time_ns] @\"ae871336-5b67-472e-a476-455c37bde5d6\" true false "
+              }
+            },
+            "rejectedPlans": []
+          }
+        }
+      },
+      {
+        "$set": {
+          "weight": {
+            "$multiply": [
+              {
+                "$switch": {
+                  "branches": [
+                    {
+                      "case": {
+                        "$gt": [
+                          "$n_players",
+                          {
+                            "$const": 100
+                          }
+                        ]
+                      },
+                      "then": {
+                        "$const": 3
+                      }
+                    },
+                    {
+                      "case": {
+                        "$gt": [
+                          "$n_players",
+                          {
+                            "$const": 20
+                          }
+                        ]
+                      },
+                      "then": {
+                        "$const": 2
+                      }
+                    }
+                  ],
+                  "default": {
+                    "$const": 1
+                  }
+                }
+              },
+              {
+                "$cond": [
+                  {
+                    "$lt": [
+                      "$n_players",
+                      {
+                        "$const": 2
+                      }
+                    ]
+                  },
+                  {
+                    "$const": 1
+                  },
+                  {
+                    "$switch": {
+                      "branches": [
+                        {
+                          "case": {
+                            "$lte": [
+                              {
+                                "$multiply": [
+                                  {
+                                    "$subtract": [
+                                      "$top_ns",
+                                      "$best_ns"
+                                    ]
+                                  },
+                                  {
+                                    "$const": 100
+                                  }
+                                ]
+                              },
+                              "$best_ns"
+                            ]
+                          },
+                          "then": {
+                            "$const": 3
+                          }
+                        },
+                        {
+                          "case": {
+                            "$lte": [
+                              {
+                                "$multiply": [
+                                  {
+                                    "$subtract": [
+                                      "$top_ns",
+                                      "$best_ns"
+                                    ]
+                                  },
+                                  {
+                                    "$const": 10
+                                  }
+                                ]
+                              },
+                              "$best_ns"
+                            ]
+                          },
+                          "then": {
+                            "$const": 2
+                          }
+                        }
+                      ],
+                      "default": {
+                        "$const": 1
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "$switch": {
+                  "branches": [
+                    {
+                      "case": {
+                        "$lt": [
+                          "$median_ns",
+                          {
+                            "$const": 60000000000
+                          }
+                        ]
+                      },
+                      "then": {
+                        "$const": 1
+                      }
+                    },
+                    {
+                      "case": {
+                        "$lt": [
+                          "$median_ns",
+                          {
+                            "$const": 1800000000000
+                          }
+                        ]
+                      },
+                      "then": {
+                        "$const": 2
+                      }
+                    }
+                  ],
+                  "default": {
+                    "$const": 3
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "$project": {
+          "n_players": true,
+          "best_ns": true,
+          "median_ns": true,
+          "top_ns": true,
+          "weight": true,
+          "key": "$_id",
+          "_id": false
+        }
+      }
+    ],
+    "queryShapeHash": "ADD3A8D7D52546BCF8AB291DFA384619EBE0A5364809D38D322C166A25B0B9B3",
+    "serverInfo": {
+      "host": "f447119a3a20",
+      "port": 27017,
+      "version": "8.0.34",
+      "gitVersion": "51db4515a6597aedcf6188ee4e48a27e65b065ae"
+    },
+    "serverParameters": {
+      "internalQueryFacetBufferSizeBytes": 104857600,
+      "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+      "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+      "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+      "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+      "internalQueryProhibitBlockingMergeOnMongoS": 0,
+      "internalQueryMaxAddToSetBytes": 104857600,
+      "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+      "internalQueryFrameworkControl": "trySbeRestricted",
+      "internalQueryPlannerIgnoreIndexWithCollationForRegex": 1
+    },
+    "command": {
+      "aggregate": "ranked",
+      "pipeline": [
+        {
+          "$group": {
+            "_id": "$board_id",
+            "n_players": {
+              "$max": "$n_players"
+            },
+            "best_ns": {
+              "$min": "$time_ns"
+            },
+            "median_ns": {
+              "$max": {
+                "$cond": [
+                  {
+                    "$eq": [
+                      "$seq",
+                      {
+                        "$ceil": {
+                          "$divide": [
+                            "$n_players",
+                            2
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  "$time_ns",
+                  null
+                ]
+              }
+            },
+            "top_ns": {
+              "$max": {
+                "$cond": [
+                  {
+                    "$lte": [
+                      "$seq",
+                      100
+                    ]
+                  },
+                  "$time_ns",
+                  null
+                ]
+              }
+            }
+          }
+        },
+        {
+          "$set": {
+            "weight": {
+              "$multiply": [
+                {
+                  "$switch": {
+                    "branches": [
+                      {
+                        "case": {
+                          "$gt": [
+                            "$n_players",
+                            100
+                          ]
+                        },
+                        "then": 3
+                      },
+                      {
+                        "case": {
+                          "$gt": [
+                            "$n_players",
+                            20
+                          ]
+                        },
+                        "then": 2
+                      }
+                    ],
+                    "default": 1
+                  }
+                },
+                {
+                  "$cond": [
+                    {
+                      "$lt": [
+                        "$n_players",
+                        2
+                      ]
+                    },
+                    1,
+                    {
+                      "$switch": {
+                        "branches": [
+                          {
+                            "case": {
+                              "$lte": [
+                                {
+                                  "$multiply": [
+                                    {
+                                      "$subtract": [
+                                        "$top_ns",
+                                        "$best_ns"
+                                      ]
+                                    },
+                                    100
+                                  ]
+                                },
+                                "$best_ns"
+                              ]
+                            },
+                            "then": 3
+                          },
+                          {
+                            "case": {
+                              "$lte": [
+                                {
+                                  "$multiply": [
+                                    {
+                                      "$subtract": [
+                                        "$top_ns",
+                                        "$best_ns"
+                                      ]
+                                    },
+                                    10
+                                  ]
+                                },
+                                "$best_ns"
+                              ]
+                            },
+                            "then": 2
+                          }
+                        ],
+                        "default": 1
+                      }
+                    }
+                  ]
+                },
+                {
+                  "$switch": {
+                    "branches": [
+                      {
+                        "case": {
+                          "$lt": [
+                            "$median_ns",
+                            60000000000
+                          ]
+                        },
+                        "then": 1
+                      },
+                      {
+                        "case": {
+                          "$lt": [
+                            "$median_ns",
+                            1800000000000
+                          ]
+                        },
+                        "then": 2
+                      }
+                    ],
+                    "default": 3
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "$project": {
+            "_id": 0,
+            "key": "$_id",
+            "n_players": 1,
+            "best_ns": 1,
+            "median_ns": 1,
+            "top_ns": 1,
+            "weight": 1
+          }
+        }
+      ],
+      "cursor": {},
+      "$db": "test_wl_an_20261030202817_100000_0"
+    },
+    "ok": 1.0
+  },
+  "scores": {
+    "explainVersion": "1",
+    "stages": [
+      {
+        "$cursor": {
+          "queryPlanner": {
+            "namespace": "test_wl_an_20261030202817_100000_0.ranked",
+            "parsedQuery": {},
+            "indexFilterSet": false,
+            "queryHash": "407639D8",
+            "planCacheShapeHash": "407639D8",
+            "planCacheKey": "D028ECC8",
+            "optimizationTimeMillis": 0,
+            "maxIndexedOrSolutionsReached": false,
+            "maxIndexedAndSolutionsReached": false,
+            "maxScansToExplodeReached": false,
+            "prunedSimilarIndexes": false,
+            "winningPlan": {
+              "isCached": false,
+              "stage": "PROJECTION_SIMPLE",
+              "transformBy": {
+                "board_id": 1,
+                "place": 1,
+                "player_id": 1,
+                "_id": 0
+              },
+              "inputStage": {
+                "stage": "COLLSCAN",
+                "direction": "forward"
+              }
+            },
+            "rejectedPlans": []
+          }
+        }
+      },
+      {
+        "$lookup": {
+          "from": "features",
+          "as": "f",
+          "localField": "board_id",
+          "foreignField": "_id",
+          "unwinding": {
+            "preserveNullAndEmptyArrays": true
+          }
+        }
+      },
+      {
+        "$group": {
+          "_id": "$player_id",
+          "score": {
+            "$sum": {
+              "$floor": [
+                {
+                  "$divide": [
+                    {
+                      "$multiply": [
+                        {
+                          "$const": 1000000
+                        },
+                        "$f.weight"
+                      ]
+                    },
+                    "$place"
+                  ]
+                }
+              ]
+            }
+          },
+          "boards": {
+            "$sum": {
+              "$const": 1
+            }
+          }
+        }
+      },
+      {
+        "$project": {
+          "boards": true,
+          "key": "$_id",
+          "score": {
+            "$convert": {
+              "input": "$score",
+              "to": {
+                "$const": "long"
+              }
+            }
+          },
+          "_id": false
+        }
+      }
+    ],
+    "queryShapeHash": "748395F16AD2B16C81807BA91ED9AED05EA9D0D776177E4083056A1C3E71136B",
+    "serverInfo": {
+      "host": "f447119a3a20",
+      "port": 27017,
+      "version": "8.0.34",
+      "gitVersion": "51db4515a6597aedcf6188ee4e48a27e65b065ae"
+    },
+    "serverParameters": {
+      "internalQueryFacetBufferSizeBytes": 104857600,
+      "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+      "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+      "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+      "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+      "internalQueryProhibitBlockingMergeOnMongoS": 0,
+      "internalQueryMaxAddToSetBytes": 104857600,
+      "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+      "internalQueryFrameworkControl": "trySbeRestricted",
+      "internalQueryPlannerIgnoreIndexWithCollationForRegex": 1
+    },
+    "command": {
+      "aggregate": "ranked",
+      "pipeline": [
+        {
+          "$lookup": {
+            "from": "features",
+            "localField": "board_id",
+            "foreignField": "_id",
+            "as": "f"
+          }
+        },
+        {
+          "$unwind": {
+            "path": "$f",
+            "preserveNullAndEmptyArrays": true
+          }
+        },
+        {
+          "$group": {
+            "_id": "$player_id",
+            "score": {
+              "$sum": {
+                "$floor": {
+                  "$divide": [
+                    {
+                      "$multiply": [
+                        1000000,
+                        "$f.weight"
+                      ]
+                    },
+                    "$place"
+                  ]
+                }
+              }
+            },
+            "boards": {
+              "$sum": 1
+            }
+          }
+        },
+        {
+          "$project": {
+            "_id": 0,
+            "key": "$_id",
+            "score": {
+              "$toLong": "$score"
+            },
+            "boards": 1
+          }
+        }
+      ],
+      "cursor": {},
+      "$db": "test_wl_an_20261030202817_100000_0"
+    },
+    "ok": 1.0
+  },
+  "rating": {
+    "explainVersion": "1",
+    "stages": [
+      {
+        "$cursor": {
+          "queryPlanner": {
+            "namespace": "test_wl_an_20261030202817_100000_0.scores",
+            "parsedQuery": {},
+            "indexFilterSet": false,
+            "queryHash": "F84418B7",
+            "planCacheShapeHash": "F84418B7",
+            "planCacheKey": "35EB523B",
+            "optimizationTimeMillis": 0,
+            "maxIndexedOrSolutionsReached": false,
+            "maxIndexedAndSolutionsReached": false,
+            "maxScansToExplodeReached": false,
+            "prunedSimilarIndexes": false,
+            "winningPlan": {
+              "isCached": false,
+              "stage": "SORT",
+              "sortPattern": {
+                "score": -1
+              },
+              "memLimit": 104857600,
+              "type": "simple",
+              "inputStage": {
+                "stage": "PROJECTION_SIMPLE",
+                "transformBy": {
+                  "boards": 1,
+                  "key": 1,
+                  "score": 1,
+                  "_id": 0
+                },
+                "inputStage": {
+                  "stage": "COLLSCAN",
+                  "direction": "forward"
+                }
+              }
+            },
+            "rejectedPlans": []
+          }
+        }
+      },
+      {
+        "$_internalSetWindowFields": {
+          "sortBy": {
+            "score": -1
+          },
+          "output": {
+            "place": {
+              "$rank": {}
+            }
+          }
+        }
+      },
+      {
+        "$lookup": {
+          "from": "players",
+          "as": "p",
+          "localField": "key",
+          "foreignField": "_id",
+          "unwinding": {
+            "preserveNullAndEmptyArrays": true
+          }
+        }
+      },
+      {
+        "$project": {
+          "key": true,
+          "score": true,
+          "boards": true,
+          "place": true,
+          "name": "$p.name",
+          "area": "$p.area",
+          "_id": false
+        }
+      }
+    ],
+    "queryShapeHash": "A1C5A90C09327E7E671F589BBDB50D7D743A9469931F47BA2D8877D4A1F2D1C2",
+    "serverInfo": {
+      "host": "f447119a3a20",
+      "port": 27017,
+      "version": "8.0.34",
+      "gitVersion": "51db4515a6597aedcf6188ee4e48a27e65b065ae"
+    },
+    "serverParameters": {
+      "internalQueryFacetBufferSizeBytes": 104857600,
+      "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+      "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+      "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+      "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+      "internalQueryProhibitBlockingMergeOnMongoS": 0,
+      "internalQueryMaxAddToSetBytes": 104857600,
+      "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+      "internalQueryFrameworkControl": "trySbeRestricted",
+      "internalQueryPlannerIgnoreIndexWithCollationForRegex": 1
+    },
+    "command": {
+      "aggregate": "scores",
+      "pipeline": [
+        {
+          "$setWindowFields": {
+            "sortBy": {
+              "score": -1
+            },
+            "output": {
+              "place": {
+                "$rank": {}
+              }
+            }
+          }
+        },
+        {
+          "$lookup": {
+            "from": "players",
+            "localField": "key",
+            "foreignField": "_id",
+            "as": "p"
+          }
+        },
+        {
+          "$unwind": {
+            "path": "$p",
+            "preserveNullAndEmptyArrays": true
+          }
+        },
+        {
+          "$project": {
+            "_id": 0,
+            "key": 1,
+            "score": 1,
+            "boards": 1,
+            "place": 1,
+            "name": "$p.name",
+            "area": "$p.area"
+          }
+        }
+      ],
+      "cursor": {},
+      "$db": "test_wl_an_20261030202817_100000_0"
+    },
+    "ok": 1.0
+  }
+}

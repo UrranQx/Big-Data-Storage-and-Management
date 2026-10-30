@@ -1,0 +1,10 @@
+ Container speedrun-comparison-20261030-runner-run-48a6b18b98c0 Creating
+ Container speedrun-comparison-20261030-runner-run-48a6b18b98c0 Created
+test_real_stores_full_pipeline_and_incremental_equal_full_refresh (test_analytics_benchmark.AnalyticsTests.test_real_stores_full_pipeline_and_incremental_equal_full_refresh) ... ok
+test_reference_and_streaming_client_match_with_ties_and_unknowns (test_analytics_benchmark.AnalyticsTests.test_reference_and_streaming_client_match_with_ties_and_unknowns) ... ok
+test_timer_field_is_explicit_and_missing_is_not_zero (test_analytics_benchmark.AnalyticsTests.test_timer_field_is_explicit_and_missing_is_not_zero) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 1.887s
+
+OK

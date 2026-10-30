@@ -23,6 +23,9 @@ DATA_MODEL.md; фактическое состояние автора — docs/H
 | benchmark.py, experiment_inputs.py | Сравнение entity-v2/v3 (три/четыре входа), замороженные подтверждённые пакеты и изолированный стенд, без HTTP источника |
 | storage_workloads.py | Дополнительные фиксированные опыты запросов/индексов/DDL/CRUD/COPY только в test_wl_*, не DDS |
 | plot_storage_comparison.py | CSV-статистика, таблицы и восемь PNG/SVG графиков из действительных измерений |
+| analytics_input.py, analytics_benchmark.py, analytics_sizes.py | Read-only срез подтверждённых снимков, шесть временных связанных наборов и полный аналитический опыт на 1k/10k/100k/968899, размеры после обновлений; не production DDS |
+| plot_analytics_benchmark.py | Проверка завершённости/digest, медианы/min–max/IQR, CSV и шесть PNG/SVG расширенного сравнения |
+| infra/compose.analytics.yaml, run_analytics_benchmark.py, sample_analytics_resources.py, export_analytics_results.py | Изолированный state/сеть, контроль безопасной паузы и прежнего deadline, мониторинг, экспорт только завершённых результатов |
 | infra/compose.comparison.yaml, configure_comparison.py, freeze_comparison.py | Отдельная внутренняя сеть, новые credentials/volumes и согласованные копии входа сравнения |
 | infra/run_storage_comparison.py, export_comparison.py | Контроль паузы/resume, нулевого source HTTP и выгрузка результатов без сырых SQLite |
 | forecast.py | Прогноз ресурсов по завершённой выборке из четырёх групп; не обещает полноту сайта |
