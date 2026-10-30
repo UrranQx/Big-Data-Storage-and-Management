@@ -1,0 +1,244 @@
+{
+  "airflow_active_runs": 0,
+  "airflow_active_tasks": 0,
+  "batches": {
+    "lab1-popular500-20261030": {
+      "control": {
+        "pause_requested": true,
+        "requested_at": "2026-10-30T21:27:10.454346+00:00",
+        "resumed_at": "2026-10-30T21:25:46.855091+00:00",
+        "updated_at": "2026-10-30T21:27:10.454346+00:00"
+      },
+      "controller_running": false,
+      "driver_running": false,
+      "status": {
+        "after_phase": "game",
+        "collection_id": "lab1-popular500-20261030-g-y65420de",
+        "phase": "paused",
+        "reason": "User requested pause at a safe stage boundary",
+        "updated_at": "2026-10-30T21:28:52.037473+00:00"
+      }
+    }
+  },
+  "mongo_counts": {
+    "blocks": 104,
+    "checks": 1377017,
+    "games": 52518,
+    "manifests": 541,
+    "players": 280600,
+    "responses": 23047,
+    "runs": 981599,
+    "wr_history": 20570
+  },
+  "mongo_samples": {
+    "blocks": {
+      "digest": "990749bc82dccc617a334f28e694006e25cfdb0a9dda21fbd1aacc9a1c5db317",
+      "key": "05a692aaab980a54746129b8d0929e71bd2422bb3b5a390d624432ba8a6dc52c"
+    },
+    "checks": {
+      "digest": "b735e43ceb887d4f6ebb4b10c3fe997e2d4d9f744676841c3a65757298b70172",
+      "key": "00000939a5c0958d7857340fa1fe95e1e1974fd92247e9d8e2a03a661bc3b1f9"
+    },
+    "games": {
+      "digest": "1eb2066195120b9bd609b966651a2f5baf70ad339a9fb0afe4393f19d4a3dfcf",
+      "key": "00000897fe19fcde6339b8dfa3f9afe320453f97b25684de461210f32b08ee68"
+    },
+    "manifests": {
+      "digest": "352640d19e7f9578b2da9ab7c83b08634dd93e705f85f1659c27977419bd2b09",
+      "key": "lab1-popular500-20261030-catalog-games_metadata:entity-v3"
+    },
+    "players": {
+      "digest": "9a16a4d29cfbe7a49653517353a96e7049303b4004a2ee553f79f8456f2c1ee1",
+      "key": "000005900fa7413059cbd91bb9a86257f141b78eacc9a82236fad1560d01709f"
+    },
+    "responses": {
+      "digest": "7365720d6cb5832ad6c3186ec09949b522e6f1825e7986f32c7f987662805dc9",
+      "key": "0002dd24-7cf9-45ed-9723-82078e2c6d94"
+    },
+    "runs": {
+      "digest": "d4ab32521017ed63bc9c61564783754c2e7721ee60150de15bb66441bdc49660",
+      "key": "00001d5bc355c0609b428a0448afc45d238faae097296704a630242ec4f92fc4"
+    },
+    "wr_history": {
+      "digest": "6100976de4f52981bf120f34d56b91280288d0fcd3819127aa8257c6295effc7",
+      "key": "000368695f1327d6c9ff74003983cd7a710b97397de955cd6fba4cea84110f44"
+    }
+  },
+  "namespace": "entity_v3",
+  "observed_at": "2026-10-30T21:37:23.216411+00:00",
+  "player_ids": 280595,
+  "postgres_counts": {
+    "blocks": 104,
+    "checks": 1377017,
+    "games": 52518,
+    "manifests": 541,
+    "players": 280600,
+    "responses": 23047,
+    "runs": 981599,
+    "wr_history": 20570
+  },
+  "postgres_samples": {
+    "blocks": {
+      "digest": "990749bc82dccc617a334f28e694006e25cfdb0a9dda21fbd1aacc9a1c5db317",
+      "key": "05a692aaab980a54746129b8d0929e71bd2422bb3b5a390d624432ba8a6dc52c"
+    },
+    "checks": {
+      "digest": "b735e43ceb887d4f6ebb4b10c3fe997e2d4d9f744676841c3a65757298b70172",
+      "key": "00000939a5c0958d7857340fa1fe95e1e1974fd92247e9d8e2a03a661bc3b1f9"
+    },
+    "games": {
+      "digest": "1eb2066195120b9bd609b966651a2f5baf70ad339a9fb0afe4393f19d4a3dfcf",
+      "key": "00000897fe19fcde6339b8dfa3f9afe320453f97b25684de461210f32b08ee68"
+    },
+    "manifests": {
+      "digest": "352640d19e7f9578b2da9ab7c83b08634dd93e705f85f1659c27977419bd2b09",
+      "key": "lab1-popular500-20261030-catalog-games_metadata:entity-v3"
+    },
+    "players": {
+      "digest": "9a16a4d29cfbe7a49653517353a96e7049303b4004a2ee553f79f8456f2c1ee1",
+      "key": "000005900fa7413059cbd91bb9a86257f141b78eacc9a82236fad1560d01709f"
+    },
+    "responses": {
+      "digest": "7365720d6cb5832ad6c3186ec09949b522e6f1825e7986f32c7f987662805dc9",
+      "key": "0002dd24-7cf9-45ed-9723-82078e2c6d94"
+    },
+    "runs": {
+      "digest": "d4ab32521017ed63bc9c61564783754c2e7721ee60150de15bb66441bdc49660",
+      "key": "00001d5bc355c0609b428a0448afc45d238faae097296704a630242ec4f92fc4"
+    },
+    "wr_history": {
+      "digest": "6100976de4f52981bf120f34d56b91280288d0fcd3819127aa8257c6295effc7",
+      "key": "000368695f1327d6c9ff74003983cd7a710b97397de955cd6fba4cea84110f44"
+    }
+  },
+  "queue_orders": {
+    "lab1-popular500-20261030": {
+      "descending_catalog_run_count": true,
+      "first_ten": [
+        [
+          1,
+          "k6q4rqzd",
+          "Seterra (Old Version)",
+          "61570"
+        ],
+        [
+          2,
+          "o1y9wo6q",
+          "Super Mario 64",
+          "54743"
+        ],
+        [
+          3,
+          "o1y9j9v6",
+          "Celeste",
+          "52398"
+        ],
+        [
+          4,
+          "y65797de",
+          "Subway Surfers",
+          "48044"
+        ],
+        [
+          5,
+          "o1y9pyk6",
+          "Google Snake",
+          "47945"
+        ],
+        [
+          6,
+          "369p3p81",
+          "ULTRAKILL",
+          "47119"
+        ],
+        [
+          7,
+          "nd28p43d",
+          "Seterra (Geoguessr Version)",
+          "34761"
+        ],
+        [
+          8,
+          "j1npme6p",
+          "Minecraft: Java Edition",
+          "30179"
+        ],
+        [
+          9,
+          "w6jrzxdj",
+          "Speed Builders",
+          "29660"
+        ],
+        [
+          10,
+          "76r55vd8",
+          "Super Mario Odyssey",
+          "23599"
+        ]
+      ],
+      "ordered_ids_digest": "a5ef44cac8e9a3b7a6dd29007745ffc8f396ccd55006b8843b602e4abd1795f0",
+      "queued": 500
+    }
+  },
+  "queue_states": [
+    [
+      "lab1-popular500-20261030",
+      "complete",
+      133
+    ],
+    [
+      "lab1-popular500-20261030",
+      "not_applicable",
+      1
+    ],
+    [
+      "lab1-popular500-20261030",
+      "partial",
+      1
+    ],
+    [
+      "lab1-popular500-20261030",
+      "pending",
+      365
+    ]
+  ],
+  "receipts": {
+    "count": 1623,
+    "digest": "5460fe8525b41fa801b0be25cac0cf6cbc181aaa856b5da40392c65de6eb8a08"
+  },
+  "run_ids": 981592,
+  "s3": {
+    "bytes": 687766060,
+    "listing_digest": "a9e476c06fa6ff366e0ffb39a211adde8ca817c42bcaecd33864d7bd6d927e55",
+    "objects": 17318,
+    "samples": [
+      {
+        "bytes": 650648,
+        "key": "entity_v3/entity-v3/chunks/blocks/0/5ee5c0db5d6b9d2aea1bdf4ce29091ffd83c795253571f915e62bba703e4eacf.jsonl.gz",
+        "sha256": "5ee5c0db5d6b9d2aea1bdf4ce29091ffd83c795253571f915e62bba703e4eacf"
+      },
+      {
+        "bytes": 6664,
+        "key": "entity_v3/entity-v3/chunks/checks/a/abe3be301d14f2df976d1f3ea1c27a24d2637c3d9329a4a4d9da2d956eb9761d.jsonl.gz",
+        "sha256": "abe3be301d14f2df976d1f3ea1c27a24d2637c3d9329a4a4d9da2d956eb9761d"
+      },
+      {
+        "bytes": 15244,
+        "key": "entity_v3/entity-v3/chunks/players/a/d7bcd3a2c7fa00fc0bf24f3a31b9fb51942c3cde0612eec93bf3d9390b5e0e5d.jsonl.gz",
+        "sha256": "d7bcd3a2c7fa00fc0bf24f3a31b9fb51942c3cde0612eec93bf3d9390b5e0e5d"
+      },
+      {
+        "bytes": 281046,
+        "key": "entity_v3/entity-v3/chunks/runs/2/99288496b715b6e9c756199518692a38446fc14084cba824d55b43f25c4ba4e2.jsonl.gz",
+        "sha256": "99288496b715b6e9c756199518692a38446fc14084cba824d55b43f25c4ba4e2"
+      },
+      {
+        "bytes": 9867,
+        "key": "entity_v3/entity-v3/snapshots/lab1-popular500-20261030-g-yo1yyr1q-wr_history/wr_history/b0c525c9b000d9a61f3f005be95dc4d0bc192e02dae5fa08b511baaf6d37189b.json",
+        "sha256": "be3c7b2cd31ffecc88dac96d2213328942b764d13cecc36bbb15cd866fb28580"
+      }
+    ]
+  },
+  "safe_to_stop": true,
+  "source_http_attempts": 23047
+}

@@ -1,0 +1,232 @@
+{
+  "all_three_store_receipts_agree": true,
+  "categories_with_run_core": [
+    [
+      1327
+    ]
+  ],
+  "confirmed_snapshots": 541,
+  "endpoints": [
+    [
+      "GetGameData",
+      135
+    ],
+    [
+      "GetGameLeaderboard2",
+      20607
+    ],
+    [
+      "GetGameList",
+      264
+    ],
+    [
+      "GetGameRecordHistory",
+      1772
+    ],
+    [
+      "GetGameSummary",
+      269
+    ]
+  ],
+  "full_game_categories": 1771,
+  "game_projections": [
+    [
+      "game_card",
+      52383,
+      52246
+    ],
+    [
+      "game_detail",
+      135,
+      135
+    ]
+  ],
+  "manifest_coverage": {
+    "games_metadata": {
+      "metadata_observed": 135,
+      "verified_public_partitions": 1
+    },
+    "players": {
+      "not_reported": 135
+    },
+    "runs": {
+      "partial": 1,
+      "unavailable": 1,
+      "verified_public_partitions": 133
+    },
+    "wr_history": {
+      "partial": 133,
+      "unavailable": 2
+    }
+  },
+  "observed_at": "2026-10-30T21:42:48.941353+00:00",
+  "ordinary_run_ids": [
+    [
+      981582
+    ]
+  ],
+  "queries": {
+    "categories_with_run_core": "SELECT count(DISTINCT (game_id,category_id)) FROM entity_v3.runs WHERE projection='run_core' AND category_id IS NOT NULL",
+    "endpoints": "SELECT document->'metadata'->>'endpoint',count(*) FROM entity_v3.responses GROUP BY 1 ORDER BY 1",
+    "game_projections": "SELECT projection,count(*),count(DISTINCT source_id) FROM entity_v3.games GROUP BY projection ORDER BY projection",
+    "ordinary_run_ids": "SELECT count(DISTINCT source_id) FROM entity_v3.checks WHERE document->>'dataset'='runs' AND right(document->>'snapshot_id',5)='-runs'",
+    "run_projections": "SELECT projection,count(*),count(DISTINCT source_id) FROM entity_v3.runs GROUP BY projection ORDER BY projection"
+  },
+  "receipts": 1623,
+  "role_inferred_from_snapshot": [
+    "lab1-popular500-20261030-g-2689xq71-players:entity-v3",
+    "lab1-popular500-20261030-g-268ekxy6-players:entity-v3",
+    "lab1-popular500-20261030-g-268q8o6p-players:entity-v3",
+    "lab1-popular500-20261030-g-268xm51p-players:entity-v3",
+    "lab1-popular500-20261030-g-268yw5dp-players:entity-v3",
+    "lab1-popular500-20261030-g-29d30dlp-players:entity-v3",
+    "lab1-popular500-20261030-g-3698my8d-players:entity-v3",
+    "lab1-popular500-20261030-g-369p0r31-players:entity-v3",
+    "lab1-popular500-20261030-g-369p3p81-players:entity-v3",
+    "lab1-popular500-20261030-g-369pxvg1-players:entity-v3",
+    "lab1-popular500-20261030-g-3dx2r341-players:entity-v3",
+    "lab1-popular500-20261030-g-3dxkz0v1-players:entity-v3",
+    "lab1-popular500-20261030-g-3dxz7p1y-players:entity-v3",
+    "lab1-popular500-20261030-g-46w0n91r-players:entity-v3",
+    "lab1-popular500-20261030-g-46w33l1r-players:entity-v3",
+    "lab1-popular500-20261030-g-4d73n317-players:entity-v3",
+    "lab1-popular500-20261030-g-4d7e7z67-players:entity-v3",
+    "lab1-popular500-20261030-g-4d7xlel1-players:entity-v3",
+    "lab1-popular500-20261030-g-4pd0n31e-players:entity-v3",
+    "lab1-popular500-20261030-g-576rje18-players:entity-v3",
+    "lab1-popular500-20261030-g-76r43l18-players:entity-v3",
+    "lab1-popular500-20261030-g-76r55vd8-players:entity-v3",
+    "lab1-popular500-20261030-g-76rqjqd8-players:entity-v3",
+    "lab1-popular500-20261030-g-76rqmld8-players:entity-v3",
+    "lab1-popular500-20261030-g-76rxovv6-players:entity-v3",
+    "lab1-popular500-20261030-g-76rxy346-players:entity-v3",
+    "lab1-popular500-20261030-g-9d3rnedl-players:entity-v3",
+    "lab1-popular500-20261030-g-9d3rr0dl-players:entity-v3",
+    "lab1-popular500-20261030-g-9d3rrxyd-players:entity-v3",
+    "lab1-popular500-20261030-g-9do5ym1p-players:entity-v3",
+    "lab1-popular500-20261030-g-9do8mm1p-players:entity-v3",
+    "lab1-popular500-20261030-g-9dow9e1p-players:entity-v3",
+    "lab1-popular500-20261030-g-j1l9qz1g-players:entity-v3",
+    "lab1-popular500-20261030-g-j1llrpz1-players:entity-v3",
+    "lab1-popular500-20261030-g-j1llwz1g-players:entity-v3",
+    "lab1-popular500-20261030-g-j1n29w1p-players:entity-v3",
+    "lab1-popular500-20261030-g-j1ne0vl1-players:entity-v3",
+    "lab1-popular500-20261030-g-j1ne5891-players:entity-v3",
+    "lab1-popular500-20261030-g-j1nermw1-players:entity-v3",
+    "lab1-popular500-20261030-g-j1npme6p-players:entity-v3",
+    "lab1-popular500-20261030-g-k6q474zd-players:entity-v3",
+    "lab1-popular500-20261030-g-k6q4rqzd-players:entity-v3",
+    "lab1-popular500-20261030-g-k6qgnmdg-players:entity-v3",
+    "lab1-popular500-20261030-g-k6qwoez6-players:entity-v3",
+    "lab1-popular500-20261030-g-kdk4e21m-players:entity-v3",
+    "lab1-popular500-20261030-g-kdk5medm-players:entity-v3",
+    "lab1-popular500-20261030-g-kdkokl6m-players:entity-v3",
+    "lab1-popular500-20261030-g-kdkzlgdm-players:entity-v3",
+    "lab1-popular500-20261030-g-kdkzrkxd-players:entity-v3",
+    "lab1-popular500-20261030-g-l3dx0vdy-players:entity-v3",
+    "lab1-popular500-20261030-g-l3dx51yv-players:entity-v3",
+    "lab1-popular500-20261030-g-l3dx5v1y-players:entity-v3",
+    "lab1-popular500-20261030-g-lde3nex6-players:entity-v3",
+    "lab1-popular500-20261030-g-ldelvl63-players:entity-v3",
+    "lab1-popular500-20261030-g-ldeolx63-players:entity-v3",
+    "lab1-popular500-20261030-g-ldep0513-players:entity-v3",
+    "lab1-popular500-20261030-g-ldewjld3-players:entity-v3",
+    "lab1-popular500-20261030-g-m1m2oxd2-players:entity-v3",
+    "lab1-popular500-20261030-g-m1mengpd-players:entity-v3",
+    "lab1-popular500-20261030-g-m1mm7x12-players:entity-v3",
+    "lab1-popular500-20261030-g-m1mmex12-players:entity-v3",
+    "lab1-popular500-20261030-g-m1mx0ox6-players:entity-v3",
+    "lab1-popular500-20261030-g-m1mxx362-players:entity-v3",
+    "lab1-popular500-20261030-g-m1z9l2d0-players:entity-v3",
+    "lab1-popular500-20261030-g-m1zjg926-players:entity-v3",
+    "lab1-popular500-20261030-g-m1zjlkm6-players:entity-v3",
+    "lab1-popular500-20261030-g-m1zjml06-players:entity-v3",
+    "lab1-popular500-20261030-g-m1zjnrm6-players:entity-v3",
+    "lab1-popular500-20261030-g-m1zjpl36-players:entity-v3",
+    "lab1-popular500-20261030-g-m1zk7231-players:entity-v3",
+    "lab1-popular500-20261030-g-m1zoemd0-players:entity-v3",
+    "lab1-popular500-20261030-g-m9dok31p-players:entity-v3",
+    "lab1-popular500-20261030-g-nd22xvd0-players:entity-v3",
+    "lab1-popular500-20261030-g-nd27np51-players:entity-v3",
+    "lab1-popular500-20261030-g-nd27xpe1-players:entity-v3",
+    "lab1-popular500-20261030-g-nd285r3d-players:entity-v3",
+    "lab1-popular500-20261030-g-nd28p43d-players:entity-v3",
+    "lab1-popular500-20261030-g-nd28x53d-players:entity-v3",
+    "lab1-popular500-20261030-g-nd2er3ed-players:entity-v3",
+    "lab1-popular500-20261030-g-nd2z5qd0-players:entity-v3",
+    "lab1-popular500-20261030-g-o1y7pv1q-players:entity-v3",
+    "lab1-popular500-20261030-g-o1y929v6-players:entity-v3",
+    "lab1-popular500-20261030-g-o1y9j9v6-players:entity-v3",
+    "lab1-popular500-20261030-g-o1y9lk6q-players:entity-v3",
+    "lab1-popular500-20261030-g-o1y9okr6-players:entity-v3",
+    "lab1-popular500-20261030-g-o1y9pyk6-players:entity-v3",
+    "lab1-popular500-20261030-g-o1y9wo6q-players:entity-v3",
+    "lab1-popular500-20261030-g-o1yj5n21-players:entity-v3",
+    "lab1-popular500-20261030-g-o6gen512-players:entity-v3",
+    "lab1-popular500-20261030-g-o6gk4xn1-players:entity-v3",
+    "lab1-popular500-20261030-g-o6gmpx62-players:entity-v3",
+    "lab1-popular500-20261030-g-o6gnpox1-players:entity-v3",
+    "lab1-popular500-20261030-g-o6gxkxd2-players:entity-v3",
+    "lab1-popular500-20261030-g-om1m3625-players:entity-v3",
+    "lab1-popular500-20261030-g-om1mw4d2-players:entity-v3",
+    "lab1-popular500-20261030-g-om1mx362-players:entity-v3",
+    "lab1-popular500-20261030-g-pd0py36e-players:entity-v3",
+    "lab1-popular500-20261030-g-pd0wg21e-players:entity-v3",
+    "lab1-popular500-20261030-g-pd0wlz31-players:entity-v3",
+    "lab1-popular500-20261030-g-pd0wq31e-players:entity-v3",
+    "lab1-popular500-20261030-g-pd0wx9w1-players:entity-v3",
+    "lab1-popular500-20261030-g-pdv27nv6-players:entity-v3",
+    "lab1-popular500-20261030-g-pdvvl4dw-players:entity-v3",
+    "lab1-popular500-20261030-g-pdvwr96w-players:entity-v3",
+    "lab1-popular500-20261030-g-pdvznzr6-players:entity-v3",
+    "lab1-popular500-20261030-g-pdvzywv6-players:entity-v3",
+    "lab1-popular500-20261030-g-v1pejmd8-players:entity-v3",
+    "lab1-popular500-20261030-g-v1pgmm18-players:entity-v3",
+    "lab1-popular500-20261030-g-v1pozgp6-players:entity-v3",
+    "lab1-popular500-20261030-g-v1pxjz68-players:entity-v3",
+    "lab1-popular500-20261030-g-v1pxxz68-players:entity-v3",
+    "lab1-popular500-20261030-g-w6j7vpx6-players:entity-v3",
+    "lab1-popular500-20261030-g-w6jg0ex6-players:entity-v3",
+    "lab1-popular500-20261030-g-w6jl725d-players:entity-v3",
+    "lab1-popular500-20261030-g-w6jlw74d-players:entity-v3",
+    "lab1-popular500-20261030-g-w6jmm26j-players:entity-v3",
+    "lab1-popular500-20261030-g-w6jrzxdj-players:entity-v3",
+    "lab1-popular500-20261030-g-xv1pg718-players:entity-v3",
+    "lab1-popular500-20261030-g-y65420de-players:entity-v3",
+    "lab1-popular500-20261030-g-y655346e-players:entity-v3",
+    "lab1-popular500-20261030-g-y65797de-players:entity-v3",
+    "lab1-popular500-20261030-g-y657jede-players:entity-v3",
+    "lab1-popular500-20261030-g-y65rz341-players:entity-v3",
+    "lab1-popular500-20261030-g-yd478gde-players:entity-v3",
+    "lab1-popular500-20261030-g-yd487k6e-players:entity-v3",
+    "lab1-popular500-20261030-g-yd4jl5de-players:entity-v3",
+    "lab1-popular500-20261030-g-yd4kq3k6-players:entity-v3",
+    "lab1-popular500-20261030-g-yd4ljx1e-players:entity-v3",
+    "lab1-popular500-20261030-g-yd4o0z51-players:entity-v3",
+    "lab1-popular500-20261030-g-yd4o90p1-players:entity-v3",
+    "lab1-popular500-20261030-g-yd4ojyk1-players:entity-v3",
+    "lab1-popular500-20261030-g-yd4oq3k1-players:entity-v3",
+    "lab1-popular500-20261030-g-yd4ovvg1-players:entity-v3",
+    "lab1-popular500-20261030-g-yd4ryvg1-players:entity-v3",
+    "lab1-popular500-20261030-g-yo1yyr1q-players:entity-v3"
+  ],
+  "run_projections": [
+    [
+      "run_core",
+      981599,
+      981592
+    ]
+  ],
+  "section_coverage": {
+    "runs": {
+      "partial": 2,
+      "verified_public_partitions": 5311
+    },
+    "wr_history": {
+      "partial": 1318,
+      "unavailable": 453
+    }
+  },
+  "source_HTTP": 0,
+  "unresolved_profile_diagnostics": 0
+}

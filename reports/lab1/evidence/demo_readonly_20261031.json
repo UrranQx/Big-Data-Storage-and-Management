@@ -1,0 +1,39 @@
+{
+  "command": [
+    "exec",
+    "-T",
+    "scheduler",
+    "python",
+    "-m",
+    "speedrun_etl.cli",
+    "history",
+    "--collection",
+    "lab1-popular500-20261030-g-4pd0n31e",
+    "--entity",
+    "run",
+    "--id",
+    "yv2r2oom"
+  ],
+  "source_HTTP": 0,
+  "same_entity_history_digest": true,
+  "stores": [
+    {
+      "store": "postgres",
+      "digest": "834296380ea5ccafbcbee8a99510033bb83c4b725c23e64ed72c6fc244d8ac10",
+      "versions": 1,
+      "checks": 1
+    },
+    {
+      "store": "mongo",
+      "digest": "834296380ea5ccafbcbee8a99510033bb83c4b725c23e64ed72c6fc244d8ac10",
+      "versions": 1,
+      "checks": 1
+    },
+    {
+      "store": "garage",
+      "digest": "834296380ea5ccafbcbee8a99510033bb83c4b725c23e64ed72c6fc244d8ac10",
+      "versions": 1,
+      "checks": 1
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+flowchart TB
+    S["Speedrun.com API v2<br/>открытые данные"] --> C["Общий HTTP-клиент<br/>pacing · retries · бюджет"]
+    subgraph A["Airflow 3.3.2 · LocalExecutor"]
+      direction LR
+      API["api-server<br/>UI :8080"]
+      DP["dag-processor<br/>разбор четырёх DAG"] --> SC["scheduler<br/>процессы задач"]
+      API --> SC
+    end
+    SC --> C
+    C --> J["Постоянный etl-state<br/>journal · checkpoints · пакеты"]
+    J --> P["PostgreSQL 16<br/>ODS · JSONB"]
+    J --> M["MongoDB 8.0<br/>ODS · документы"]
+    J --> G["Garage 2.4.1<br/>ODS · S3 чанки"]
+    P --> V["Три readback-проверки<br/>ключи · counts · digest"]
+    M --> V
+    G --> V
+    V --> CT["speedrun_control<br/>receipts · очередь"]
+    SC -. "служебная БД" .-> AF["airflow<br/>состояние оркестратора"]
+    classDef source fill:#eaf3fb,stroke:#4477aa,color:#19364b
+    classDef store fill:#e9f4eb,stroke:#228833,color:#153e22
+    classDef verify fill:#fff1df,stroke:#bd7825,color:#61441f
+    class S,C,J source
+    class P,M,G store
+    class V,CT verify

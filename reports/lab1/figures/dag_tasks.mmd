@@ -1,0 +1,20 @@
+flowchart TB
+    I["initialize<br/>параметры · входной snapshot"] --> C["collect<br/>получение + упаковка"]
+    C --> P["load_postgres"]
+    C --> M["load_mongo"]
+    C --> G["load_garage"]
+    P --> F["finalize · all_done<br/>три receipts / диагностика"]
+    M --> F
+    G --> F
+    F --> N{"needs_child?"}
+    N -->|"да"| T["trigger следующего DAG<br/>устойчивый run ID"]
+    N -->|"нет"| E["конец цепочки"]
+    L["ods_load: 2 слота<br/>одновременно до двух загрузок"] -.-> P
+    L -.-> M
+    L -.-> G
+    classDef task fill:#eaf3fb,stroke:#4477aa,color:#19364b
+    classDef store fill:#e9f4eb,stroke:#228833,color:#153e22
+    classDef verify fill:#fff1df,stroke:#bd7825,color:#61441f
+    class I,C,T,E task
+    class P,M,G store
+    class F,N verify

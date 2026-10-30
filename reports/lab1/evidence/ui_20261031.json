@@ -1,0 +1,15 @@
+{
+  "observed_at": "2026-10-30T21:55:13.733Z",
+  "mode": "Read-only UI navigation; no DAG trigger",
+  "source_HTTP": 0,
+  "run_path": "/dags/runs/runs/lab1-popular500-20261030-g-y65420de--y65420de--call-of-duty-modern-warfare-2--runs",
+  "files": {
+    "airflow_dags.png": "84187f3db9979d105df5f6c43007dfd25a8de1897fe75d3f72f2e21c2032e5a6",
+    "airflow_run.png": "84e76ed596b6a80596146970aab729c63f3323ce8d10a8679cc4f033efc16168"
+  },
+  "verified_pools": {
+    "default_pool": 128,
+    "source_api": 1,
+    "ods_load": 2
+  }
+}

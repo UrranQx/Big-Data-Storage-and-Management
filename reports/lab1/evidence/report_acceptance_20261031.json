@@ -1,0 +1,27 @@
+{
+  "checked_at": "2026-10-30T22:04:08.977356+00:00",
+  "source_HTTP_during_report_preparation": 0,
+  "source_attempts_before": 23047,
+  "source_attempts_after": 23047,
+  "production_state": "manual_pause",
+  "driver": false,
+  "keep_running": false,
+  "active_DAGs": 0,
+  "active_tasks": 0,
+  "notebook_strategy": "Existing verified 116-game private snapshot plus GitHub documentation/code update",
+  "new_database_backup_created": false,
+  "network_bundle_modified": false,
+  "current_PG_Mongo_counts_equal": true,
+  "three_store_snapshot_receipts_agree": true,
+  "demo_history_read_equal": true,
+  "UI_view_only": true,
+  "pools": {
+    "default_pool": 128,
+    "source_api": 1,
+    "ods_load": 2
+  },
+  "relative_links_checked": 61,
+  "report_mermaid_diagrams_rendered": 4,
+  "FAQ_questions": 22,
+  "PowerShell_demo_blocks_parsed": 5
+}
