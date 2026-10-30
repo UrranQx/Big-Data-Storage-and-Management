@@ -1,4 +1,7 @@
-"""Four immutable logical record sets and reversible response decomposition."""
+"""Прежний ODS: четыре immutable-набора и обратимое разложение ответов.
+
+Локальные пакеты сохраняют точные поля и историю; текущие DAG используют entity_ods."""
+
 import base64
 import copy
 import hashlib
@@ -10,10 +13,19 @@ from .jsonutil import atomic_write, digest, dumps, loads, read
 
 SETS = ("payloads", "responses", "observations", "manifests")
 BLOCK_BYTES = 5 * 1024 * 1024  # base64 document < 8 MiB, also safely below BSON limit
-LISTS = {"gameList": "game", "runList": "run", "playerList": "player",
-         "platformList": "platform", "categories": "category", "categoryList": "category",
-         "variables": "variable", "variableList": "variable", "platforms": "platform",
-         "values": "variable_value", "regionList": "region"}
+LISTS = {
+    "gameList": "game",
+    "runList": "run",
+    "playerList": "player",
+    "platformList": "platform",
+    "categories": "category",
+    "categoryList": "category",
+    "variables": "variable",
+    "variableList": "variable",
+    "platforms": "platform",
+    "values": "variable_value",
+    "regionList": "region",
+}
 OBJECTS = {"game": "game", "stats": "stats", "gameStats": "stats"}
 
 
@@ -26,12 +38,16 @@ def native_safe(value):
     if isinstance(value, (float, Decimal)):
         return False  # do not silently round Decimal through double
     if isinstance(value, str):
-        return "\x00" not in value and not any(0xD800 <= ord(c) <= 0xDFFF for c in value)
+        return "\x00" not in value and not any(
+            0xD800 <= ord(c) <= 0xDFFF for c in value
+        )
     if isinstance(value, list):
         return all(native_safe(v) for v in value)
     if isinstance(value, dict):
-        return all(native_safe(k) and "." not in k and not k.startswith("$") and native_safe(v)
-                   for k, v in value.items())
+        return all(
+            native_safe(k) and "." not in k and not k.startswith("$") and native_safe(v)
+            for k, v in value.items()
+        )
     return False
 
 
@@ -43,17 +59,23 @@ class Package:
         database = self.root / "records.sqlite3"
         if database.exists() or compact:
             import sqlite3
+
             self.root.mkdir(parents=True, exist_ok=True)
             if compact and any((self.root / kind).exists() for kind in SETS):
                 raise ValueError("Existing file package cannot be converted in place")
             self.db = sqlite3.connect(database)
             self.db.execute("PRAGMA journal_mode=WAL")
             self.db.execute("PRAGMA synchronous=NORMAL")
-            self.db.execute("CREATE TABLE IF NOT EXISTS records(kind TEXT NOT NULL, key TEXT NOT NULL, document TEXT NOT NULL, PRIMARY KEY(kind,key)) WITHOUT ROWID")
+            self.db.execute(
+                "CREATE TABLE IF NOT EXISTS records(kind TEXT NOT NULL, key TEXT NOT NULL, document TEXT NOT NULL, PRIMARY KEY(kind,key)) WITHOUT ROWID"
+            )
             self.db.commit()
         self._known_payloads = set()
         from functools import lru_cache
-        self.resolve = lru_cache(maxsize=32768)(lambda key: resolve_payload(self.get, key))
+
+        self.resolve = lru_cache(maxsize=32768)(
+            lambda key: resolve_payload(self.get, key)
+        )
 
     def flush(self):
         if self.db is not None:
@@ -62,7 +84,12 @@ class Package:
 
     def contains(self, kind, key):
         if self.db is not None:
-            return self.db.execute("SELECT 1 FROM records WHERE kind=? AND key=?", (kind, key)).fetchone() is not None
+            return (
+                self.db.execute(
+                    "SELECT 1 FROM records WHERE kind=? AND key=?", (kind, key)
+                ).fetchone()
+                is not None
+            )
         return self.path(kind, key).exists()
 
     def path(self, kind, key):
@@ -75,12 +102,17 @@ class Package:
             raise ValueError(kind)
         if self.db is not None:
             raw = dumps(record)
-            previous = self.db.execute("SELECT document FROM records WHERE kind=? AND key=?", (kind, record["key"])).fetchone()
+            previous = self.db.execute(
+                "SELECT document FROM records WHERE kind=? AND key=?",
+                (kind, record["key"]),
+            ).fetchone()
             if previous is not None:
                 if previous[0] != raw:
                     raise ValueError(f"Immutable key conflict: {kind}/{record['key']}")
             else:
-                self.db.execute("INSERT INTO records VALUES(?,?,?)", (kind, record["key"], raw))
+                self.db.execute(
+                    "INSERT INTO records VALUES(?,?,?)", (kind, record["key"], raw)
+                )
                 self.pending += 1
                 if self.pending >= 1000:
                     self.flush()
@@ -102,7 +134,9 @@ class Package:
 
     def get(self, kind, key):
         if self.db is not None:
-            row = self.db.execute("SELECT document FROM records WHERE kind=? AND key=?", (kind, key)).fetchone()
+            row = self.db.execute(
+                "SELECT document FROM records WHERE kind=? AND key=?", (kind, key)
+            ).fetchone()
             if row is None:
                 raise KeyError((kind, key))
             return loads(row[0])
@@ -111,7 +145,9 @@ class Package:
     def records(self, kind):
         if self.db is not None:
             self.flush()
-            for row in self.db.execute("SELECT document FROM records WHERE kind=? ORDER BY key", (kind,)):
+            for row in self.db.execute(
+                "SELECT document FROM records WHERE kind=? ORDER BY key", (kind,)
+            ):
                 yield loads(row[0])
             return
         # Sorting the hashed filenames is deterministic; summary sorts logical keys.
@@ -121,7 +157,9 @@ class Package:
     def keys(self, kind):
         if self.db is not None:
             self.flush()
-            for row in self.db.execute("SELECT key FROM records WHERE kind=? ORDER BY key", (kind,)):
+            for row in self.db.execute(
+                "SELECT key FROM records WHERE kind=? ORDER BY key", (kind,)
+            ):
                 yield row[0]
         else:
             yield from sorted(row["key"] for row in self.records(kind))
@@ -129,6 +167,7 @@ class Package:
     def payload_array(self, values):
         """Canonical array built in bounded memory, using the common block scheme."""
         checksum, buffer, blocks = hashlib.sha256(), bytearray(), []
+
         def append(raw):
             checksum.update(raw)
             buffer.extend(raw)
@@ -136,8 +175,16 @@ class Package:
                 block = bytes(buffer[:BLOCK_BYTES])
                 del buffer[:BLOCK_BYTES]
                 key = "block-v1:" + hashlib.sha256(block).hexdigest()
-                self.put("payloads", {"key": key, "encoding": "base64-block", "data": base64.b64encode(block).decode()})
+                self.put(
+                    "payloads",
+                    {
+                        "key": key,
+                        "encoding": "base64-block",
+                        "data": base64.b64encode(block).decode(),
+                    },
+                )
                 blocks.append(key)
+
         append(b"[")
         for index, value in enumerate(values):
             if index:
@@ -149,10 +196,19 @@ class Package:
         if buffer:
             block = bytes(buffer)
             block_key = "block-v1:" + hashlib.sha256(block).hexdigest()
-            self.put("payloads", {"key": block_key, "encoding": "base64-block", "data": base64.b64encode(block).decode()})
+            self.put(
+                "payloads",
+                {
+                    "key": block_key,
+                    "encoding": "base64-block",
+                    "data": base64.b64encode(block).decode(),
+                },
+            )
             blocks.append(block_key)
         key = "json-v1:" + checksum.hexdigest()
-        self.put("payloads", {"key": key, "encoding": "json-v1-blocks", "blocks": blocks})
+        self.put(
+            "payloads", {"key": key, "encoding": "json-v1-blocks", "blocks": blocks}
+        )
         return key
 
     def payload(self, value):
@@ -163,16 +219,26 @@ class Package:
         if len(raw) > BLOCK_BYTES:
             blocks = []
             for offset in range(0, len(raw), BLOCK_BYTES):
-                block = raw[offset:offset + BLOCK_BYTES]
+                block = raw[offset : offset + BLOCK_BYTES]
                 block_key = "block-v1:" + hashlib.sha256(block).hexdigest()
-                self.put("payloads", {"key": block_key, "encoding": "base64-block",
-                                      "data": base64.b64encode(block).decode()})
+                self.put(
+                    "payloads",
+                    {
+                        "key": block_key,
+                        "encoding": "base64-block",
+                        "data": base64.b64encode(block).decode(),
+                    },
+                )
                 blocks.append(block_key)
             record = {"key": key, "encoding": "json-v1-blocks", "blocks": blocks}
         elif native_safe(value):
             record = {"key": key, "encoding": "json", "value": value}
         else:
-            record = {"key": key, "encoding": "canonical-json-utf8", "text": raw.decode()}
+            record = {
+                "key": key,
+                "encoding": "canonical-json-utf8",
+                "text": raw.decode(),
+            }
         self.put("payloads", record)
         self._known_payloads.add(key)
         return key
@@ -191,7 +257,10 @@ class Package:
                 result[kind] = {"count": count, "digest": checksum.hexdigest()}
                 continue
             pairs = sorted((r["key"], digest(r)) for r in self.records(kind))
-            result[kind] = {"count": len(pairs), "digest": digest([list(p) for p in pairs])}
+            result[kind] = {
+                "count": len(pairs),
+                "digest": digest([list(p) for p in pairs]),
+            }
         return result
 
 
@@ -245,7 +314,11 @@ def pack_response(package, staged, snapshot_id, context):
         for field, value in body.items():
             items = []
             if field in LISTS and isinstance(value, list):
-                items = [([field, i], LISTS[field], v) for i, v in enumerate(value) if isinstance(v, dict)]
+                items = [
+                    ([field, i], LISTS[field], v)
+                    for i, v in enumerate(value)
+                    if isinstance(v, dict)
+                ]
             elif field in OBJECTS and isinstance(value, dict):
                 items = [([field], OBJECTS[field], value)]
             for path, entity_type, entity in items:
@@ -253,20 +326,43 @@ def pack_response(package, staged, snapshot_id, context):
                 references.append({"path": path, "payload": payload})
                 at_path(envelope, path[:-1])[path[-1]] = None
                 owner = context.get("game_id", staged["endpoint"])
-                source_id = str(entity.get("id") or (owner + ":" + "/".join(map(str, path))))
+                source_id = str(
+                    entity.get("id") or (owner + ":" + "/".join(map(str, path)))
+                )
                 key = digest([staged["response_id"], entity_type, path])
-                observations.append({"key": key, "source_system": "speedruncom", "api_variant": "v2",
-                    "snapshot_id": snapshot_id, "entity_type": entity_type, "source_id": source_id,
-                    "payload": payload, "response_id": staged["response_id"], "path": path,
-                    "observed_at": staged["fetched_at"], "context": context})
-    response = {"key": staged["response_id"], "snapshot_id": snapshot_id, "api_variant": "v2",
-                "source_system": "speedruncom", "endpoint": staged["endpoint"], "params": staged["params"],
-                "requested_at": staged["requested_at"], "fetched_at": staged["fetched_at"],
-                "http_status": staged["http_status"], "attempt": staged["attempt"],
-                "network_bytes": staged["network_bytes"], "body_digest": digest(body),
-                "error": staged.get("error"),
-                "envelope": package.payload(envelope), "references": references,
-                "diagnostics": [] if references else ["unrecognized_or_scalar_shape_preserved"]}
+                observations.append(
+                    {
+                        "key": key,
+                        "source_system": "speedruncom",
+                        "api_variant": "v2",
+                        "snapshot_id": snapshot_id,
+                        "entity_type": entity_type,
+                        "source_id": source_id,
+                        "payload": payload,
+                        "response_id": staged["response_id"],
+                        "path": path,
+                        "observed_at": staged["fetched_at"],
+                        "context": context,
+                    }
+                )
+    response = {
+        "key": staged["response_id"],
+        "snapshot_id": snapshot_id,
+        "api_variant": "v2",
+        "source_system": "speedruncom",
+        "endpoint": staged["endpoint"],
+        "params": staged["params"],
+        "requested_at": staged["requested_at"],
+        "fetched_at": staged["fetched_at"],
+        "http_status": staged["http_status"],
+        "attempt": staged["attempt"],
+        "network_bytes": staged["network_bytes"],
+        "body_digest": digest(body),
+        "error": staged.get("error"),
+        "envelope": package.payload(envelope),
+        "references": references,
+        "diagnostics": [] if references else ["unrecognized_or_scalar_shape_preserved"],
+    }
     package.put("responses", response)
     for record in observations:
         package.put("observations", record)
@@ -278,7 +374,12 @@ def pack_response(package, staged, snapshot_id, context):
 def s3_key(kind, record):
     if kind == "observations":
         # Entity-prefix history without a SQL engine. Quote every source component.
-        parts = [record["source_system"], record["entity_type"], record["source_id"],
-                 record["response_id"], record["key"]]
+        parts = [
+            record["source_system"],
+            record["entity_type"],
+            record["source_id"],
+            record["response_id"],
+            record["key"],
+        ]
         return kind + "/" + "/".join(quote(p, safe="") for p in parts) + ".json"
     return kind + "/" + quote(record["key"], safe="") + ".json"

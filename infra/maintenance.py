@@ -1,4 +1,7 @@
-"""Delete only expired technical Airflow task logs; never touch raw/ODS/staging."""
+"""Удаляет только устаревшие технические task logs Airflow.
+
+Исходные ответы, ODS и staging не затрагиваются."""
+
 from pathlib import Path
 import time
 

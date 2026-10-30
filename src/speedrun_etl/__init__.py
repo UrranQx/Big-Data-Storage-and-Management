@@ -1,2 +1,3 @@
-"""Speedrun.com Lab 1. Importing this package never performs network I/O."""
+"""Пакет ETL ЛР1; импорт не выполняет сетевых запросов."""
+
 __version__ = "0.1.0"

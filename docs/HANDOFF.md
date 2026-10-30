@@ -1,5 +1,36 @@
 # Передача контекста: реализация ЛР1
 
+## 30 октября: внедрение рефакторинга и перенос на ноутбук В ПРОЦЕССЕ
+
+Пользователь явно разрешил: коммит до, безопасная остановка, внедрение;
+также схемы ODS и перенос данных для очной защиты завтра. Один агент.
+Ноутбук Windows/16GB/Docker/100GB свободно. NAS доступен; точный privateпуть
+и все текущие процессы/действия записаны в exports/refactor-deploy-20261030/PLAN.md.
+MAIN pre-deploy commit3d9136660c6cd71d1f90c15edb8a8c0bfe5130bb.
+После116игрыMetroidDread batch/controller мягко stopped;0activeDAG/tasks,
+четыреDAGpaused, всеproductionсервисыstopped. Ничего не вайпалось.
+Baseline entity_v3:934836runID/269010playerID;114complete+1partial+1not_applicable.
+Until остаётся2026-11-02T00:51:41.916756+00:00, не продлевать.
+
+Кандидат speedrun-lab1-airflow:refactor-candidate-20261030 собран ОДИН раз;
+169тестов с3реальными ИЗОЛИРОВАННЫМИ ODS прошли38,759с/0skip/ошибок.
+Сравнительные3сервиса снова stopped. Основнойsrc внедрён изa4989f0 приSTOPPEDсервисах; запускпослерепетиции.
+ХолодныйbackupD: ЗАВЕРШЁН,6.27GiB/6volumes/код/образы; pointer=exports/refactor-deploy-20261030/backup-path.txt.
+СтараяпроверкаstagingчерезWindowsbind быламедленной; еёчитательпослеROпроверки
+штатноостановлен, готовыеархивынетронуты. Финализаторexec17832 ЗАВЕРШИЛСЯ; повторноиспользовал
+4проверенныхархиваи проверяетготовыйetl-state.tar.gz черезLinuxкэш. Не запускать
+оригинальныесервисыдозавершениякопии. Более подробная очередь действий — PLAN.md.
+Mermaidэкспортexec32137;2схемы/PNG/SVG, не runtimeзависимость.
+
+В candidateworktree добавлены: v3backupinventory, приватный portablepacker,
+restore_portable с6новымиvolumes/проверкой/офлайнобразами/localhostUI,
+проверенный переносимыйWindowsPython, Gitoptional. Архив не копировать
+пользователю до реального восстановления и проверки UI на изолированной копии.
+ПримерPortal yv2r2oom восстановлен изresponse,SHAпрошёл,3ODSравны,0sourceHTTP.
+Публичные7JSON/README — reports/lab1/ods_example_20261030, схемыDATA_MODEL,
+инструкцияноутбукаdocs/LAPTOP_DEMO. Пакеты .envсодержаттолькоprivateпередачу,
+неGit/неpubliccloud. До завершения смотреть приватный PLAN, не начинать заново.
+
 ## 30 октября: глубокое сравнение хранилищ завершено
 
 Результаты: `reports/lab1/comparison_20261030/README.md` (методика и рекомендации),

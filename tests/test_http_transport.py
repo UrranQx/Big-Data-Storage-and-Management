@@ -1,3 +1,7 @@
+"""Keep-alive, wire gzip и возврат 429 через loopback HTTP fixture.
+
+Transport не должен скрывать throttling от общего клиента и его retry-политики."""
+
 import gzip
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import threading
@@ -12,8 +16,10 @@ class TransportTests(unittest.TestCase):
     def test_reuses_connection_preserves_wire_gzip_and_exposes_429(self):
         ports = []
         raw = gzip.compress(b'{"exact":0.1234567890123456789}', mtime=0)
+
         class Handler(BaseHTTPRequestHandler):
             protocol_version = "HTTP/1.1"
+
             def do_GET(self):
                 ports.append(self.client_address[1])
                 self.send_response(429 if self.path == "/throttle" else 200)
@@ -22,7 +28,10 @@ class TransportTests(unittest.TestCase):
                 self.send_header("Retry-After", "120")
                 self.end_headers()
                 self.wfile.write(raw)
-            def log_message(self, *args): pass
+
+            def log_message(self, *args):
+                pass
+
         server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()

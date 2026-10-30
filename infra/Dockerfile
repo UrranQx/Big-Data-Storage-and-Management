@@ -5,6 +5,7 @@ COPY --chown=airflow:root src /opt/project/src
 RUN pip install --no-cache-dir "apache-airflow==3.3.2" "apache-airflow-providers-standard==1.19.0" /opt/project --constraint /opt/airflow/constraints.txt && pip check
 COPY --chown=airflow:root sql /opt/project/sql
 COPY --chown=airflow:root tests /opt/project/tests
+COPY --chown=airflow:root infra/*.py /opt/project/infra/
 COPY --chown=airflow:root infra/init.py /opt/project/init.py
 COPY --chown=airflow:root infra/maintenance.py infra/scheduler.sh /opt/project/
 COPY --chown=airflow:root dags/ods /opt/airflow/dags/ods

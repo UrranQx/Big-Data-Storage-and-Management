@@ -1,3 +1,7 @@
+"""Каталог: продолжение checkpoints и контроль конечных границ.
+
+Дубли ID и дрейф не должны превращаться в подтверждённое полное покрытие."""
+
 from tempfile import TemporaryDirectory
 import unittest
 
@@ -6,8 +10,10 @@ from speedrun_etl.source import SourceError
 
 
 def body(n):
-    return {"pagination": {"count": 3, "pages": 2, "per": 2, "page": n},
-            "gameList": [{"id": str(i)} for i in range(2 * (n - 1), min(2 * n, 3))]}
+    return {
+        "pagination": {"count": 3, "pages": 2, "per": 2, "page": n},
+        "gameList": [{"id": str(i)} for i in range(2 * (n - 1), min(2 * n, 3))],
+    }
 
 
 class CatalogClient:

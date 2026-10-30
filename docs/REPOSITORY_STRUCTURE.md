@@ -20,12 +20,16 @@ DATA_MODEL.md; фактическое состояние автора — docs/H
 | entity_workflow.py, workflow.py | Задачи и зависимости Airflow, подтверждение трёх загрузок |
 | batch.py | Очередь top-N / all / выборка четырёх групп, прогресс в control PG, мягкая pause/resume с сохранёнными настройками |
 | keep_running.py | Продолжение существующей очереди после штатных лимитов до явного дедлайна; ошибки и ручную паузу не отменяет |
-| benchmark.py | Актуальные замеры entity-v2 в трёх изолированных пространствах, без HTTP источника |
+| benchmark.py, experiment_inputs.py | Сравнение entity-v2/v3 (три/четыре входа), замороженные подтверждённые пакеты и изолированный стенд, без HTTP источника |
 | storage_workloads.py | Дополнительные фиксированные опыты запросов/индексов/DDL/CRUD/COPY только в test_wl_*, не DDS |
+| plot_storage_comparison.py | CSV-статистика, таблицы и восемь PNG/SVG графиков из действительных измерений |
+| infra/compose.comparison.yaml, configure_comparison.py, freeze_comparison.py | Отдельная внутренняя сеть, новые credentials/volumes и согласованные копии входа сравнения |
+| infra/run_storage_comparison.py, export_comparison.py | Контроль паузы/resume, нулевого source HTTP и выгрузка результатов без сырых SQLite |
 | forecast.py | Прогноз ресурсов по завершённой выборке из четырёх групп; не обещает полноту сайта |
 | cli.py, progress.py | Ручной старт, доказательства, replay, чтение сущности и мониторинг |
 | tests/ | Фикстуры API, история, пагинация, limiter, контроль очереди, реальные три ODS |
-| reports/lab1/ | Отчёт, методика, сохранённые небольшие доказательства и результаты |
+| reports/lab1/ | Краткий README и рабочий REPORT; это ещё не окончательный отчёт |
+| docs/research/evidence/lab1_history_20261030/ | Побайтово сохранённые исторические доказательства, методика, демонстрация, CSV/JSON/графики и MOVES.json с SHA-256 |
 | sql/ods.sql | Прежняя схема четырёх технических наборов, не текущий production DDL |
 | archive/ | Исследовательские прототипы; не подключаются к DAG или рабочему образу |
 | data/, exports/ | Локальные данные и пакеты передачи, исключены из Git |

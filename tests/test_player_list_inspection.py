@@ -1,3 +1,7 @@
+"""Анализ встроенных профилей по сохранённым страницам.
+
+Проверяет покрытие поздних ранов общим списком и видимость изменения профиля."""
+
 import tempfile
 import unittest
 from pathlib import Path
@@ -11,20 +15,41 @@ class PlayerListInspectionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             for filename, stamp, run, profiles in (
-                ("z-first", "2026-10-27T10:00:00+00:00", {"id": "r1", "playerIds": ["p1"]},
-                 [{"id": "p1", "name": "A"}, {"id": "p2", "name": "B"}]),
-                ("a-last", "2026-10-27T10:01:00+00:00", {"id": "r2", "playerIds": ["p2"]},
-                 [{"id": "p2", "name": "Changed"}, {"id": "p1", "name": "A"}]),
+                (
+                    "z-first",
+                    "2026-10-27T10:00:00+00:00",
+                    {"id": "r1", "playerIds": ["p1"]},
+                    [{"id": "p1", "name": "A"}, {"id": "p2", "name": "B"}],
+                ),
+                (
+                    "a-last",
+                    "2026-10-27T10:01:00+00:00",
+                    {"id": "r2", "playerIds": ["p2"]},
+                    [{"id": "p2", "name": "Changed"}, {"id": "p1", "name": "A"}],
+                ),
             ):
-                atomic_write(root / "requests" / filename / "response.json", {
-                    "endpoint": "GetGameLeaderboard2", "http_status": 200,
-                    "response_id": filename, "fetched_at": stamp,
-                    "params": {"params": {"gameId": "g", "categoryId": "c", "verified": 1},
-                               "page": 1 if filename == "z-first" else 2},
-                    "body": {"runList": [run], "playerList": profiles,
-                             "pagination": {"count": 2}}})
-            atomic_write(root / "requests" / "error" / "response.json", {
-                "endpoint": "GetGameLeaderboard2", "http_status": 500, "body": None})
+                atomic_write(
+                    root / "requests" / filename / "response.json",
+                    {
+                        "endpoint": "GetGameLeaderboard2",
+                        "http_status": 200,
+                        "response_id": filename,
+                        "fetched_at": stamp,
+                        "params": {
+                            "params": {"gameId": "g", "categoryId": "c", "verified": 1},
+                            "page": 1 if filename == "z-first" else 2,
+                        },
+                        "body": {
+                            "runList": [run],
+                            "playerList": profiles,
+                            "pagination": {"count": 2},
+                        },
+                    },
+                )
+            atomic_write(
+                root / "requests" / "error" / "response.json",
+                {"endpoint": "GetGameLeaderboard2", "http_status": 500, "body": None},
+            )
             report = inspect(root)
             self.assertEqual(report["responses_scanned"], 2)
             row = report["sections"][0]

@@ -1,4 +1,5 @@
 """Bounded post-reset sequence: fresh Half-Life, directory, then Minecraft."""
+
 import os
 from pathlib import Path
 import sys
@@ -15,7 +16,11 @@ MINECRAFT = "minecraft-v2-fresh-20261016-001"
 
 
 def token():
-    return api("POST", "/auth/token", {"username": "admin", "password": os.environ["AIRFLOW_ADMIN_PASSWORD"]})["access_token"]
+    return api(
+        "POST",
+        "/auth/token",
+        {"username": "admin", "password": os.environ["AIRFLOW_ADMIN_PASSWORD"]},
+    )["access_token"]
 
 
 def wait(collection, kinds):
@@ -25,7 +30,11 @@ def wait(collection, kinds):
         auth = token()
         for kind in kinds:
             try:
-                states[kind] = api("GET", f"/api/v2/dags/{kind}/dagRuns/{collection}-{kind}", token=auth)["state"]
+                states[kind] = api(
+                    "GET",
+                    f"/api/v2/dags/{kind}/dagRuns/{collection}-{kind}",
+                    token=auth,
+                )["state"]
             except HTTPError as error:
                 if error.code != 404:
                     raise
@@ -34,7 +43,9 @@ def wait(collection, kinds):
             print(utcnow(), collection, states, flush=True)
             previous = states
         if "failed" in states.values():
-            raise RuntimeError("Fresh cycle stopped after a failed DAG; no further extraction started")
+            raise RuntimeError(
+                "Fresh cycle stopped after a failed DAG; no further extraction started"
+            )
         if all(v == "success" for v in states.values()):
             for kind in kinds:
                 ready(collection + "-" + kind, role="runs" if kind == "runs" else "all")
@@ -44,9 +55,16 @@ def wait(collection, kinds):
 
 def start(collection, conf):
     try:
-        api("POST", "/api/v2/dags/games_metadata/dagRuns", {
-            "dag_run_id": collection + "-games_metadata", "logical_date": utcnow(),
-            "conf": {"collection_id": collection, **conf}}, token())
+        api(
+            "POST",
+            "/api/v2/dags/games_metadata/dagRuns",
+            {
+                "dag_run_id": collection + "-games_metadata",
+                "logical_date": utcnow(),
+                "conf": {"collection_id": collection, **conf},
+            },
+            token(),
+        )
     except HTTPError as error:
         if error.code != 409:
             raise
@@ -62,7 +80,11 @@ def main():
         wait(CATALOG, ("games_metadata",))
         start(MINECRAFT, {"scope": "full_game", "game": "mc", "request_budget": 1500})
         wait(MINECRAFT, ("games_metadata", "runs", "players"))
-        print(utcnow(), "Fresh collection cycle complete; top-five remains disabled", flush=True)
+        print(
+            utcnow(),
+            "Fresh collection cycle complete; top-five remains disabled",
+            flush=True,
+        )
 
 
 if __name__ == "__main__":

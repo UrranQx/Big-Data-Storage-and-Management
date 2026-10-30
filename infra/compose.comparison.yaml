@@ -1,0 +1,89 @@
+name: speedrun-comparison
+
+services:
+  postgres:
+    image: postgres:16@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d
+    cpus: 2
+    mem_limit: 768m
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
+      AIRFLOW_DB_PASSWORD: ${AIRFLOW_DB_PASSWORD:?}
+      ODS_DB_PASSWORD: ${ODS_DB_PASSWORD:?}
+      CONTROL_DB_PASSWORD: ${CONTROL_DB_PASSWORD:?}
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+      - ./postgres-init.sh:/docker-entrypoint-initdb.d/01-databases.sh:ro
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U postgres]
+      interval: 3s
+      retries: 30
+  mongo:
+    image: mongo:8.0@sha256:6657bf2413fefc5be649390318f5b4cd7328e982722f8ce2ac6dfa6f0a42cb03
+    cpus: 2
+    mem_limit: 768m
+    command: [mongod, --wiredTigerCacheSizeGB, '0.25']
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ods
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:?}
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: [CMD, mongosh, --quiet, --eval, "quit(db.adminCommand('ping').ok ? 0 : 1)"]
+      interval: 5s
+      retries: 30
+  garage:
+    image: dxflrs/garage:v2.4.1@sha256:9c96caa2612d3411acc5b0e6701fb238dbfba33e533a6d7d3d811a4b12d0d020
+    cpus: 2
+    mem_limit: 768m
+    command: [/garage, server, --single-node, --default-bucket]
+    environment:
+      GARAGE_DEFAULT_ACCESS_KEY: ${S3_ACCESS_KEY:?}
+      GARAGE_DEFAULT_SECRET_KEY: ${S3_SECRET_KEY:?}
+      GARAGE_DEFAULT_BUCKET: speedrun-ods
+    volumes:
+      - ${BENCH_GARAGE_CONFIG:?}:/etc/garage.toml:ro
+      - garage-meta:/var/lib/garage/meta
+      - garage-data:/var/lib/garage/data
+    healthcheck:
+      test: [CMD, /garage, status]
+      interval: 5s
+      retries: 30
+  runner:
+    image: speedrun-lab1-airflow:local
+    profiles: [tools]
+    user: '50000:0'
+    entrypoint: [python]
+    cpus: 2
+    mem_limit: ${BENCH_RUNNER_MEMORY:-1536m}
+    environment:
+      PYTHONPATH: /opt/project/src
+      ETL_STATE: /opt/airflow/state
+      ETL_EXPERIMENT_ID: ${ETL_EXPERIMENT_ID:?}
+      AIRFLOW_HOME: /tmp/comparison-airflow
+      AIRFLOW__CORE__DAGS_FOLDER: /opt/project/dags/ods
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW_ADMIN_PASSWORD: isolated-comparison-placeholder
+      PGHOST: postgres
+      PGUSER: speedrun_ods
+      PGDATABASE: speedrun_ods
+      PGPASSWORD: ${ODS_DB_PASSWORD:?}
+      CONTROL_DB_PASSWORD: ${CONTROL_DB_PASSWORD:?}
+      MONGO_PASSWORD: ${MONGO_PASSWORD:?}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:?}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:?}
+    volumes:
+      - ..:/opt/project:ro
+      - state:/opt/airflow/state
+
+networks:
+  default:
+    internal: true
+
+volumes:
+  pg-data:
+  mongo-data:
+  garage-meta:
+  garage-data:
+  state:
+    external: true
+    name: ${BENCH_STATE_VOLUME:?}

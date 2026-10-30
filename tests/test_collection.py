@@ -1,3 +1,7 @@
+"""Фильтры, пагинация и coverage разделов ранов.
+
+Проверяет рост counts, перекрытие страниц и недоступный WR без потери исходных ответов."""
+
 from copy import deepcopy
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -8,9 +12,18 @@ from speedrun_etl.source import SourceError
 
 
 def page(number=1, total=3, per=2):
-    return {"pagination": {"page": number, "count": total, "per": per, "pages": (total + per - 1) // per},
-            "runList": [{"id": f"r{i}", "gameId": "g", "categoryId": "c", "verified": 1}
-                        for i in range((number - 1) * per, min(number * per, total))]}
+    return {
+        "pagination": {
+            "page": number,
+            "count": total,
+            "per": per,
+            "pages": (total + per - 1) // per,
+        },
+        "runList": [
+            {"id": f"r{i}", "gameId": "g", "categoryId": "c", "verified": 1}
+            for i in range((number - 1) * per, min(number * per, total))
+        ],
+    }
 
 
 class FakeClient:
@@ -41,13 +54,19 @@ class CollectionTests(unittest.TestCase):
                 if key not in self.cache:
                     self.calls.append(key)
                     total = 6 if key.endswith("pass0/page1") else 7
-                    self.cache[key] = {"response_id": key, "body": page(params["page"], total=total)}
+                    self.cache[key] = {
+                        "response_id": key,
+                        "body": page(params["page"], total=total),
+                    }
                 return self.cache[key]
+
         with TemporaryDirectory() as temp:
             client = Growing()
             result = partition(client, temp, "g", "c", 1, cap=None)
             self.assertEqual("partial", result["coverage"])
-            self.assertEqual("pagination_changed_during_traversal", result["diagnostic"])
+            self.assertEqual(
+                "pagination_changed_during_traversal", result["diagnostic"]
+            )
             self.assertEqual(7, result["unique_runs"])
             self.assertEqual(4, result["pages_received"])
             self.assertIn("c-verified/pass0/page4", client.calls)
@@ -60,12 +79,15 @@ class CollectionTests(unittest.TestCase):
     def test_live_shrink_keeps_received_runs_and_diagnoses_vanished_tail(self):
         class Shrinking(FakeClient):
             page_concurrency = 2
+
             def request_pages(self, endpoint, specs):
                 return [self.request(endpoint, *s) for s in specs]
+
             def request(self, endpoint, params, key, context):
                 self.calls.append(key)
                 total = 5 if key.endswith("pass0/page1") else 3
                 return {"response_id": key, "body": page(params["page"], total=total)}
+
         with TemporaryDirectory() as temp:
             result = partition(Shrinking(), temp, "g", "c", 1, cap=None)
             self.assertEqual("partial", result["coverage"])
@@ -81,6 +103,7 @@ class CollectionTests(unittest.TestCase):
                 if params["page"] == 2:
                     body["runList"][0]["id"] = "r1"
                 return {"response_id": key, "body": body}
+
         with TemporaryDirectory() as temp:
             client = Repeated()
             result = partition(client, temp, "g", "c", 1, cap=None)
@@ -96,6 +119,7 @@ class CollectionTests(unittest.TestCase):
                 if params["page"] == 2:
                     body["runList"][0]["categoryId"] = "wrong"
                 return {"response_id": key, "body": body}
+
         with TemporaryDirectory() as temp:
             with self.assertRaisesRegex(SourceError, "filter violation"):
                 partition(WrongCategory(), temp, "g", "c", 1, cap=None)
@@ -104,16 +128,19 @@ class CollectionTests(unittest.TestCase):
         class PrefetchClient(FakeClient):
             page_concurrency = 2
             groups = []
+
             def request(self, endpoint, params, key, context):
                 self.calls.append(key)
                 return {"response_id": key, "body": page(params["page"], total=5)}
+
             def request_pages(self, endpoint, specs):
                 self.groups.append([s[0]["page"] for s in specs])
                 return [self.request(endpoint, *s) for s in specs]
+
         with TemporaryDirectory() as temp:
             client = PrefetchClient()
             result = partition(client, temp, "g", "c", 1, cap=None)
-            self.assertEqual([[2,3]], client.groups)
+            self.assertEqual([[2, 3]], client.groups)
             self.assertEqual(5, result["unique_runs"])
             self.assertEqual("verified_public_partitions", result["coverage"])
             calls = list(client.calls)
@@ -123,9 +150,19 @@ class CollectionTests(unittest.TestCase):
     def test_game_metadata_rejects_extension_even_from_a_legacy_selection(self):
         from unittest.mock import Mock
         from speedrun_etl.collect import metadata
+
         client = Mock()
-        client.request.return_value = {"body": {"game": {
-            "id": "g", "name": "Unrelated title", "type": "game", "gameTypeIds": [8]}, "categories": []}}
+        client.request.return_value = {
+            "body": {
+                "game": {
+                    "id": "g",
+                    "name": "Unrelated title",
+                    "type": "game",
+                    "gameTypeIds": [8],
+                },
+                "categories": [],
+            }
+        }
         with self.assertRaisesRegex(SourceError, "Category Extensions"):
             metadata(client, {"game": "url", "scope": "game", "game_id": "g"})
 
@@ -136,6 +173,7 @@ class CollectionTests(unittest.TestCase):
                 if "/end/" in key:
                     saved["body"]["runList"][0]["id"] = "changed"
                 return saved
+
         with TemporaryDirectory() as temp:
             client = Unstable()
             result = partition(client, temp, "g", "c", 1)
@@ -147,20 +185,38 @@ class CollectionTests(unittest.TestCase):
         from unittest.mock import Mock, patch
         from speedrun_etl.collect import collect_runs
         from speedrun_etl.jsonutil import atomic_write
-        body = {"game": {"id": "g"}, "categories": [
-            {"id": "empty", "isPerLevel": False}, {"id": "normal", "isPerLevel": False}]}
+
+        body = {
+            "game": {"id": "g"},
+            "categories": [
+                {"id": "empty", "isPerLevel": False},
+                {"id": "normal", "isPerLevel": False},
+            ],
+        }
         client = Mock()
+
         def request(endpoint, params, key, context):
-            value = ({ } if params.get("params", {}).get("categoryId") == "empty" else
-                     {"recordEventList": [], "pagination": {"pages": 1}})
+            value = (
+                {}
+                if params.get("params", {}).get("categoryId") == "empty"
+                else {"recordEventList": [], "pagination": {"pages": 1}}
+            )
             return {"response_id": key, "body": value}
+
         client.request.side_effect = request
         package = Mock()
-        package.records.return_value = iter([{"endpoint": "GetGameData", "http_status": 200}])
+        package.records.return_value = iter(
+            [{"endpoint": "GetGameData", "http_status": 200}]
+        )
         with TemporaryDirectory() as temp:
             atomic_write(Path(temp) / "config.json", {"scope": "full_game"})
-            with patch("speedrun_etl.collect.restore", return_value=body), patch(
-                "speedrun_etl.collect.partition", return_value={"coverage": "verified_public_partitions"}):
+            with (
+                patch("speedrun_etl.collect.restore", return_value=body),
+                patch(
+                    "speedrun_etl.collect.partition",
+                    return_value={"coverage": "verified_public_partitions"},
+                ),
+            ):
                 result = collect_runs(client, temp, package)
         self.assertEqual("partial", result["coverage"])
         self.assertEqual("unavailable", result["wr"][0]["coverage"])
@@ -169,14 +225,24 @@ class CollectionTests(unittest.TestCase):
 
     def test_empty_last_page_and_filters(self):
         with self.assertRaisesRegex(SourceError, "outside"):
-            validate_page({"pagination":{"page":3,"count":3,"per":2,"pages":2}},3)
+            validate_page(
+                {"pagination": {"page": 3, "count": 3, "per": 2, "pages": 2}}, 3
+            )
         self.assertEqual([], validate_page(page(total=0), 1))
         empty = {"pagination": {"page": 1, "count": 0, "per": 100, "pages": 1}}
         self.assertEqual([], validate_page(empty, 1))
         from speedrun_etl.collect import boundary_signature
+
         self.assertTrue(boundary_signature(empty))
-        self.assertEqual(["r2"], validate_page(page(2), 2, game_id="g", category_id="c", status=1))
-        for field, bad in (("gameId", "wrong"), ("categoryId", "wrong"), ("verified", 2), ("levelId", "level")):
+        self.assertEqual(
+            ["r2"], validate_page(page(2), 2, game_id="g", category_id="c", status=1)
+        )
+        for field, bad in (
+            ("gameId", "wrong"),
+            ("categoryId", "wrong"),
+            ("verified", 2),
+            ("levelId", "level"),
+        ):
             body = page()
             body["runList"][0][field] = bad
             with self.assertRaises(SourceError):
@@ -208,8 +274,11 @@ class CollectionTests(unittest.TestCase):
             self.assertTrue(any("pass1" in key for key in client.cache))
 
     def test_stop_scope_and_path_traversal(self):
-        for conf in ({"collection_id": "../oops"}, {"collection_id": "valid", "scope": "global"},
-                     {"collection_id": "valid", "game": "other"}):
+        for conf in (
+            {"collection_id": "../oops"},
+            {"collection_id": "valid", "scope": "global"},
+            {"collection_id": "valid", "game": "other"},
+        ):
             with self.assertRaises(ValueError):
                 validate_conf(conf)
 

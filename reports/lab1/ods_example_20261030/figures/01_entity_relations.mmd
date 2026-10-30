@@ -1,0 +1,9 @@
+erDiagram
+    GAME_ID ||--o{ RUN_ID : gameId
+    GAME_ID ||--o{ CATEGORY_IN_METADATA : contains
+    CATEGORY_IN_METADATA ||--o{ RUN_ID : categoryId
+    RUN_ID }o--o{ PLAYER_ID : playerIds
+    WR_EVENT }o--o{ RUN_ID : run_ids
+    RUN_ID ||--o{ CORE_VERSION : source_id
+    CORE_VERSION ||--o{ CHECK_STATE : version_key
+    SOURCE_RESPONSE ||--o{ CHECK_STATE : response_id

@@ -1,0 +1,17 @@
+flowchart TD
+    A["API response<br/>полный JSON + metadata"] --> J["Надёжный journal<br/>до продвижения checkpoint"]
+    J --> B["Упаковка entity-v3"]
+    B --> E["games · runs · players · wr_history<br/>предметные состояния"]
+    B --> C["checks<br/>наблюдения, переходы, контекст"]
+    B --> R["responses + blocks<br/>восстановимый исходный JSON"]
+    B --> M["manifests<br/>область · coverage · ошибки · digest"]
+    E --> Q["Один логический пакет<br/>8 наборов"]
+    C --> Q
+    R --> Q
+    M --> Q
+    Q --> P["PostgreSQL<br/>8 таблиц + runs_current"]
+    Q --> D["MongoDB<br/>8 коллекций"]
+    Q --> S["Garage S3<br/>gzip JSONL chunks + indexes"]
+    P --> V["Readback и digest<br/>3 receipts → ready"]
+    D --> V
+    S --> V

@@ -1,7 +1,7 @@
-"""Bounded public v1 /runs probes using the production journal, budget and lock.
+"""Ограниченные исследовательские запросы публичного v1 /runs.
 
-Research only: production DAG imports/routes remain unchanged. No API key is used.
-"""
+Использует общий журнал, бюджет и блокировку без API key; не меняет маршруты DAG."""
+
 import base64
 from urllib.parse import parse_qs, urlencode, urlsplit
 from urllib.request import Request, urlopen
@@ -16,18 +16,42 @@ class V1RunsTransport:
 
     def __call__(self, request, timeout=60):
         parts = urlsplit(request.full_url)
-        if (request.get_method() != "GET" or parts.scheme != "https" or
-                parts.netloc != "www.speedrun.com" or parts.path != "/api/v2/v1/runs"):
+        if (
+            request.get_method() != "GET"
+            or parts.scheme != "https"
+            or parts.netloc != "www.speedrun.com"
+            or parts.path != "/api/v2/v1/runs"
+        ):
             raise ValueError("Research transport only accepts public v1 /runs")
         encoded = parse_qs(parts.query)["_r"][0]
         params = loads(base64.urlsafe_b64decode(encoded + "=" * (-len(encoded) % 4)))
-        allowed = {"game", "category", "platform", "examiner", "status", "orderby", "direction", "max", "offset", "embed"}
+        allowed = {
+            "game",
+            "category",
+            "platform",
+            "examiner",
+            "status",
+            "orderby",
+            "direction",
+            "max",
+            "offset",
+            "embed",
+        }
         if set(params) - allowed or not params.get("game"):
             raise ValueError("Unexpected v1 research parameters")
-        if not 1 <= int(params.get("max", 200)) <= 200 or int(params.get("offset", 0)) < 0:
+        if (
+            not 1 <= int(params.get("max", 200)) <= 200
+            or int(params.get("offset", 0)) < 0
+        ):
             raise ValueError("Invalid v1 research pagination")
-        headers = {k:v for k,v in request.header_items() if k.lower() in ("accept", "accept-encoding", "user-agent")}
-        actual = Request("https://www.speedrun.com/api/v1/runs?" + urlencode(params), headers=headers)
+        headers = {
+            k: v
+            for k, v in request.header_items()
+            if k.lower() in ("accept", "accept-encoding", "user-agent")
+        }
+        actual = Request(
+            "https://www.speedrun.com/api/v1/runs?" + urlencode(params), headers=headers
+        )
         return self.transport(actual, timeout=timeout)
 
 
@@ -35,8 +59,16 @@ def client(state, collection, snapshot, budget=24, transport=urlopen):
     # The allow-list extension is local to this research process. No DAG configuration
     # or source module on disk is changed; journal endpoint explicitly says v1/runs.
     ENDPOINTS.add("v1/runs")
-    return Client(state, collection, snapshot, budget=budget, transport=V1RunsTransport(transport),
-                  adaptive_rate=False, interval=3.1, max_attempts=1)
+    return Client(
+        state,
+        collection,
+        snapshot,
+        budget=budget,
+        transport=V1RunsTransport(transport),
+        adaptive_rate=False,
+        interval=3.1,
+        max_attempts=1,
+    )
 
 
 def validate_runs(saved, params):
@@ -46,15 +78,29 @@ def validate_runs(saved, params):
         raise ValueError("v1 page length differs from pagination")
     if int(pagination["offset"]) != int(params.get("offset", 0)):
         raise ValueError("v1 returned another offset")
-    if int(pagination["max"]) != int(params.get("max", 200)) or len(rows) > int(pagination["max"]):
+    if int(pagination["max"]) != int(params.get("max", 200)) or len(rows) > int(
+        pagination["max"]
+    ):
         raise ValueError("v1 returned another page limit")
     ids = []
     for row in rows:
-        if (not row.get("id") or row.get("game") != params["game"] or
-                (params.get("category") and row.get("category") != params["category"]) or
-                (params.get("status") and row.get("status", {}).get("status") != params["status"]) or
-                (params.get("examiner") and row.get("status", {}).get("examiner") != params["examiner"]) or
-                (params.get("platform") and row.get("system", {}).get("platform") != params["platform"])):
+        if (
+            not row.get("id")
+            or row.get("game") != params["game"]
+            or (params.get("category") and row.get("category") != params["category"])
+            or (
+                params.get("status")
+                and row.get("status", {}).get("status") != params["status"]
+            )
+            or (
+                params.get("examiner")
+                and row.get("status", {}).get("examiner") != params["examiner"]
+            )
+            or (
+                params.get("platform")
+                and row.get("system", {}).get("platform") != params["platform"]
+            )
+        ):
             raise ValueError("v1 ID/game/category/status/platform filter violation")
         ids.append(row["id"])
     if len(ids) != len(set(ids)):
