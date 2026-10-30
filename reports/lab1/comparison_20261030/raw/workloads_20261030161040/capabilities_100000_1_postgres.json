@@ -1,0 +1,1 @@
+{"check_constraint":{"code":"23514","rejected":true},"duplicate_key":{"code":"23505","rejected":true},"foreign_key":{"code":"23503","rejected":true},"multi_record_rollback":[["a",0],["b",0]],"schema_optional_field":"ALTER TABLE ADD COLUMN; benchmarked separately"}

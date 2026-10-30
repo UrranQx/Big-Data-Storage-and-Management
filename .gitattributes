@@ -7,3 +7,6 @@ Dockerfile text eol=lf
 *.png binary
 *.zip binary
 *.bundle binary
+
+# Preserve the original bytes of archived evidence on every OS.
+docs/research/evidence/lab1_history_20261030/** -text whitespace=cr-at-eol

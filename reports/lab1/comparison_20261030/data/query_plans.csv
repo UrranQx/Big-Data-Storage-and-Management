@@ -1,0 +1,145 @@
+size,repeat,store,phase,operation,execution_ms,rows_returned,primary_docs_examined,primary_keys_examined,plan_stages,planning_ms,shared_hit_blocks,shared_read_blocks
+100000,1,mongo,indexed,join_1000,16,1000,2062,2062,coscan;filter;group;ixseek;limit;mkobj;nlj;project;seek;union;unwind,,,
+100000,1,mongo,indexed,json_filter,0,3,3,3,FETCH;IXSCAN;PROJECTION_SIMPLE;SORT,,,
+100000,1,mongo,indexed,player_runs,0,123,123,123,FETCH;IXSCAN;PROJECTION_SIMPLE;SORT,,,
+100000,1,mongo,indexed,scope_top_100,0,100,100,100,FETCH;IXSCAN;LIMIT;PROJECTION_SIMPLE,,,
+100000,1,mongo,pk_only,join_1000,16,1000,2062,2062,coscan;filter;group;ixseek;limit;mkobj;nlj;project;seek;union;unwind,,,
+100000,1,mongo,pk_only,json_filter,78,3,100000,100000,FETCH;IXSCAN;PROJECTION_SIMPLE,,,
+100000,1,mongo,pk_only,player_runs,82,123,100000,100000,FETCH;IXSCAN;PROJECTION_SIMPLE,,,
+100000,1,mongo,pk_only,scope_top_100,50,100,100000,0,COLLSCAN;PROJECTION_SIMPLE;SORT,,,
+100000,1,postgres,indexed,join_1000,15.122,1000,,,Aggregate;Index Scan,0.249,7159,0
+100000,1,postgres,indexed,json_filter,0.032,3,,,Bitmap Heap Scan;Bitmap Index Scan;Sort,0.071,6,0
+100000,1,postgres,indexed,player_runs,0.259,123,,,Bitmap Heap Scan;Bitmap Index Scan;Sort,0.086,120,0
+100000,1,postgres,indexed,scope_top_100,0.068,100,,,Index Only Scan;Limit,0.068,4,0
+100000,1,postgres,pk_only,join_1000,15.32,1000,,,Aggregate;Index Scan,0.203,7159,0
+100000,1,postgres,pk_only,json_filter,40.249,3,,,Seq Scan;Sort,0.101,14887,4542
+100000,1,postgres,pk_only,player_runs,41.052,123,,,Seq Scan;Sort,0.097,14919,4510
+100000,1,postgres,pk_only,scope_top_100,20.675,100,,,Gather Merge;Limit;Seq Scan;Sort,0.073,14923,4638
+100000,2,mongo,indexed,join_1000,16,1000,2062,2062,coscan;filter;group;ixseek;limit;mkobj;nlj;project;seek;union;unwind,,,
+100000,2,mongo,indexed,json_filter,0,3,3,3,FETCH;IXSCAN;PROJECTION_SIMPLE;SORT,,,
+100000,2,mongo,indexed,player_runs,0,123,123,123,FETCH;IXSCAN;PROJECTION_SIMPLE;SORT,,,
+100000,2,mongo,indexed,scope_top_100,0,100,100,100,FETCH;IXSCAN;LIMIT;PROJECTION_SIMPLE,,,
+100000,2,mongo,pk_only,join_1000,19,1000,2062,2062,coscan;filter;group;ixseek;limit;mkobj;nlj;project;seek;union;unwind,,,
+100000,2,mongo,pk_only,json_filter,79,3,100000,100000,FETCH;IXSCAN;PROJECTION_SIMPLE,,,
+100000,2,mongo,pk_only,player_runs,83,123,100000,100000,FETCH;IXSCAN;PROJECTION_SIMPLE,,,
+100000,2,mongo,pk_only,scope_top_100,51,100,100000,0,COLLSCAN;PROJECTION_SIMPLE;SORT,,,
+100000,2,postgres,indexed,join_1000,11.723,1000,,,Aggregate;Index Scan,0.357,7159,0
+100000,2,postgres,indexed,json_filter,0.03,3,,,Bitmap Heap Scan;Bitmap Index Scan;Sort,0.069,6,0
+100000,2,postgres,indexed,player_runs,0.306,123,,,Bitmap Heap Scan;Bitmap Index Scan;Sort,0.112,120,0
+100000,2,postgres,indexed,scope_top_100,0.141,100,,,Index Only Scan;Limit,0.085,103,0
+100000,2,postgres,pk_only,join_1000,12.841,1000,,,Aggregate;Index Scan,0.237,6958,201
+100000,2,postgres,pk_only,json_filter,35.601,3,,,Seq Scan;Sort,0.164,15041,4388
+100000,2,postgres,pk_only,player_runs,31.794,123,,,Seq Scan;Sort,0.098,15073,4356
+100000,2,postgres,pk_only,scope_top_100,21.073,100,,,Gather Merge;Limit;Seq Scan;Sort,0.056,15077,4484
+100000,3,mongo,indexed,join_1000,20,1000,2062,2062,coscan;filter;group;ixseek;limit;mkobj;nlj;project;seek;union;unwind,,,
+100000,3,mongo,indexed,json_filter,0,3,3,3,FETCH;IXSCAN;PROJECTION_SIMPLE;SORT,,,
+100000,3,mongo,indexed,player_runs,1,123,123,123,FETCH;IXSCAN;PROJECTION_SIMPLE;SORT,,,
+100000,3,mongo,indexed,scope_top_100,0,100,100,100,FETCH;IXSCAN;LIMIT;PROJECTION_SIMPLE,,,
+100000,3,mongo,pk_only,join_1000,13,1000,2062,2062,coscan;filter;group;ixseek;limit;mkobj;nlj;project;seek;union;unwind,,,
+100000,3,mongo,pk_only,json_filter,73,3,100000,100000,FETCH;IXSCAN;PROJECTION_SIMPLE,,,
+100000,3,mongo,pk_only,player_runs,73,123,100000,100000,FETCH;IXSCAN;PROJECTION_SIMPLE,,,
+100000,3,mongo,pk_only,scope_top_100,46,100,100000,0,COLLSCAN;PROJECTION_SIMPLE;SORT,,,
+100000,3,postgres,indexed,join_1000,15.308,1000,,,Aggregate;Index Scan,0.205,7159,0
+100000,3,postgres,indexed,json_filter,0.035,3,,,Bitmap Heap Scan;Bitmap Index Scan;Sort,0.088,6,0
+100000,3,postgres,indexed,player_runs,0.216,123,,,Bitmap Heap Scan;Bitmap Index Scan;Sort,0.089,120,0
+100000,3,postgres,indexed,scope_top_100,0.072,100,,,Index Only Scan;Limit,0.097,4,0
+100000,3,postgres,pk_only,join_1000,17.401,1000,,,Aggregate;Index Scan,0.197,6787,372
+100000,3,postgres,pk_only,json_filter,38.9,3,,,Seq Scan;Sort,0.071,15086,4343
+100000,3,postgres,pk_only,player_runs,40.407,123,,,Seq Scan;Sort,0.078,15118,4311
+100000,3,postgres,pk_only,scope_top_100,19.477,100,,,Gather Merge;Limit;Seq Scan;Sort,0.08,15122,4439
+10000,1,mongo,indexed,join_1000,18,1000,2062,2062,coscan;filter;group;ixseek;limit;mkobj;nlj;project;seek;union;unwind,,,
+10000,1,mongo,indexed,json_filter,0,1,1,1,FETCH;IXSCAN;PROJECTION_SIMPLE;SORT,,,
+10000,1,mongo,indexed,player_runs,0,14,14,14,FETCH;IXSCAN;PROJECTION_SIMPLE;SORT,,,
+10000,1,mongo,indexed,scope_top_100,0,100,100,100,FETCH;IXSCAN;LIMIT;PROJECTION_SIMPLE,,,
+10000,1,mongo,pk_only,join_1000,19,1000,2062,2062,coscan;filter;group;ixseek;limit;mkobj;nlj;project;seek;union;unwind,,,
+10000,1,mongo,pk_only,json_filter,7,1,10000,10000,FETCH;IXSCAN;PROJECTION_SIMPLE,,,
+10000,1,mongo,pk_only,player_runs,7,14,10000,10000,FETCH;IXSCAN;PROJECTION_SIMPLE,,,
+10000,1,mongo,pk_only,scope_top_100,6,100,10000,0,COLLSCAN;PROJECTION_SIMPLE;SORT,,,
+10000,1,postgres,indexed,join_1000,18.19,1000,,,Aggregate;Index Scan,0.4,6000,0
+10000,1,postgres,indexed,json_filter,0.037,1,,,Bitmap Heap Scan;Bitmap Index Scan;Sort,0.103,4,0
+10000,1,postgres,indexed,player_runs,0.059,14,,,Bitmap Heap Scan;Bitmap Index Scan;Sort,0.095,15,0
+10000,1,postgres,indexed,scope_top_100,0.151,100,,,Index Only Scan;Limit,0.093,103,0
+10000,1,postgres,pk_only,join_1000,9.575,1000,,,Aggregate;Index Scan,0.31,6000,0
+10000,1,postgres,pk_only,json_filter,3.545,1,,,Seq Scan;Sort,0.105,1940,0
+10000,1,postgres,pk_only,player_runs,2.799,14,,,Seq Scan;Sort,0.103,1940,0
+10000,1,postgres,pk_only,scope_top_100,2.984,100,,,Limit;Seq Scan;Sort,0.059,1940,0
+10000,2,mongo,indexed,join_1000,13,1000,2062,2062,coscan;filter;group;ixseek;limit;mkobj;nlj;project;seek;union;unwind,,,
+10000,2,mongo,indexed,json_filter,0,1,1,1,FETCH;IXSCAN;PROJECTION_SIMPLE;SORT,,,
+10000,2,mongo,indexed,player_runs,0,14,14,14,FETCH;IXSCAN;PROJECTION_SIMPLE;SORT,,,
+10000,2,mongo,indexed,scope_top_100,0,100,100,100,FETCH;IXSCAN;LIMIT;PROJECTION_SIMPLE,,,
+10000,2,mongo,pk_only,join_1000,15,1000,2062,2062,coscan;filter;group;ixseek;limit;mkobj;nlj;project;seek;union;unwind,,,
+10000,2,mongo,pk_only,json_filter,11,1,10000,10000,FETCH;IXSCAN;PROJECTION_SIMPLE,,,
+10000,2,mongo,pk_only,player_runs,10,14,10000,10000,FETCH;IXSCAN;PROJECTION_SIMPLE,,,
+10000,2,mongo,pk_only,scope_top_100,5,100,10000,0,COLLSCAN;PROJECTION_SIMPLE;SORT,,,
+10000,2,postgres,indexed,join_1000,13.368,1000,,,Aggregate;Index Scan,0.362,6000,0
+10000,2,postgres,indexed,json_filter,0.035,1,,,Bitmap Heap Scan;Bitmap Index Scan;Sort,0.108,4,0
+10000,2,postgres,indexed,player_runs,0.042,14,,,Bitmap Heap Scan;Bitmap Index Scan;Sort,0.072,15,0
+10000,2,postgres,indexed,scope_top_100,0.194,100,,,Index Only Scan;Limit,0.093,103,0
+10000,2,postgres,pk_only,join_1000,13.759,1000,,,Aggregate;Index Scan,0.211,6000,0
+10000,2,postgres,pk_only,json_filter,2.703,1,,,Seq Scan;Sort,0.078,1940,0
+10000,2,postgres,pk_only,player_runs,4.527,14,,,Seq Scan;Sort,0.061,1940,0
+10000,2,postgres,pk_only,scope_top_100,2.217,100,,,Limit;Seq Scan;Sort,0.053,1940,0
+10000,3,mongo,indexed,join_1000,12,1000,2062,2062,coscan;filter;group;ixseek;limit;mkobj;nlj;project;seek;union;unwind,,,
+10000,3,mongo,indexed,json_filter,0,1,1,1,FETCH;IXSCAN;PROJECTION_SIMPLE;SORT,,,
+10000,3,mongo,indexed,player_runs,0,14,14,14,FETCH;IXSCAN;PROJECTION_SIMPLE;SORT,,,
+10000,3,mongo,indexed,scope_top_100,0,100,100,100,FETCH;IXSCAN;LIMIT;PROJECTION_SIMPLE,,,
+10000,3,mongo,pk_only,join_1000,17,1000,2062,2062,coscan;filter;group;ixseek;limit;mkobj;nlj;project;seek;union;unwind,,,
+10000,3,mongo,pk_only,json_filter,12,1,10000,10000,FETCH;IXSCAN;PROJECTION_SIMPLE,,,
+10000,3,mongo,pk_only,player_runs,9,14,10000,10000,FETCH;IXSCAN;PROJECTION_SIMPLE,,,
+10000,3,mongo,pk_only,scope_top_100,5,100,10000,0,COLLSCAN;PROJECTION_SIMPLE;SORT,,,
+10000,3,postgres,indexed,join_1000,12.252,1000,,,Aggregate;Index Scan,0.268,6000,0
+10000,3,postgres,indexed,json_filter,0.031,1,,,Bitmap Heap Scan;Bitmap Index Scan;Sort,0.1,4,0
+10000,3,postgres,indexed,player_runs,0.048,14,,,Bitmap Heap Scan;Bitmap Index Scan;Sort,0.082,15,0
+10000,3,postgres,indexed,scope_top_100,0.156,100,,,Index Only Scan;Limit,0.094,103,0
+10000,3,postgres,pk_only,join_1000,13.791,1000,,,Aggregate;Index Scan,0.195,6000,0
+10000,3,postgres,pk_only,json_filter,4.172,1,,,Seq Scan;Sort,0.101,1940,0
+10000,3,postgres,pk_only,player_runs,2.975,14,,,Seq Scan;Sort,0.098,1940,0
+10000,3,postgres,pk_only,scope_top_100,2.899,100,,,Limit;Seq Scan;Sort,0.145,1940,0
+1000,1,mongo,indexed,join_1000,17,1000,2062,2062,coscan;filter;group;ixseek;limit;mkobj;nlj;project;seek;union;unwind,,,
+1000,1,mongo,indexed,json_filter,0,4,4,4,FETCH;IXSCAN;PROJECTION_SIMPLE;SORT,,,
+1000,1,mongo,indexed,player_runs,0,3,3,3,FETCH;IXSCAN;PROJECTION_SIMPLE;SORT,,,
+1000,1,mongo,indexed,scope_top_100,0,100,100,100,FETCH;IXSCAN;LIMIT;PROJECTION_SIMPLE,,,
+1000,1,mongo,pk_only,join_1000,18,1000,2062,2062,coscan;filter;group;ixseek;limit;mkobj;nlj;project;seek;union;unwind,,,
+1000,1,mongo,pk_only,json_filter,1,4,1000,1000,FETCH;IXSCAN;PROJECTION_SIMPLE,,,
+1000,1,mongo,pk_only,player_runs,1,3,1000,1000,FETCH;IXSCAN;PROJECTION_SIMPLE,,,
+1000,1,mongo,pk_only,scope_top_100,1,100,1000,0,COLLSCAN;PROJECTION_SIMPLE;SORT,,,
+1000,1,postgres,indexed,join_1000,7.479,1000,,,Aggregate;Index Scan;Seq Scan;Sort,0.3,3359,0
+1000,1,postgres,indexed,json_filter,0.049,4,,,Bitmap Heap Scan;Bitmap Index Scan;Sort,0.109,7,0
+1000,1,postgres,indexed,player_runs,0.029,3,,,Bitmap Heap Scan;Bitmap Index Scan;Sort,0.081,6,0
+1000,1,postgres,indexed,scope_top_100,0.182,100,,,Index Only Scan;Limit,0.102,103,0
+1000,1,postgres,pk_only,join_1000,11.296,1000,,,Aggregate;Index Scan;Seq Scan;Sort,0.344,3359,0
+1000,1,postgres,pk_only,json_filter,0.342,4,,,Seq Scan;Sort,0.069,194,0
+1000,1,postgres,pk_only,player_runs,0.471,3,,,Seq Scan;Sort,0.101,194,0
+1000,1,postgres,pk_only,scope_top_100,0.303,100,,,Limit;Seq Scan;Sort,0.063,194,0
+1000,2,mongo,indexed,join_1000,12,1000,2062,2062,coscan;filter;group;ixseek;limit;mkobj;nlj;project;seek;union;unwind,,,
+1000,2,mongo,indexed,json_filter,0,4,4,4,FETCH;IXSCAN;PROJECTION_SIMPLE;SORT,,,
+1000,2,mongo,indexed,player_runs,0,3,3,3,FETCH;IXSCAN;PROJECTION_SIMPLE;SORT,,,
+1000,2,mongo,indexed,scope_top_100,0,100,100,100,FETCH;IXSCAN;LIMIT;PROJECTION_SIMPLE,,,
+1000,2,mongo,pk_only,join_1000,14,1000,2062,2062,coscan;filter;group;ixseek;limit;mkobj;nlj;project;seek;union;unwind,,,
+1000,2,mongo,pk_only,json_filter,1,4,1000,1000,FETCH;IXSCAN;PROJECTION_SIMPLE,,,
+1000,2,mongo,pk_only,player_runs,0,3,1000,1000,FETCH;IXSCAN;PROJECTION_SIMPLE,,,
+1000,2,mongo,pk_only,scope_top_100,1,100,1000,0,COLLSCAN;PROJECTION_SIMPLE;SORT,,,
+1000,2,postgres,indexed,join_1000,6.536,1000,,,Aggregate;Index Scan;Seq Scan;Sort,0.376,3359,0
+1000,2,postgres,indexed,json_filter,0.046,4,,,Bitmap Heap Scan;Bitmap Index Scan;Sort,0.064,7,0
+1000,2,postgres,indexed,player_runs,0.021,3,,,Bitmap Heap Scan;Bitmap Index Scan;Sort,0.058,6,0
+1000,2,postgres,indexed,scope_top_100,0.107,100,,,Index Only Scan;Limit,0.067,103,0
+1000,2,postgres,pk_only,join_1000,16.667,1000,,,Aggregate;Index Scan;Seq Scan;Sort,0.42,3359,0
+1000,2,postgres,pk_only,json_filter,0.565,4,,,Seq Scan;Sort,0.123,194,0
+1000,2,postgres,pk_only,player_runs,0.399,3,,,Seq Scan;Sort,0.102,194,0
+1000,2,postgres,pk_only,scope_top_100,0.529,100,,,Limit;Seq Scan;Sort,0.095,194,0
+1000,3,mongo,indexed,join_1000,12,1000,2062,2062,coscan;filter;group;ixseek;limit;mkobj;nlj;project;seek;union;unwind,,,
+1000,3,mongo,indexed,json_filter,0,4,4,4,FETCH;IXSCAN;PROJECTION_SIMPLE;SORT,,,
+1000,3,mongo,indexed,player_runs,0,3,3,3,FETCH;IXSCAN;PROJECTION_SIMPLE;SORT,,,
+1000,3,mongo,indexed,scope_top_100,0,100,100,100,FETCH;IXSCAN;LIMIT;PROJECTION_SIMPLE,,,
+1000,3,mongo,pk_only,join_1000,15,1000,2062,2062,coscan;filter;group;ixseek;limit;mkobj;nlj;project;seek;union;unwind,,,
+1000,3,mongo,pk_only,json_filter,1,4,1000,1000,FETCH;IXSCAN;PROJECTION_SIMPLE,,,
+1000,3,mongo,pk_only,player_runs,1,3,1000,1000,FETCH;IXSCAN;PROJECTION_SIMPLE,,,
+1000,3,mongo,pk_only,scope_top_100,0,100,1000,0,COLLSCAN;PROJECTION_SIMPLE;SORT,,,
+1000,3,postgres,indexed,join_1000,6.288,1000,,,Aggregate;Index Scan;Seq Scan;Sort,0.22,3359,0
+1000,3,postgres,indexed,json_filter,0.15,4,,,Bitmap Heap Scan;Bitmap Index Scan;Sort,0.145,7,0
+1000,3,postgres,indexed,player_runs,0.023,3,,,Bitmap Heap Scan;Bitmap Index Scan;Sort,0.06,6,0
+1000,3,postgres,indexed,scope_top_100,0.101,100,,,Index Only Scan;Limit,0.066,103,0
+1000,3,postgres,pk_only,join_1000,5.805,1000,,,Aggregate;Index Scan;Seq Scan;Sort,0.193,3359,0
+1000,3,postgres,pk_only,json_filter,0.265,4,,,Seq Scan;Sort,0.055,194,0
+1000,3,postgres,pk_only,player_runs,0.219,3,,,Seq Scan;Sort,0.05,194,0
+1000,3,postgres,pk_only,scope_top_100,0.288,100,,,Limit;Seq Scan;Sort,0.048,194,0

@@ -1,13 +1,15 @@
 # Структура рабочего проекта ЛР1
 
-Текущая модель — entity-v2: игры, раны, игроки и история WR. Правила модели —
+Текущая модель — entity-v3 (чтение entity-v2 сохраняется): игры, раны, игроки и история WR. Правила модели —
 DATA_MODEL.md; фактическое состояние автора — docs/HANDOFF.md; переносимый
-запуск с нуля — docs/TEAM_HANDOFF.md. Стек и три DAG уже реализованы.
+запуск с нуля — docs/TEAM_HANDOFF.md. Стек и четыре DAG уже реализованы.
 
 | Место | Назначение |
 |---|---|
 | compose.yaml, infra/ | Docker Compose, один образ Airflow, init, локальная генерация секретов |
-| dags/ods/ | Три тонких DAG games_metadata, runs, players |
+| infra/cold_backup.py, backup_inventory.py, verify_cold_backup.py | Холодная копия шести volumes/кода/образов на другой диск, baseline и реальное изолированное восстановление; без wipe и source HTTP |
+| dags/ods/ | Четыре тонких DAG games_metadata, runs, wr_history, players |
+| model.py, wr.py | Два явных контрактаODS, читаемыеIDзапусков, отдельный сбор WR/coverage |
 | src/speedrun_etl/source.py | Общий HTTP-клиент, до 4 страниц в пакете, pacing, retries, gzip, телеметрия |
 | http_probe.py, http_transport.py | Ограниченные исследования GET/keep-alive/POST и окон, не стартовая команда сбора |
 | v1_research.py | Ограниченный публичный /runs v1 через общий limiter, только исследование, не источник действующих DAG |
@@ -16,7 +18,8 @@ DATA_MODEL.md; фактическое состояние автора — docs/H
 | entity_ods.py, entity_runtime.py | Версии полных сущностей, checks, упаковка и профили участников |
 | entity_storage.py | Актуальный DDL entity_v2, пакетные PG/Mongo-загрузки, S3-блоки, readback |
 | entity_workflow.py, workflow.py | Задачи и зависимости Airflow, подтверждение трёх загрузок |
-| batch.py | Переносимая очередь top-N / all / выборка четырёх групп, сохранение прогресса в control PG |
+| batch.py | Очередь top-N / all / выборка четырёх групп, прогресс в control PG, мягкая pause/resume с сохранёнными настройками |
+| keep_running.py | Продолжение существующей очереди после штатных лимитов до явного дедлайна; ошибки и ручную паузу не отменяет |
 | benchmark.py | Актуальные замеры entity-v2 в трёх изолированных пространствах, без HTTP источника |
 | storage_workloads.py | Дополнительные фиксированные опыты запросов/индексов/DDL/CRUD/COPY только в test_wl_*, не DDS |
 | forecast.py | Прогноз ресурсов по завершённой выборке из четырёх групп; не обещает полноту сайта |

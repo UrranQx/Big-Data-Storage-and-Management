@@ -1,0 +1,177 @@
+{
+  "authorization": "User: запускаем; agreed wipe collected data and backups, then start bounded full session",
+  "deletion_paths": [
+    {
+      "exists": true,
+      "path": "C:\\Users\\alike\\ETL_practice\\data",
+      "files": 0,
+      "bytes": null,
+      "scope": "contents_only"
+    },
+    {
+      "exists": true,
+      "path": "C:\\Users\\alike\\ETL_practice\\exports\\backups",
+      "files": 33,
+      "bytes": 5549937827.0,
+      "scope": "entire_target"
+    },
+    {
+      "exists": true,
+      "path": "C:\\Users\\alike\\ETL_practice\\exports\\current-backup-path.txt",
+      "files": 1,
+      "bytes": 78.0,
+      "scope": "entire_target"
+    },
+    {
+      "exists": true,
+      "path": "C:\\Users\\alike\\ETL_practice\\archive\\backups\\data.zip",
+      "files": 1,
+      "bytes": 283112061.0,
+      "scope": "entire_target"
+    },
+    {
+      "exists": true,
+      "path": "C:\\Users\\alike\\ETL_practice\\archive\\backups\\BD_LAB1.zip",
+      "files": 1,
+      "bytes": 84350.0,
+      "scope": "entire_target"
+    }
+  ],
+  "preserved_config_sha256": {
+    "env": "D5627886419E62C3219511CADB22AF56E819229D5802B24BCE7338A3277D4135",
+    "garage": "E0976A6F3D81D78CCBC1AC0C1024A2E30D51EFFB61CC5F83FC33B855AEE6F26A"
+  },
+  "recorded_at": "2026-10-28T21:08:02.889038Z",
+  "phase": "full_running",
+  "mongo_configdb_volume": "665a12c821bc051417ed3fc950e4f350bae82780dcb1f83828e718979de126bc",
+  "session": {
+    "http_budget": 9000,
+    "rpm": 40,
+    "window": 4,
+    "game_budget": 5000,
+    "continue_on_drift": true,
+    "strategy": "date-large",
+    "hours": 8,
+    "collection": "lab1-full-20261029"
+  },
+  "project": "speedrun-lab1",
+  "volumes": [
+    "speedrun-lab1_postgres-data",
+    "speedrun-lab1_mongo-data",
+    "speedrun-lab1_garage-meta",
+    "speedrun-lab1_garage-data",
+    "speedrun-lab1_etl-state",
+    "speedrun-lab1_airflow-logs"
+  ],
+  "wipe_completed_at": "2026-10-28T21:09:32.6026286Z",
+  "runtime": {
+    "batch_id": "lab1-full-20261029",
+    "catalog": {
+      "budget": {
+        "limit": 650,
+        "used": 54
+      },
+      "collection": "lab1-full-20261029-catalog",
+      "http_telemetry": {
+        "attempts": 53,
+        "configured_page_window": 4,
+        "last_error": null,
+        "last_http_status": "200",
+        "last_pacing_interval_ms": 1500,
+        "last_response_age_seconds": 1,
+        "median_response_ms": 1130,
+        "network_bytes": 2349114,
+        "observed_rpm": 32.7,
+        "rate_policy": "recover-v1",
+        "recent_rpm": 38.27,
+        "status_counts": {
+          "200": 53
+        }
+      },
+      "limiter": {
+        "inflight": true,
+        "next_at": 1793222051.6990726,
+        "rate": {
+          "rpm": 40,
+          "successes": 23,
+          "throttled": false
+        }
+      },
+      "snapshots": {
+        "games_metadata": {
+          "checkpoints": [
+            {
+              "complete": false,
+              "coverage": null,
+              "name": "catalog",
+              "pages": 53,
+              "pages_planned": 262,
+              "pass": 0,
+              "source_count": 52232,
+              "source_pages": 262,
+              "unique_games": 10600,
+              "unique_runs": null,
+              "updated_at": "2026-10-28T21:14:09.947005"
+            }
+          ],
+          "completed_sections": 0,
+          "coverage_counts": {},
+          "extracted": false,
+          "known_sections": 1,
+          "phase": "collecting",
+          "records": {},
+          "verified": false
+        }
+      }
+    },
+    "checked_at": "2026-10-29T00:14:11.190115+03:00",
+    "config": {
+      "game_request_budget": 5000,
+      "mode": "all",
+      "run_partition_strategy": "date_large_v1",
+      "top": null
+    },
+    "driver": {
+      "collection_id": "lab1-full-20261029-catalog",
+      "phase": "catalog",
+      "updated_at": "2026-10-29T00:11:26.951482+03:00"
+    },
+    "driver_running": true,
+    "fresh_ods_before_start": {
+      "dag_ids": [
+        "games_metadata",
+        "players",
+        "runs"
+      ],
+      "host_guard_age_seconds": 30.22,
+      "mongo_documents": {
+        "blocks": 0,
+        "checks": 0,
+        "games": 0,
+        "manifests": 0,
+        "players": 0,
+        "responses": 0,
+        "runs": 0,
+        "wr_history": 0
+      },
+      "postgres_rows": {
+        "blocks": 0,
+        "checks": 0,
+        "games": 0,
+        "manifests": 0,
+        "players": 0,
+        "responses": 0,
+        "runs": 0,
+        "wr_history": 0
+      },
+      "s3_initial_objects": 0,
+      "snapshot_directories": 0
+    },
+    "runtime_policy": {
+      "continue_on_drift": true,
+      "hours": 8,
+      "session_request_budget": 9000,
+      "updated_at": "2026-10-29T00:11:26.93293+03:00"
+    }
+  }
+}

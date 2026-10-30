@@ -1,0 +1,32 @@
+{
+  "checked_at": "2026-10-28T20:46:10.950350+00:00",
+  "tests": 132,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "test_runner_seconds": 31.474,
+  "elapsed_seconds": 31.861,
+  "integration_enabled": true,
+  "log": "/opt/airflow/state/pause-resume-tests-20261028.log",
+  "source_http_attempts_before": 8978,
+  "source_http_attempts_after": 8978,
+  "source_budget_digest_before": "26d9d64eb38c13fbf32c42e6a404906153f6de23c81746d448785ff6133044c0",
+  "source_budget_digest_after": "26d9d64eb38c13fbf32c42e6a404906153f6de23c81746d448785ff6133044c0",
+  "active_dags_before": [],
+  "active_dags_after": [],
+  "pause_test_scope": "Synthetic DAG starts/waits and temporary local state; real PostgreSQL control queue. No live source collection.",
+  "cases": [
+    "A separate pause process returns while driver.lock is held; the next stage is denied admission",
+    "The active game finishes all three DAG waits before pausing; the next game remains pending",
+    "A pause at the last game boundary is acknowledged; resume marks completion without repeating games",
+    "Pause during catalog or ranking stops before the next stage",
+    "Repeated run does not cancel pause or replace the saved session policy",
+    "Resume restores all/top/sample, catalog, date strategy, game/session budgets, hours and continue-on-drift",
+    "A duplicate resume neither starts another driver nor cancels an active pause",
+    "Unknown batches and scope changes are rejected without side effects",
+    "An active store failure remains failed despite a pause request",
+    "Progress distinguishes requested pause, acknowledged pause and a stopped driver"
+  ],
+  "wipe_performed": false,
+  "full_started": false
+}

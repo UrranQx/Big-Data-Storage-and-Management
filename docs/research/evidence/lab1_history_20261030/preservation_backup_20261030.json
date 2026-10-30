@@ -1,0 +1,660 @@
+{
+  "backup_path": "D:\\ETL_backups\\pre-redesign-20261029T231150Z",
+  "complete": true,
+  "restore_verified": true,
+  "backup_bytes_at_completion": 6678589081,
+  "backup_gib": 6.22,
+  "all_six_filesystems_extracted_and_compared": true,
+  "offline_images_loaded": 4,
+  "git_bundle_verified": true,
+  "tested_scripts_match_archived_scripts": true,
+  "isolated_restore": {
+    "started_at": "2026-10-29T23:31:27.454592+00:00",
+    "verified": true,
+    "production_untouched": true,
+    "network_internal": true,
+    "published_ports": [],
+    "temporary_prefix": "speedrun-lab1-restorecheck-7b597f8ac738",
+    "filesystems": [
+      {
+        "name": "postgres-data",
+        "sha256_verified": true,
+        "extracted_and_tar_compared": true,
+        "seconds": 70.51
+      },
+      {
+        "name": "mongo-data",
+        "sha256_verified": true,
+        "extracted_and_tar_compared": true,
+        "seconds": 46.84
+      },
+      {
+        "name": "garage-meta",
+        "sha256_verified": true,
+        "extracted_and_tar_compared": true,
+        "seconds": 1.92
+      },
+      {
+        "name": "garage-data",
+        "sha256_verified": true,
+        "extracted_and_tar_compared": true,
+        "seconds": 20.05
+      },
+      {
+        "name": "etl-state",
+        "sha256_verified": true,
+        "extracted_and_tar_compared": true,
+        "seconds": 202.11
+      },
+      {
+        "name": "airflow-logs",
+        "sha256_verified": true,
+        "extracted_and_tar_compared": true,
+        "seconds": 2.88
+      }
+    ],
+    "checked_fields": [
+      "postgres_counts",
+      "postgres_samples",
+      "mongo_counts",
+      "mongo_samples",
+      "run_ids",
+      "player_ids",
+      "receipts",
+      "queue_states",
+      "popular_queue_order",
+      "s3",
+      "airflow_active_runs",
+      "airflow_active_tasks"
+    ],
+    "mismatches": [],
+    "restored_inventory": {
+      "airflow_active_runs": 0,
+      "airflow_active_tasks": 0,
+      "mongo_counts": {
+        "blocks": 237,
+        "checks": 1571372,
+        "games": 54882,
+        "manifests": 1157,
+        "players": 294771,
+        "responses": 33048,
+        "runs": 1122141,
+        "wr_history": 2794
+      },
+      "mongo_samples": {
+        "blocks": {
+          "digest": "95fc517d56898223e488bc40473c03e2221250c3de4c27cede45cfe11c28a765",
+          "key": "00b74a750351b1ecb3c82853f072b82c2c8db195c5967b6b26c5f384f2d22d3b"
+        },
+        "checks": {
+          "digest": "3cb1712cdc68b5931a34f771038a09b69942ea47074f1a4d6d8257c0fa98dae2",
+          "key": "000002d29bbaf9d885c1aecaed93991f9ab079bef3a440840467001f13e424be"
+        },
+        "games": {
+          "digest": "81ede1907f55d2e02fe12016f379d1bc598203047bd2bca4f5952a6abce0e677",
+          "key": "00000897fe19fcde6339b8dfa3f9afe320453f97b25684de461210f32b08ee68"
+        },
+        "manifests": {
+          "digest": "2277feb9b9811bfca7c7aced341c78952bab303586f9c21c23015029cacc452f",
+          "key": "lab1-full-20261029-catalog-games_metadata:entity-v2"
+        },
+        "players": {
+          "digest": "33ce7bbb8d5c7a78a4e0a2b6082a4af3a6fe434deb4855f0122044ed24090d20",
+          "key": "000005900fa7413059cbd91bb9a86257f141b78eacc9a82236fad1560d01709f"
+        },
+        "responses": {
+          "digest": "2bc786ad5ff64e6eac62c4e04677efa04085eb0d26e1c1a657c2362e0c2c40e4",
+          "key": "0000fa42-097c-4d4d-9f03-aa144c8b0349"
+        },
+        "runs": {
+          "digest": "757b37ccf05a170f7483942ede99fd225775da880b27a5c4692e90dbf11ac5b8",
+          "key": "0000871e61a497966d17bcf5f0340c4e9a88e74fb7ececffc08dd407c00a6ac6"
+        },
+        "wr_history": {
+          "digest": "bc874c806f03b1172cea596350c2d3d002a6e24c7ee2f52c41089502267482e0",
+          "key": "001795c0d42d9d5673484e6d8d3450b9b8819682d55c914ed91dbcff777726dc"
+        }
+      },
+      "observed_at": "2026-10-29T23:37:53.325223+00:00",
+      "player_ids": 294770,
+      "popular_queue_order": {
+        "descending_catalog_run_count": true,
+        "first_ten": [
+          [
+            1,
+            "k6q4rqzd",
+            "Seterra (Old Version)",
+            "61570"
+          ],
+          [
+            2,
+            "o1y9wo6q",
+            "Super Mario 64",
+            "54734"
+          ],
+          [
+            3,
+            "o1y9j9v6",
+            "Celeste",
+            "52392"
+          ],
+          [
+            4,
+            "y65797de",
+            "Subway Surfers",
+            "48033"
+          ],
+          [
+            5,
+            "o1y9pyk6",
+            "Google Snake",
+            "47917"
+          ],
+          [
+            6,
+            "369p3p81",
+            "ULTRAKILL",
+            "47082"
+          ],
+          [
+            7,
+            "nd28p43d",
+            "Seterra (Geoguessr Version)",
+            "34756"
+          ],
+          [
+            8,
+            "j1npme6p",
+            "Minecraft: Java Edition",
+            "30178"
+          ],
+          [
+            9,
+            "w6jrzxdj",
+            "Speed Builders",
+            "29660"
+          ],
+          [
+            10,
+            "76r55vd8",
+            "Super Mario Odyssey",
+            "23591"
+          ]
+        ],
+        "ordered_ids_digest": "eaabcf1eee6575a7190180789534aa629890c5c404b8501c3a6c0de007e2d9fd",
+        "queued": 10000
+      },
+      "postgres_counts": {
+        "blocks": 237,
+        "checks": 1571372,
+        "games": 54882,
+        "manifests": 1157,
+        "players": 294771,
+        "responses": 33048,
+        "runs": 1122141,
+        "wr_history": 2794
+      },
+      "postgres_samples": {
+        "blocks": {
+          "digest": "95fc517d56898223e488bc40473c03e2221250c3de4c27cede45cfe11c28a765",
+          "key": "00b74a750351b1ecb3c82853f072b82c2c8db195c5967b6b26c5f384f2d22d3b"
+        },
+        "checks": {
+          "digest": "3cb1712cdc68b5931a34f771038a09b69942ea47074f1a4d6d8257c0fa98dae2",
+          "key": "000002d29bbaf9d885c1aecaed93991f9ab079bef3a440840467001f13e424be"
+        },
+        "games": {
+          "digest": "81ede1907f55d2e02fe12016f379d1bc598203047bd2bca4f5952a6abce0e677",
+          "key": "00000897fe19fcde6339b8dfa3f9afe320453f97b25684de461210f32b08ee68"
+        },
+        "manifests": {
+          "digest": "2277feb9b9811bfca7c7aced341c78952bab303586f9c21c23015029cacc452f",
+          "key": "lab1-full-20261029-catalog-games_metadata:entity-v2"
+        },
+        "players": {
+          "digest": "33ce7bbb8d5c7a78a4e0a2b6082a4af3a6fe434deb4855f0122044ed24090d20",
+          "key": "000005900fa7413059cbd91bb9a86257f141b78eacc9a82236fad1560d01709f"
+        },
+        "responses": {
+          "digest": "2bc786ad5ff64e6eac62c4e04677efa04085eb0d26e1c1a657c2362e0c2c40e4",
+          "key": "0000fa42-097c-4d4d-9f03-aa144c8b0349"
+        },
+        "runs": {
+          "digest": "757b37ccf05a170f7483942ede99fd225775da880b27a5c4692e90dbf11ac5b8",
+          "key": "0000871e61a497966d17bcf5f0340c4e9a88e74fb7ececffc08dd407c00a6ac6"
+        },
+        "wr_history": {
+          "digest": "bc874c806f03b1172cea596350c2d3d002a6e24c7ee2f52c41089502267482e0",
+          "key": "001795c0d42d9d5673484e6d8d3450b9b8819682d55c914ed91dbcff777726dc"
+        }
+      },
+      "queue_states": [
+        [
+          "lab1-full-20261029",
+          "complete",
+          214
+        ],
+        [
+          "lab1-full-20261029",
+          "not_applicable",
+          5
+        ],
+        [
+          "lab1-full-20261029",
+          "pending",
+          51194
+        ],
+        [
+          "lab1-popular10k-20261029",
+          "complete",
+          161
+        ],
+        [
+          "lab1-popular10k-20261029",
+          "not_applicable",
+          5
+        ],
+        [
+          "lab1-popular10k-20261029",
+          "pending",
+          9834
+        ],
+        [
+          "testbatch298afcf3fc",
+          "complete",
+          2
+        ],
+        [
+          "testbatch813f6b6eb9",
+          "complete",
+          2
+        ],
+        [
+          "testbatchaf3664f001",
+          "complete",
+          2
+        ],
+        [
+          "testbatchcdfbf3d147",
+          "complete",
+          2
+        ],
+        [
+          "testdrift48c1103759",
+          "complete",
+          1
+        ],
+        [
+          "testdrift48c1103759",
+          "partial",
+          1
+        ],
+        [
+          "testdrift712a0ec1f3",
+          "complete",
+          1
+        ],
+        [
+          "testdrift712a0ec1f3",
+          "partial",
+          1
+        ],
+        [
+          "testdrift79340db9b8",
+          "complete",
+          1
+        ],
+        [
+          "testdrift79340db9b8",
+          "partial",
+          1
+        ],
+        [
+          "testdriftf2a23dc0a9",
+          "complete",
+          1
+        ],
+        [
+          "testdriftf2a23dc0a9",
+          "partial",
+          1
+        ],
+        [
+          "testpause14e4c4100e",
+          "complete",
+          2
+        ],
+        [
+          "testpause1bd68238c8",
+          "complete",
+          2
+        ],
+        [
+          "testpause239f1d3f17",
+          "complete",
+          2
+        ],
+        [
+          "testpause53b1f9c425",
+          "complete",
+          2
+        ],
+        [
+          "testpause55c8b1e311",
+          "complete",
+          2
+        ],
+        [
+          "testpause8b8d5b7c7b",
+          "complete",
+          2
+        ],
+        [
+          "testpausebde386f701",
+          "complete",
+          2
+        ],
+        [
+          "testpauseed8dcd4269",
+          "complete",
+          2
+        ],
+        [
+          "testpausefail30b43f91",
+          "failed",
+          1
+        ],
+        [
+          "testpausefail30b43f91",
+          "pending",
+          1
+        ],
+        [
+          "testpausefail320b9bb8",
+          "failed",
+          1
+        ],
+        [
+          "testpausefail320b9bb8",
+          "pending",
+          1
+        ],
+        [
+          "testpausefaile088e9c3",
+          "failed",
+          1
+        ],
+        [
+          "testpausefaile088e9c3",
+          "pending",
+          1
+        ],
+        [
+          "testpausefaileeefcfab",
+          "failed",
+          1
+        ],
+        [
+          "testpausefaileeefcfab",
+          "pending",
+          1
+        ],
+        [
+          "testpilot2d93d91878",
+          "complete",
+          4
+        ],
+        [
+          "testpilot5ad836beba",
+          "complete",
+          4
+        ],
+        [
+          "testpilot5f8e6bc006",
+          "complete",
+          4
+        ],
+        [
+          "testpilotf8c553375f",
+          "complete",
+          4
+        ],
+        [
+          "testpriorityece17edf7b",
+          "complete",
+          2
+        ],
+        [
+          "testrepair30392ff04b",
+          "excluded",
+          1
+        ],
+        [
+          "testrepair30392ff04b",
+          "pending",
+          1
+        ],
+        [
+          "testrepair30392ff04b",
+          "running",
+          1
+        ],
+        [
+          "testrepair5b3183d838",
+          "excluded",
+          1
+        ],
+        [
+          "testrepair5b3183d838",
+          "pending",
+          1
+        ],
+        [
+          "testrepair5b3183d838",
+          "running",
+          1
+        ],
+        [
+          "testrepairc495399eb9",
+          "excluded",
+          1
+        ],
+        [
+          "testrepairc495399eb9",
+          "pending",
+          1
+        ],
+        [
+          "testrepairc495399eb9",
+          "running",
+          1
+        ],
+        [
+          "testrepairc7cc7c39fa",
+          "excluded",
+          1
+        ],
+        [
+          "testrepairc7cc7c39fa",
+          "pending",
+          1
+        ],
+        [
+          "testrepairc7cc7c39fa",
+          "running",
+          1
+        ],
+        [
+          "testscope0ff8b5e7ce",
+          "complete",
+          1
+        ],
+        [
+          "testscope0ff8b5e7ce",
+          "not_applicable",
+          1
+        ],
+        [
+          "testscope4756584ca0",
+          "complete",
+          1
+        ],
+        [
+          "testscope4756584ca0",
+          "not_applicable",
+          1
+        ],
+        [
+          "testscope5941a55f6b",
+          "complete",
+          1
+        ],
+        [
+          "testscope5941a55f6b",
+          "not_applicable",
+          1
+        ],
+        [
+          "testscope89f0a90dcf",
+          "complete",
+          1
+        ],
+        [
+          "testscope89f0a90dcf",
+          "not_applicable",
+          1
+        ],
+        [
+          "teststorefail5e94fa2b54",
+          "failed",
+          1
+        ],
+        [
+          "teststorefail5e94fa2b54",
+          "pending",
+          1
+        ],
+        [
+          "teststorefail803d3c1c03",
+          "failed",
+          1
+        ],
+        [
+          "teststorefail803d3c1c03",
+          "pending",
+          1
+        ],
+        [
+          "teststorefailb9beacbb87",
+          "failed",
+          1
+        ],
+        [
+          "teststorefailb9beacbb87",
+          "pending",
+          1
+        ],
+        [
+          "teststorefaile560395353",
+          "failed",
+          1
+        ],
+        [
+          "teststorefaile560395353",
+          "pending",
+          1
+        ],
+        [
+          "teststrategy03557a66ff",
+          "complete",
+          2
+        ],
+        [
+          "teststrategy574f02213b",
+          "complete",
+          2
+        ],
+        [
+          "teststrategyc29965b415",
+          "complete",
+          2
+        ],
+        [
+          "teststrategyd0f94216bd",
+          "complete",
+          2
+        ]
+      ],
+      "receipts": {
+        "count": 3552,
+        "digest": "4c4868e195f53ad5c4b26f0f8b5b2a9da9f9c775f690f91fb81974a5d9869a5a"
+      },
+      "run_ids": 1055101,
+      "s3": {
+        "bytes": 842647519,
+        "listing_digest": "e43f2717d2582e181a6b3934fae11ce6c311062b521ab455850100015ed239a3",
+        "objects": 28028,
+        "samples": [
+          {
+            "bytes": 33745,
+            "key": "entity_v2/entity-v2/chunks/blocks/0/08a4076aef02aaf65854d85b7f869896b4f97e924c310b56b64237278c00b1dc.jsonl.gz",
+            "sha256": "08a4076aef02aaf65854d85b7f869896b4f97e924c310b56b64237278c00b1dc"
+          },
+          {
+            "bytes": 728,
+            "key": "entity_v2/entity-v2/chunks/checks/c/651440daae60337f7ed144e715d7a20f155a2706a6f1a411f7e35ea1c89ad271.jsonl.gz",
+            "sha256": "651440daae60337f7ed144e715d7a20f155a2706a6f1a411f7e35ea1c89ad271"
+          },
+          {
+            "bytes": 22163,
+            "key": "entity_v2/entity-v2/chunks/players/c/e872f5e38f6d20f95939a4f5ce7a039645bec34dc84b593d0f5083765569cb45.jsonl.gz",
+            "sha256": "e872f5e38f6d20f95939a4f5ce7a039645bec34dc84b593d0f5083765569cb45"
+          },
+          {
+            "bytes": 32899,
+            "key": "entity_v2/entity-v2/chunks/runs/3/8b21dd504bc425f6b9eb54c79365b45602c9a64d8f6988465e9d7557a8164fd9.jsonl.gz",
+            "sha256": "8b21dd504bc425f6b9eb54c79365b45602c9a64d8f6988465e9d7557a8164fd9"
+          },
+          {
+            "bytes": 35,
+            "key": "test_wl_fixture_e7852164c4/workloads/probe/schema-invalid",
+            "sha256": "c7ccc36f70f305ee1780c20c1a75f622d7d505db1265d1f5f091bd36ebd52e76"
+          }
+        ]
+      }
+    },
+    "finished_at": "2026-10-29T23:38:08.336348+00:00",
+    "temporary_resources_removed": true,
+    "recovery_compose_file": "D:\\ETL_backups\\pre-redesign-20261029T231150Z\\recovered-volumes.compose.yaml",
+    "recovery_compose_config_valid": true,
+    "restore_check_copies_removed_at": "2026-10-29T23:39:10.422989+00:00",
+    "cleanup_note": "Kept-volume recovery branch and generated Compose config were tested; only six verified temporary copies were then removed. Re-run verify_cold_backup.py --keep-verified-volumes before using the recovery override.",
+    "tested_volume_names": [
+      "speedrun-lab1-restorecheck-7b597f8ac738-postgres-data",
+      "speedrun-lab1-restorecheck-7b597f8ac738-mongo-data",
+      "speedrun-lab1-restorecheck-7b597f8ac738-garage-meta",
+      "speedrun-lab1-restorecheck-7b597f8ac738-garage-data",
+      "speedrun-lab1-restorecheck-7b597f8ac738-etl-state",
+      "speedrun-lab1-restorecheck-7b597f8ac738-airflow-logs"
+    ]
+  },
+  "baseline_file": "reports/lab1/preservation_baseline_20261030.json",
+  "production_shutdown_exit_codes": {
+    "api-server": 0,
+    "dag-processor": 0,
+    "garage": 0,
+    "init": 0,
+    "mongo": 0,
+    "postgres": 0,
+    "scheduler": 0
+  },
+  "source_http_attempts_before": 33048,
+  "wipe_performed": false,
+  "new_collection_started": false,
+  "host_free_gib_after_test": 57.07,
+  "source_http_attempts_after": 33048,
+  "new_source_http_attempts": 0,
+  "all_production_services_stopped": true,
+  "temporary_restore_resources_remaining": 0,
+  "recovery_override_requires_regeneration": true
+}

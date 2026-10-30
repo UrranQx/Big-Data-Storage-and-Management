@@ -1,0 +1,11 @@
+study,block,mode,pages,network_sum_ms,service_span_ms,serial_isolated_estimate_ms
+http-window-20261027-001,0,sequential,"[104, 105]",1100,13930,3648
+http-window-20261027-001,0,window2,"[106, 107]",1113,3765,3661
+http-window-20261027-001,1,window2,"[108, 109]",1178,3793,3677
+http-window-20261027-001,1,sequential,"[110, 111]",1109,14860,3645
+http-window-cold-20261027-001,0,sequential,"[210, 211]",21472,32877,21472
+http-window-cold-20261027-001,0,window2,"[212, 213]",22415,14211,22415
+http-window-cold-20261027-001,1,window2,"[214, 215]",21769,13892,21769
+http-window-cold-20261027-001,1,sequential,"[216, 217]",21893,32849,21893
+http-window4-cold-20261027-001,0,sequential,"[235, 236, 237, 238]",44069,78145,44069
+http-window4-cold-20261027-001,0,window4,"[239, 240, 241, 242]",45153,20127,45153

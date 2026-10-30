@@ -9,6 +9,8 @@ import sqlite3
 import time
 
 from .jsonutil import atomic_write, digest, dumps, loads, read
+from .model import V2, V3, run_core
+from .ods import native_safe
 
 DATASETS = ("games", "runs", "players", "wr_history", "checks", "responses", "blocks", "manifests")
 CHUNK_BYTES = 4 * 1024**2
@@ -23,7 +25,7 @@ def profile_projection(fields):
 
 class EntityPackage:
     def __init__(self, root, role="all"):
-        if role not in ("all", "runs"):
+        if role not in ("all", "runs", "wr_history"):
             raise ValueError("Unknown package role")
         self.role = role
         self.root = Path(root)
@@ -52,11 +54,11 @@ class EntityPackage:
         return loads(row[0])
 
     def records(self, dataset):
-        if self.role == "runs" and dataset == "players":
+        if self.role in ("runs", "wr_history") and dataset == "players":
             return
         for row in self.db.execute("SELECT document FROM records WHERE dataset=? ORDER BY key", (dataset,)):
             value = loads(row[0])
-            if self.role == "runs" and dataset == "checks" and value["dataset"] == "players":
+            if self.role in ("runs", "wr_history") and dataset == "checks" and value["dataset"] == "players":
                 continue
             yield value
 
@@ -75,6 +77,8 @@ class EntityPackage:
 
     def decode(self, value):
         encoding = value["encoding"]
+        if encoding == 'native-json-v1':
+            return value['value']
         if encoding == "json-v1-player-list-ref":
             body = self.decode(value["envelope"])
             if not isinstance(body, dict) or "playerList" in body:
@@ -135,7 +139,12 @@ def retain_base(package, base, snapshot_id, checks):
     package.db.commit()
 
 
-def build(snapshot_root, target_root, resume=False, source_result=None, load_role="all", base_root=None):
+def build(snapshot_root, target_root, resume=False, source_result=None, load_role="all", base_root=None,
+          format_version=V2, runs_input=None, input_snapshot_ids=None):
+    if format_version not in (V2, V3):
+        raise ValueError('Unknown entity package version')
+    if format_version == V3 and base_root is not None:
+        raise ValueError('Do not merge legacy repair into unified runs')
     snapshot_root, target_root = Path(snapshot_root), Path(target_root)
     if target_root.exists() and not resume:
         raise ValueError("Output must be a new directory; existing data is never overwritten")
@@ -146,12 +155,18 @@ def build(snapshot_root, target_root, resume=False, source_result=None, load_rol
     response_count = 0
     # The journal filenames are hashes, not chronological sequence numbers.
     paths = list((snapshot_root / "requests").glob("*/*.json"))
-    if not paths:
+    if not paths and not (format_version == V3 and load_role == 'wr_history' and
+                         (source_result or {}).get('diagnostic') in ('no_full_game_categories_in_source_metadata','upstream_stopped')):
         raise ValueError("No durable source responses")
     ordered = sorted((read(path)["fetched_at"], str(path)) for path in paths)
     marker = {"snapshot_id": snapshot_id, "journal": [[t, str(Path(p).relative_to(snapshot_root))] for t,p in ordered],
               "source_result": source_result, "load_role": load_role,
               "response_encoding": "shared-player-list-v1"}
+    if format_version == V3:
+        marker['format_version'] = V3
+        if input_snapshot_ids is not None:marker['input_snapshot_ids']=input_snapshot_ids
+        if runs_input:
+            marker['runs_input'] = str(runs_input.root)
     if base_root is not None:
         print(f"Packing: retaining immutable base {base_root}", flush=True)
         base = EntityPackage(base_root)
@@ -168,6 +183,8 @@ def build(snapshot_root, target_root, resume=False, source_result=None, load_rol
     else:
         atomic_write(marker_path, marker)
     package = EntityPackage(target_root)
+    if format_version == V3:
+        package.db.execute("CREATE INDEX IF NOT EXISTS records_source ON records(dataset,json_extract(document,'$.source_id'))")
     print(f"Packing: snapshot={snapshot_id} source_responses=0/{len(ordered)}", flush=True)
 
     def entity(dataset, source_id, raw, projection, saved, path, attributes=None):
@@ -179,8 +196,11 @@ def build(snapshot_root, target_root, resume=False, source_result=None, load_rol
         content_hash = hashlib.sha256(raw_bytes).hexdigest()
         key = digest(["speedruncom", source_id, projection, content_hash])
         if (dataset, key) not in package.known:
+            encoded = ({'encoding':'native-json-v1','value':raw}
+                       if format_version==V3 and native_safe(raw) and len(raw_bytes)<=CHUNK_BYTES
+                       else package.encoded(raw_bytes))
             package.put(dataset, {"key": key, "source_system": "speedruncom", "source_id": str(source_id),
-                "projection": projection, "content_hash": content_hash, "raw": package.encoded(raw_bytes),
+                "projection": projection, "content_hash": content_hash, "raw": encoded,
                 **(attributes or {})})
             package.known.add((dataset, key))
         check_key = digest([snapshot_id, dataset, source_id, projection])
@@ -192,8 +212,31 @@ def build(snapshot_root, target_root, resume=False, source_result=None, load_rol
         check["last_seen"] = event
         if not check["states"] or check["states"][-1]["version_key"] != key:
             check["states"].append(event)
+        return check
 
     def run(raw, saved, path, projection):
+        if format_version == V3:
+            core = run_core(raw)
+            if runs_input is not None:
+                # WR is an independent source projection, often partial. Link a
+                # known run by ID; keep ALL WR-specific fields in the exact WR
+                # response rather than replacing the ordinary run with a subset.
+                known = runs_input.db.execute("SELECT 1 FROM records WHERE dataset='runs' AND json_extract(document,'$.source_id')=? LIMIT 1", (str(raw.get('id')),)).fetchone()
+                if known is not None:return
+            check = entity('runs', raw.get('id'), core, 'run_core', saved, path, {
+                'game_id':raw.get('gameId'), 'category_id':raw.get('categoryId'),
+                'status':raw.get('verified'), 'player_ids':raw.get('playerIds', [])})
+            filters = saved.get('params',{}).get('params',{})
+            if (check is not None and saved['endpoint']=='GetGameLeaderboard2'
+                    and not any(k in filters for k in ('minRunDate','maxRunDate'))):
+                context = {'observed_at':saved['fetched_at'],'response_id':saved['response_id'],
+                           'path':path,'filters':filters,
+                           'values':{k:raw[k] for k in ('place','obsolete') if k in raw}}
+                observed = check.setdefault('unfiltered_leaderboard',{'first_seen':context,'last_seen':context,'states':[]})
+                observed['last_seen'] = context
+                if not observed['states'] or any(observed['states'][-1][k]!=context[k] for k in ('values','filters')):
+                    observed['states'].append(context)
+            return
         filters = saved.get("params", {}).get("params", {})
         date_filters = {k: filters[k] for k in ("minRunDate", "maxRunDate") if k in filters}
         if projection == "leaderboard_run" and date_filters:
@@ -274,10 +317,23 @@ def build(snapshot_root, target_root, resume=False, source_result=None, load_rol
             scope = params.get("params", {})
             page = params.get("page", 1)
             history_id = digest([scope, page])
-            entity("wr_history", history_id, body, "source_wr_page", saved, [], {
-                "game_id": scope.get("gameId"), "category_id": scope.get("categoryId"),
-                "filters": scope, "page": page, "coverage": "unavailable" if body == {} else "not_checked"})
-            for event_index, event in enumerate(body.get("recordEventList", [])):
+            if format_version == V2:
+                entity("wr_history", history_id, body, "source_wr_page", saved, [], {
+                    "game_id": scope.get("gameId"), "category_id": scope.get("categoryId"),
+                    "filters": scope, "page": page, "coverage": "unavailable" if body == {} else "not_checked"})
+            events = body.get('recordEventList', [])
+            for event_index, event in enumerate(events if isinstance(events,list) else []):
+                if not isinstance(event,dict) or not isinstance(event.get('runList'),list):
+                    continue  # Full response retained; collector records malformed coverage.
+                if format_version == V3:
+                    event_raw = {'event':{k:v for k,v in event.items() if k != 'runList'},
+                                 'run_ids':[r.get('id') for r in event['runList']]}
+                    entity('wr_history', digest([scope,page,event_index]), event_raw,
+                           'source_wr_event', saved, ['recordEventList',event_index], {
+                               'game_id':scope.get('gameId'), 'category_id':scope.get('categoryId'),
+                               'filters':scope, 'page':page, 'event_index':event_index,
+                               'run_ids':event_raw['run_ids'],
+                               'player_ids':sorted({p for r in event['runList'] for p in r.get('playerIds',[]) if isinstance(p,str) and p})})
                 for run_index, raw in enumerate(event.get("runList", [])):
                     run(raw, saved, ["recordEventList", event_index, "runList", run_index], "source_wr_run")
         package.db.commit()
@@ -304,11 +360,14 @@ def build(snapshot_root, target_root, resume=False, source_result=None, load_rol
         for record in package.records(dataset):
             if digest(package.decode(record["raw"])) != record["content_hash"]:
                 raise ValueError("Entity reconstruction differs")
-    package.put("manifests", {"key": snapshot_id + ":entity-v2", "format_version": "entity-v2",
+    package.put("manifests", {"key": snapshot_id + ":" + format_version, "format_version": format_version,
         "snapshot_id": snapshot_id, "provenance": "retained_base_and_fresh_repair_HTTP" if base_root else "repacked_durable_journal_no_new_HTTP",
         "input_config": read(snapshot_root / "config.json") if (snapshot_root / "config.json").exists() else None,
         "responses": package.db.execute("SELECT count(*) FROM records WHERE dataset='responses'").fetchone()[0], "unresolved": unresolved,
         "source_result": source_result, "load_role": load_role,
+        **({'wr_run_policy':'link_known_ids; preserve_WR_specific_fields_in_exact_responses; retain_WR_only_ids'} if runs_input is not None else {}),
+        **({'input_snapshot_ids':[runs_input.root.parent.name]} if runs_input is not None else {}),
+        **({'input_snapshot_ids':input_snapshot_ids} if input_snapshot_ids is not None else {}),
         **({"input_snapshot_ids": [source_result["repair_from_snapshot_id"]],
             "new_journal_responses": response_count,
             "retained_base": marker["retained_base"]} if base_root else {}),
@@ -318,7 +377,7 @@ def build(snapshot_root, target_root, resume=False, source_result=None, load_rol
     summary = package.summary()
     package.db.execute("PRAGMA wal_checkpoint(TRUNCATE)")
     package.db.close()
-    result = {"format_version": "entity-v2", "snapshot_id": snapshot_id, "records": summary,
+    result = {"format_version": format_version, "snapshot_id": snapshot_id, "records": summary,
               "seconds": round(time.perf_counter() - started, 3), "digest": digest(summary),
               "shared_profile_work": profile_work}
     atomic_write(target_root / "verified_local.json", result)

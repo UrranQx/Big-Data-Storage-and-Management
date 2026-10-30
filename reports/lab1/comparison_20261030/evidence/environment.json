@@ -1,0 +1,51 @@
+{
+  "captured_at": "2026-10-30T16:42:44.852739+00:00",
+  "host_os": "Windows-10-10.0.26300-SP0",
+  "docker": {
+    "memory_bytes": 8237723648,
+    "logical_cpus": 8,
+    "storage_driver": "overlayfs",
+    "os": "Docker Desktop",
+    "kernel": "6.6.114.1-microsoft-standard-WSL2"
+  },
+  "docker_versions": "29.8.2 / 29.8.2",
+  "compose": "Docker Compose version v5.6.0",
+  "backend_versions": {
+    "postgres": "postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg13+2)",
+    "mongo": "db version v8.0.34\nBuild Info: {\n    \"version\": \"8.0.34\",\n    \"gitVersion\": \"51db4515a6597aedcf6188ee4e48a27e65b065ae\",\n    \"openSSLVersion\": \"OpenSSL 3.0.13 30 Jan 2024\",\n    \"modules\": [],\n    \"allocator\": \"tcmalloc-google\",\n    \"environment\": {\n        \"distmod\": \"ubuntu2404\",\n        \"distarch\": \"x86_64\",\n        \"target_arch\": \"x86_64\"\n    }\n}",
+    "garage": "garage v2.4.1 [features: bundled-libs, consul-discovery, fjall, journald, k2v, kubernetes-discovery, lmdb, metrics, sqlite, syslog, telemetry-otlp]"
+  },
+  "backend_limits_and_images": {
+    "postgres": {
+      "memory_bytes": 805306368,
+      "nano_cpus": 2000000000,
+      "image": "postgres:16@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d",
+      "image_id": "sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d"
+    },
+    "mongo": {
+      "memory_bytes": 805306368,
+      "nano_cpus": 2000000000,
+      "image": "mongo:8.0@sha256:6657bf2413fefc5be649390318f5b4cd7328e982722f8ce2ac6dfa6f0a42cb03",
+      "image_id": "sha256:6657bf2413fefc5be649390318f5b4cd7328e982722f8ce2ac6dfa6f0a42cb03"
+    },
+    "garage": {
+      "memory_bytes": 805306368,
+      "nano_cpus": 2000000000,
+      "image": "dxflrs/garage:v2.4.1@sha256:9c96caa2612d3411acc5b0e6701fb238dbfba33e533a6d7d3d811a4b12d0d020",
+      "image_id": "sha256:9c96caa2612d3411acc5b0e6701fb238dbfba33e533a6d7d3d811a4b12d0d020"
+    }
+  },
+  "network_internal": true,
+  "network_names": [
+    "speedrun-comparison-20261030-garage-1",
+    "speedrun-comparison-20261030-postgres-1",
+    "speedrun-comparison-20261030-mongo-1"
+  ],
+  "client_memory_MiB": {
+    "ods": 1536,
+    "workloads": 3072,
+    "pg_bulk": 3072
+  },
+  "client_cpu_limit": 2,
+  "notes": "CPU quotas, not dedicated cores. OS/service caches not reset. Source queue paused during measurement windows."
+}

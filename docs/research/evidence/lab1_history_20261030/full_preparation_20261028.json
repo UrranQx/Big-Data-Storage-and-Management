@@ -1,0 +1,37 @@
+{
+  "as_of": "2026-10-28T09:42:16.587342+00:00",
+  "status": "control_top10_running",
+  "global_full_started": false,
+  "data_or_backups_deleted": false,
+  "separate_confirmation_still_required": true,
+  "tests": {
+    "run": 110,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "real_three_store_integration": true
+  },
+  "implemented": [
+    "date_gap_unfiltered_fallback_with_history",
+    "standard_partial_repair",
+    "no_full_game_scope_terminal_state",
+    "host_disk_guard_and_watcher",
+    "large_player_list_shared_blocks_and_group_processing"
+  ],
+  "repair_evidence": "sm64_standard_repair_20261028.json",
+  "date_gap_evidence": "sm64_date_gap_20261028.json",
+  "profile_compaction_evidence": "player_list_compaction_20261028.json",
+  "observed_batch": {
+    "id": "lab1-top10-fresh-20261028",
+    "complete": 1,
+    "running": "Subway Surfers",
+    "pending": 8
+  },
+  "remaining_before_full": [
+    "Finish and review fresh control top10",
+    "Estimate global requests, duration and bytes with representative sampling",
+    "Complete final entity-v2 storage benchmark, choice, graphs/report/demo",
+    "Review global session budget and operational limits",
+    "Request explicit wipe/full confirmation"
+  ]
+}

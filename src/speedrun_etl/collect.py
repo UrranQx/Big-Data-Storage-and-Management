@@ -11,14 +11,55 @@ DATE_SPLIT_MIN_RUNS = 10000
 DATE_SPLIT_MIN_PROFILES = 5000
 
 
+def valid_game_slug(value):
+    # These are source URL components, not local paths or IDs. The catalog also
+    # contains leading/trailing dots and literal pipes; requests encode them in JSON.
+    return (isinstance(value, str) and value not in (".", "..")
+            and re.fullmatch(r"[a-zA-Z0-9_.|\-]{1,110}", value) is not None)
+
+
 def validate_conf(conf):
+    from .model import V2, V3
+    result = _validate_conf(conf)
+    model = conf.get('data_model', V2)
+    if model not in (V2, V3):
+        raise ValueError('Unknown ODS data model')
+    if 'data_model' in conf:
+        result['data_model'] = model
+    if model == V3 and conf.get('repair_from_snapshot_id'):
+        raise ValueError('Legacy repair must not mix with the new ODS contract')
+    for key in ('game_label', 'display_game_id'):
+        if key in conf:
+            value = conf[key]
+            if (not isinstance(value, str) or not 1 <= len(value) <= 256
+                    or any(ord(c) < 32 for c in value)):
+                raise ValueError('Invalid display identity')
+            if key == 'display_game_id' and not re.fullmatch(r'[a-zA-Z0-9_-]{1,110}', value):
+                raise ValueError('Invalid display game ID')
+            if key == 'display_game_id' and result.get('game_id', value) != value:
+                raise ValueError('Display identity differs from source game ID')
+            result[key] = value
+    if 'smoke' in conf:
+        if type(conf['smoke']) is not bool or model != V3 or result['scope'] != 'single_game':
+            raise ValueError('Smoke is an explicit entity-v3 single-game test only')
+        result['smoke'] = conf['smoke']
+    if 'smoke_category_id' in conf:
+        cid=conf['smoke_category_id']
+        if not result.get('smoke') or not isinstance(cid,str) or not re.fullmatch(r'[a-zA-Z0-9_-]{1,40}',cid):
+            raise ValueError('A category limit is only valid for an explicit smoke test')
+        result['smoke_category_id']=cid
+    return result
+
+
+def _validate_conf(conf):
     collection = conf.get("collection_id", "")
     if not re.fullmatch(r"[a-zA-Z0-9_-]{1,80}", collection):
         raise ValueError("collection_id must have 1..80 ASCII letters/digits/_/-")
     scope, game = conf.get("scope", "e2e"), conf.get("game", "portal")
     if scope == "single_game":
         identity = {k:conf[k] for k in ("game", "game_id") if k in conf}
-        if len(identity) != 1 or any(not isinstance(v,str) or not re.fullmatch(r"[a-zA-Z0-9_-]{1,110}",v) for v in identity.values()):
+        if len(identity) != 1 or any(not (valid_game_slug(v) if k == "game" else
+                isinstance(v, str) and re.fullmatch(r"[a-zA-Z0-9_-]{1,110}", v)) for k,v in identity.items()):
             raise ValueError("Single game requires its explicit URL slug or source ID")
         if any(k in conf for k in ("selection_snapshot_id", "catalog_snapshot_id", "repair_from_snapshot_id", "repair_partitions")):
             raise ValueError("Single game cannot inherit a catalog/selection/repair snapshot")
@@ -48,7 +89,9 @@ def validate_conf(conf):
                 **({"ranking_policy": policy} if policy else {})}
     if scope == "game":
         for key in ("game", "game_id", "selection_snapshot_id"):
-            if not re.fullmatch(r"[a-zA-Z0-9_-]{1,110}", conf.get(key, "")):
+            value = conf.get(key)
+            if not (valid_game_slug(value) if key == "game" else
+                    isinstance(value, str) and re.fullmatch(r"[a-zA-Z0-9_-]{1,110}", value)):
                 raise ValueError("Game requires explicit source ID, URL and verified selection snapshot")
         budget = int(conf.get("request_budget", 5000))
         if not 100 <= budget <= 10000:
@@ -82,7 +125,9 @@ def validate_conf(conf):
         return result
     if scope == "ranked_game":
         for key in ("game", "game_id", "ranking_snapshot_id"):
-            if not re.fullmatch(r"[a-zA-Z0-9_-]{1,110}", conf.get(key, "")):
+            value = conf.get(key)
+            if not (valid_game_slug(value) if key == "game" else
+                    isinstance(value, str) and re.fullmatch(r"[a-zA-Z0-9_-]{1,110}", value)):
                 raise ValueError("Ranked game needs explicit source IDs")
         return {"collection_id": collection, "scope": scope,
                 **{k: conf[k] for k in ("game", "game_id", "ranking_snapshot_id")},
@@ -363,16 +408,26 @@ def collect_runs(client, root, metadata_package):
     gid = body["game"]["id"]
     conf_path = Path(root) / "config.json"
     conf = read(conf_path)
-    full_game = conf["scope"] in ("full_game", "ranked_game", "game", "single_game")
-    categories = [c for c in body["categories"] if c.get("isPerLevel") is False and
-                  (full_game or c.get("name") == "Inbounds")]
-    if any(type(c.get("isPerLevel")) is not bool for c in body["categories"]):
+    full_scope = conf["scope"] in ("full_game", "ranked_game", "game", "single_game")
+    full_game = full_scope and not conf.get('smoke')
+    category_rows = body.get("categories", [])
+    if not isinstance(category_rows, list):
+        raise SourceError("Invalid category list shape")
+    if any(not isinstance(c, dict) or type(c.get("isPerLevel")) is not bool for c in category_rows):
         raise SourceError("Unknown full-game category classification")
+    categories = [c for c in category_rows if c["isPerLevel"] is False and
+                  (full_scope or c.get("name") == "Inbounds")]
+    if conf.get('smoke'):
+        if conf.get('smoke_category_id'):
+            categories=[c for c in categories if c['id']==conf['smoke_category_id']]
+            if not categories:raise SourceError('Requested smoke category absent from fresh full-game metadata')
+        categories = categories[:1]
     if not categories and conf["scope"] in ("game", "single_game"):
         client.request("GetGameSummary", {"gameId":gid}, "stats-no-full-game-categories",
                        {"game_id":gid,"diagnostic":"no_full_game_categories_in_source_metadata"})
         return {"game_id": gid, "coverage": "unavailable", "partitions": [], "wr": [],
-                "diagnostic": "no_full_game_categories_in_source_metadata"}
+                "diagnostic": "no_full_game_categories_in_source_metadata",
+                "category_list_present": "categories" in body, "source_category_count": len(category_rows)}
     if not categories or (not full_game and len(categories) != 1):
         raise SourceError("Requested full-game categories are missing or ambiguous")
     repair_result = None
@@ -403,7 +458,8 @@ def collect_runs(client, root, metadata_package):
                                 partition(client,root,gid,cid,status,cap=2))
     wr_coverage = [{**w, "retained_from_snapshot_id": conf["repair_from_snapshot_id"]}
                    for w in repair_result["wr"]] if repair_result else []
-    for category in ([] if repair_result else categories):
+    from .model import version, V3
+    for category in ([] if repair_result or version(conf) == V3 else categories):
         cid = category["id"]
         print(f"WR: game={gid} category={cid} fetching source history", flush=True)
         params = {"gameId": gid, "categoryId": cid, "obsolete": 1, "video": 0,

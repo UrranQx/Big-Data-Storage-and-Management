@@ -82,13 +82,13 @@ def atomic_write(path, value, durable=True):
 
 
 @contextmanager
-def file_lock(path):
+def file_lock(path, blocking=True):
     # Production always runs on the same Linux named volume, never on SMB.
     import fcntl
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a+b") as handle:
-        fcntl.flock(handle, fcntl.LOCK_EX)
+        fcntl.flock(handle, fcntl.LOCK_EX | (0 if blocking else fcntl.LOCK_NB))
         try:
             yield
         finally:

@@ -13,8 +13,8 @@ from .storage import pg_connect, Mongo, S3
 
 
 def validate_namespace(value):
-    if value != "entity_v2" and not re.fullmatch(r"test_[a-z0-9_]{1,40}", value):
-        raise ValueError("Explicit entity_v2 or test_* namespace required")
+    if value not in ("entity_v2", "entity_v3") and not re.fullmatch(r"test_[a-z0-9_]{1,40}", value):
+        raise ValueError("Explicit entity_v2/entity_v3 or test_* namespace required")
     return value
 
 
@@ -46,6 +46,30 @@ def init_entities(namespace="entity_v2"):
             if dataset in ("runs", "wr_history"):
                 conn.execute(sql.SQL("CREATE INDEX IF NOT EXISTS {} ON {} (game_id,category_id,status)").format(
                     sql.Identifier(dataset + "_scope"), table))
+        if namespace == 'entity_v3':
+            # A read convenience over the ODS history, not a DDS transformation.
+            # Context has its own observation time and is never inferred from dates.
+            conn.execute("""CREATE OR REPLACE VIEW entity_v3.runs_current AS
+                WITH seen AS (
+                  SELECT DISTINCT ON (source_id) source_id,document->'last_seen' observed
+                  FROM entity_v3.checks WHERE projection='run_core'
+                  ORDER BY source_id,document->'last_seen'->>'observed_at' DESC,key DESC
+                ), context AS (
+                  SELECT DISTINCT ON (source_id) source_id,document->'unfiltered_leaderboard'->'last_seen' observed
+                  FROM entity_v3.checks WHERE projection='run_core' AND document ? 'unfiltered_leaderboard'
+                  ORDER BY source_id,document->'unfiltered_leaderboard'->'last_seen'->>'observed_at' DESC,key DESC
+                )
+                SELECT r.source_id AS id,r.game_id,r.category_id,r.status,
+                       r.document->'raw'->'value' AS data,r.document->'raw' AS raw,
+                       s.observed->>'observed_at' AS observed_at,
+                       c.observed->'values' AS unfiltered_values,
+                       c.observed->>'observed_at' AS unfiltered_observed_at,
+                       c.observed->>'response_id' AS unfiltered_response_id,
+                       c.observed->'filters' AS unfiltered_filters,
+                       c.observed->'values'->'obsolete' AS obsolete,
+                       c.observed->'values'->'place' AS place
+                FROM seen s JOIN entity_v3.runs r ON r.key=s.observed->>'version_key'
+                LEFT JOIN context c ON c.source_id=r.source_id""")
     with Mongo() as store:
         db = store.client[namespace]
         for dataset in DATASETS:
@@ -125,6 +149,8 @@ def load(name, package, snapshot_id, namespace="entity_v2", role="all", fail_aft
     from psycopg.types.json import Jsonb
     from pymongo import UpdateOne
     namespace = validate_namespace(namespace)
+    manifest = next(package.records('manifests'), {})
+    format_version = manifest.get('format_version','entity-v2')
     expected_summary = package.summary()
     started = time.perf_counter()
     n = 0
@@ -166,7 +192,7 @@ def load(name, package, snapshot_id, namespace="entity_v2", role="all", fail_aft
                         raise ValueError("Mongo entity readback differs")
     elif name == "garage":
         chunks = []
-        prefix = namespace + "/entity-v2/"
+        prefix = namespace + '/' + format_version + '/'
         with S3() as store:
             for dataset in DATASETS:
                 for part, raw, count in make_chunks(package, dataset):
@@ -210,7 +236,7 @@ def load(name, package, snapshot_id, namespace="entity_v2", role="all", fail_aft
                     if {"count": count, "digest": checksum.hexdigest()} != expected:
                         raise ValueError("S3 logical record set differs")
                 db.close()
-            index = {"format_version": "entity-v2", "snapshot_id": snapshot_id, "role": role,
+            index = {"format_version": format_version, "snapshot_id": snapshot_id, "role": role,
                      "summary": expected_summary, "chunks": chunks}
             key = prefix + "snapshots/" + snapshot_id + "/" + role + "/" + digest(expected_summary) + ".json"
             raw = dumps(index).encode()
@@ -243,17 +269,21 @@ def ready(snapshot_id, namespace="entity_v2", role="all", expected=None):
     return {"digest": rows[0][1], "stores": {r[0]: r[2] for r in rows}}
 
 
-def read_entity(name, dataset, source_id, snapshot_id, summary, namespace="entity_v2", role="all"):
+def read_entity(name, dataset, source_id, snapshot_id, summary, namespace="entity_v2", role="all", format_version=None):
     """Versions/history belonging to this exact input snapshot in every store."""
     if dataset not in DATASETS:
         raise ValueError(dataset)
     namespace = validate_namespace(namespace)
+    format_version = format_version or ('entity-v3' if namespace=='entity_v3' else 'entity-v2')
     check_snapshot = snapshot_id[:-len("-players")] + "-runs" if snapshot_id.endswith("-players") else snapshot_id
+    check_snapshots = [check_snapshot]
+    if snapshot_id.endswith('-players') and format_version == 'entity-v3':
+        check_snapshots.append(snapshot_id[:-len('-players')]+'-wr_history')
     if name == "postgres":
         from psycopg import sql
         with pg_connect() as conn:
-            checks = [r[0] for r in conn.execute(sql.SQL("SELECT document FROM {} WHERE source_id=%s AND document->>'snapshot_id'=%s").format(
-                sql.Identifier(namespace, "checks")), [source_id, check_snapshot])]
+            checks = [r[0] for r in conn.execute(sql.SQL("SELECT document FROM {} WHERE source_id=%s AND document->>'snapshot_id'=ANY(%s)").format(
+                sql.Identifier(namespace, "checks")), [source_id, check_snapshots])]
             if snapshot_id.endswith("-players"):
                 checks = [c for c in checks if c["dataset"] == "players"]
             if dataset == "checks":
@@ -264,7 +294,7 @@ def read_entity(name, dataset, source_id, snapshot_id, summary, namespace="entit
     if name == "mongo":
         with Mongo() as store:
             db = store.client[namespace]
-            checks = [mongo_document(r) for r in db.checks.find({"source_id": source_id, "document.snapshot_id": check_snapshot})]
+            checks = [mongo_document(r) for r in db.checks.find({"source_id": source_id, "document.snapshot_id": {'$in':check_snapshots}})]
             if snapshot_id.endswith("-players"):
                 checks = [c for c in checks if c["dataset"] == "players"]
             if dataset == "checks":
@@ -272,7 +302,7 @@ def read_entity(name, dataset, source_id, snapshot_id, summary, namespace="entit
             keys = list({s["version_key"] for c in checks if c["dataset"] == dataset for s in c["states"]})
             return [mongo_document(r) for r in db[dataset].find({"_id": {"$in": keys}}).sort("_id", 1)]
     with S3() as store:
-        key = namespace + "/entity-v2/snapshots/" + snapshot_id + "/" + role + "/" + digest(summary) + ".json"
+        key = namespace + '/' + format_version + '/snapshots/' + snapshot_id + "/" + role + "/" + digest(summary) + ".json"
         response = store.client.get_object(Bucket=store.bucket, Key=key)
         with response["Body"] as stream:
             index = loads(stream.read())

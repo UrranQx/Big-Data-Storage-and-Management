@@ -1,0 +1,1 @@
+{"check_constraint":{"code":121,"rejected":true},"duplicate_key":{"code":11000,"rejected":true},"foreign_key":"accepted","multi_record_transaction":{"code":20,"supported":false},"nontransactional_partial_write":[["a",1],["b",0]],"schema_optional_field":"No DDL needed; validator can enforce fields, not cross-collection FK"}

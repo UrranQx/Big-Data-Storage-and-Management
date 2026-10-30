@@ -1,0 +1,1 @@
+{"collections":["lab1-popular500-20261030-g-4pd0n31e","lab1-popular500-20261030-g-o1y9wo6q","lab1-popular500-20261030-g-j1npme6p"],"format_version":"lab1-workload-v1","repeats":3,"s3_read_strategy":"streaming_query","sizes":[1000,10000,100000],"source_HTTP":0}

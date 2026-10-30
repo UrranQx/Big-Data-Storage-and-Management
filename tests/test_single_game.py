@@ -97,6 +97,51 @@ class SingleGameTests(unittest.TestCase):
                 package.db.close()
             self.assertEqual(['GetGameData','GetGameSummary'],[e for e,p in source.calls])
 
+    def test_omitted_empty_categories_retains_raw_and_finishes_profiles_without_run_queries(self):
+        from speedrun_etl.entity_runtime import extract
+        from speedrun_etl.entity_ods import EntityPackage
+        from speedrun_etl.batch import result_state
+        source = FixtureSource()
+        def transport(request, timeout):
+            response = source(request, timeout); body = loads(response.getvalue())
+            if 'categories' in body:
+                body.pop('categories');body['game']['runCount'] = 0
+            return Response(dumps(body).encode())
+        def factory(state, collection, snapshot, **kwargs):
+            return Client(state, collection, snapshot, **{**kwargs, 'adaptive_rate':False},
+                          initial_pause=0, interval=0, transport=transport)
+        with TemporaryDirectory() as temp, patch('speedrun_etl.entity_runtime.Client', side_effect=factory):
+            conf = validate_conf({'collection_id':'omitted', 'scope':'single_game', 'game_id':'g'})
+            for kind in ('games_metadata', 'runs', 'players'):
+                root = Path(temp)/'snapshots'/('omitted-'+kind);atomic_write(root/'config.json', conf)
+                ref = extract(temp, conf, kind)
+                package = EntityPackage(ref['package_uri'], role=ref['role'])
+                if kind == 'games_metadata':
+                    response = next(r for r in package.records('responses') if r['metadata']['endpoint']=='GetGameData')
+                    self.assertNotIn('categories', package.decode(response['body']))
+                if kind == 'runs':
+                    result = next(package.records('manifests'))['source_result']
+                    self.assertEqual('not_applicable', result_state(result))
+                    self.assertFalse(result['category_list_present'])
+                    self.assertEqual(0, result['source_category_count'])
+                    self.assertEqual([], list(package.records('runs')))
+                package.db.close()
+        self.assertEqual(['GetGameData', 'GetGameSummary'], [e for e,p in source.calls])
+
+    def test_malformed_category_lists_are_not_reported_as_empty_scope(self):
+        from unittest.mock import Mock
+        from speedrun_etl.collect import collect_runs
+        with TemporaryDirectory() as temp:
+            atomic_write(Path(temp)/'config.json', {'scope':'game'})
+            for value in (None, {}, 'categories', 3, [None], [{'id':'unknown'}]):
+                package = Mock()
+                package.records.return_value = iter([{'endpoint':'GetGameData', 'http_status':200}])
+                client = Mock()
+                with self.subTest(categories=value), patch('speedrun_etl.collect.restore',
+                        return_value={'game':{'id':'g'}, 'categories':value}):
+                    with self.assertRaises(SourceError):collect_runs(client, temp, package)
+                client.request.assert_not_called()
+
     def test_date_large_does_not_split_small_or_low_profile_partitions(self):
         from unittest.mock import Mock
         for count,profiles,year in ((0,0,2020),(12001,1,2020),(12001,5000,None)):

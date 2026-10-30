@@ -1,0 +1,4 @@
+store,reported_MiB,index_MiB,method
+postgres,70.1953125,9.4453125,ODS schema only: pg_table_size + pg_indexes_size
+mongo,32.6875,6.796875,ODS DB storageSize + indexSize after fsync; dataSize separate
+garage,12.860006332397461,,S3 object bodies; excludes physical Garage volume overhead

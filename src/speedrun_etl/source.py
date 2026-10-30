@@ -91,15 +91,17 @@ class Client:
             raise SourceError("Invalid reviewed retry allowance")
         return state, self.max_attempts + extra
 
-    def request(self, endpoint, params, logical_key, context=None):
+    def request(self, endpoint, params, logical_key, context=None, allow_statuses=()):
         if endpoint not in ENDPOINTS:
             raise ValueError("Unapproved endpoint")
+        if allow_statuses and (endpoint != 'GetGameRecordHistory' or set(allow_statuses) - {404,410}):
+            raise ValueError('Only explicit WR history 404/410 may be unavailable results')
         identity = digest([endpoint, params, logical_key] + ([self.http_method] if self.http_method != "GET" else []))
         request_dir = self.snapshot / "requests" / identity
         # Same logical request after a crash reuses an already saved success.
         for path in sorted(request_dir.glob("*.json")):
             saved = read(path)
-            if saved["http_status"] == 200 and saved.get("error") is None:
+            if (saved["http_status"] == 200 and saved.get("error") is None) or saved['http_status'] in allow_statuses:
                 return saved
         attempts_path = request_dir / "attempts.state"
         for _ in range(self.max_attempts):
@@ -109,7 +111,7 @@ class Client:
                 # A concurrent retry may have saved this request while we waited.
                 for path in sorted(request_dir.glob("*.json")):
                     saved = read(path)
-                    if saved["http_status"] == 200 and saved.get("error") is None:
+                    if (saved["http_status"] == 200 and saved.get("error") is None) or saved['http_status'] in allow_statuses:
                         return saved
                 check_capacity(self.root, check_virtual=False, now=self.clock())
                 attempt_state, attempt_limit = self._attempt_state(attempts_path)
@@ -161,7 +163,7 @@ class Client:
                 # start; server backoff is always measured from completion.
                 atomic_write(limiter_path, {"next_at": max(network_start + interval, self.clock() + delay),
                                             "inflight": False, "rate": rate})
-            if saved.get("error") is None and saved["http_status"] == 200:
+            if (saved.get("error") is None and saved["http_status"] == 200) or saved['http_status'] in allow_statuses:
                 return saved
             if delay == 0:
                 raise SourceError(f"Source request failed: {saved.get('error', saved['http_status'])}")

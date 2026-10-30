@@ -1,0 +1,8 @@
+{
+  "tests": 163,
+  "errors": 0,
+  "failures": 0,
+  "skipped": 0,
+  "seconds": 46.428,
+  "scope": "Three isolated real ODS, including streaming-equivalence regression. No production test writes."
+}

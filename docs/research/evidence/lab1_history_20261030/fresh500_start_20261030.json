@@ -1,0 +1,1026 @@
+{
+  "at": "2026-10-30T00:49:43.027418+00:00",
+  "collection_id": "lab1-popular500-20261030",
+  "wipe_completed": true,
+  "removed_volumes": [
+    "726b1816f8fbdc78161ff7398039af0a9c6c2d62a93670794ba4cbb7a78c2490",
+    "speedrun-lab1_airflow-logs",
+    "speedrun-lab1_etl-state",
+    "speedrun-lab1_garage-data",
+    "speedrun-lab1_garage-meta",
+    "speedrun-lab1_mongo-data",
+    "speedrun-lab1_postgres-data"
+  ],
+  "backup_preserved": "D:\\ETL_backups\\pre-redesign-20261029T231150Z",
+  "credentials_unchanged": true,
+  "preflight_tests": {
+    "errors": 0,
+    "failures": 0,
+    "seconds": "29.368",
+    "skipped": 0,
+    "tests": 157
+  },
+  "host_data_was_empty": true,
+  "working_code_zip": "D:\\ETL_backups\\pre-redesign-20261029T231150Z\\working-tree-before-fresh500-20261030.zip",
+  "empty_stand_verified": {
+    "postgres": {
+      "entity_v2": {
+        "games": 0,
+        "runs": 0,
+        "players": 0,
+        "wr_history": 0,
+        "checks": 0,
+        "responses": 0,
+        "blocks": 0,
+        "manifests": 0
+      },
+      "entity_v3": {
+        "games": 0,
+        "runs": 0,
+        "players": 0,
+        "wr_history": 0,
+        "checks": 0,
+        "responses": 0,
+        "blocks": 0,
+        "manifests": 0
+      }
+    },
+    "mongo": {
+      "entity_v2": {
+        "games": 0,
+        "runs": 0,
+        "players": 0,
+        "wr_history": 0,
+        "checks": 0,
+        "responses": 0,
+        "blocks": 0,
+        "manifests": 0
+      },
+      "entity_v3": {
+        "games": 0,
+        "runs": 0,
+        "players": 0,
+        "wr_history": 0,
+        "checks": 0,
+        "responses": 0,
+        "blocks": 0,
+        "manifests": 0
+      }
+    },
+    "s3_objects": 0,
+    "receipts": 0,
+    "source_collections": 0
+  },
+  "initial_progress": {
+    "batch": "lab1-popular500-20261030",
+    "driver_running": true,
+    "control": {},
+    "continuation": {
+      "batch_id": "lab1-popular500-20261030",
+      "driver_phase": "catalog",
+      "phase": "watching",
+      "session_hours_max": 8,
+      "session_http_budget": 9000,
+      "started_sessions": 0,
+      "until": "2026-11-02T00:51:41.916756+00:00",
+      "updated_at": "2026-10-30T00:56:41.202139+00:00",
+      "running": true
+    },
+    "driver": {
+      "collection_id": "lab1-popular500-20261030-catalog",
+      "phase": "catalog",
+      "updated_at": "2026-10-30T00:51:42.417590+00:00"
+    },
+    "games_complete": 0,
+    "games_partial": 0,
+    "games_not_applicable": 0,
+    "games_processed": 0,
+    "games_total": 500,
+    "selection_ready": false,
+    "games": [],
+    "collections": {
+      "lab1-popular500-20261030-catalog": {
+        "collection": "lab1-popular500-20261030-catalog",
+        "snapshots": {
+          "games_metadata": {
+            "extracted": false,
+            "verified": false,
+            "phase": "collecting",
+            "records": {},
+            "checkpoints": [
+              {
+                "name": "catalog",
+                "pages": 134,
+                "pages_planned": 262,
+                "source_pages": 262,
+                "source_count": 52246,
+                "unique_runs": null,
+                "unique_games": 26800,
+                "coverage": null,
+                "complete": false,
+                "pass": 0,
+                "updated_at": "2026-10-30T00:56:51.721339"
+              }
+            ],
+            "completed_sections": 0,
+            "known_sections": 1,
+            "coverage_counts": {},
+            "staging_format": "entity-v3"
+          }
+        },
+        "budget": {
+          "limit": 650,
+          "used": 135
+        },
+        "http_telemetry": {
+          "attempts": 134,
+          "configured_page_window": 4,
+          "last_error": null,
+          "last_http_status": "200",
+          "last_pacing_interval_ms": 1500,
+          "network_bytes": 6007395,
+          "observed_rpm": "39.49",
+          "rate_policy": "recover-v1",
+          "recent_rpm": "39.61",
+          "status_counts": {
+            "200": 134
+          },
+          "median_response_ms": 1195.5,
+          "last_response_age_seconds": 1
+        },
+        "limiter": {
+          "inflight": true,
+          "next_at": "1793321813.429372",
+          "rate": {
+            "rpm": 40,
+            "successes": 104,
+            "throttled": false
+          }
+        }
+      }
+    }
+  },
+  "config": {
+    "data_model": "entity-v3",
+    "game_limit": 500,
+    "game_order": "run-count-desc",
+    "game_request_budget": 5000,
+    "mode": "all",
+    "run_partition_strategy": "standard",
+    "top": null
+  },
+  "source_start_is_fresh": true,
+  "controller_until_utc": "2026-11-02T00:51:41.916756+00:00",
+  "post_catalog_verification": {
+    "checked_at": "2026-10-30T01:04:10.437969+00:00",
+    "all_500_positions_match_fresh_catalog_sort": true,
+    "queued_games": 500,
+    "eligible_games": 51427,
+    "catalog_result": {
+      "boundary_checks": "passed",
+      "coverage": "verified_public_partitions",
+      "pages": 262,
+      "pass": 0,
+      "scope": "Global directory cards, no game type filter; not per-game details",
+      "unique_games": 52246
+    },
+    "catalog_game_versions": 52246,
+    "catalog_digest": "8667ed3efd02612f8daca55ce99d720d3879bd91a96984036a8e11861e9d946a",
+    "catalog_stores": [
+      "garage",
+      "mongo",
+      "postgres"
+    ],
+    "first_fetched_at": "2026-10-30T00:52:48.440123+00:00",
+    "last_fetched_at": "2026-10-30T01:00:09.293480+00:00",
+    "source_catalog_responses": 264,
+    "ordered_id_digest": "a5ef44cac8e9a3b7a6dd29007745ffc8f396ccd55006b8843b602e4abd1795f0",
+    "top10": [
+      {
+        "position": 1,
+        "id": "k6q4rqzd",
+        "name": "Seterra (Old Version)",
+        "runCount": "61570",
+        "state": "running"
+      },
+      {
+        "position": 2,
+        "id": "o1y9wo6q",
+        "name": "Super Mario 64",
+        "runCount": "54743",
+        "state": "pending"
+      },
+      {
+        "position": 3,
+        "id": "o1y9j9v6",
+        "name": "Celeste",
+        "runCount": "52398",
+        "state": "pending"
+      },
+      {
+        "position": 4,
+        "id": "y65797de",
+        "name": "Subway Surfers",
+        "runCount": "48044",
+        "state": "pending"
+      },
+      {
+        "position": 5,
+        "id": "o1y9pyk6",
+        "name": "Google Snake",
+        "runCount": "47945",
+        "state": "pending"
+      },
+      {
+        "position": 6,
+        "id": "369p3p81",
+        "name": "ULTRAKILL",
+        "runCount": "47119",
+        "state": "pending"
+      },
+      {
+        "position": 7,
+        "id": "nd28p43d",
+        "name": "Seterra (Geoguessr Version)",
+        "runCount": "34761",
+        "state": "pending"
+      },
+      {
+        "position": 8,
+        "id": "j1npme6p",
+        "name": "Minecraft: Java Edition",
+        "runCount": "30179",
+        "state": "pending"
+      },
+      {
+        "position": 9,
+        "id": "w6jrzxdj",
+        "name": "Speed Builders",
+        "runCount": "29660",
+        "state": "pending"
+      },
+      {
+        "position": 10,
+        "id": "76r55vd8",
+        "name": "Super Mario Odyssey",
+        "runCount": "23599",
+        "state": "pending"
+      }
+    ],
+    "last_selected": {
+      "id": "3dxzqv1y",
+      "name": "Tetris (NES)",
+      "runCount": "1645"
+    }
+  },
+  "latest_observation": {
+    "checked_at": "2026-10-30T01:07:40.153031+00:00",
+    "progress": {
+      "batch": "lab1-popular500-20261030",
+      "driver_running": true,
+      "control": {},
+      "continuation": {
+        "batch_id": "lab1-popular500-20261030",
+        "driver_phase": "game",
+        "phase": "watching",
+        "session_hours_max": 8,
+        "session_http_budget": 9000,
+        "started_sessions": 0,
+        "until": "2026-11-02T00:51:41.916756+00:00",
+        "updated_at": "2026-10-30T01:07:26.423465+00:00",
+        "running": true
+      },
+      "driver": {
+        "collection_id": "lab1-popular500-20261030-g-k6q4rqzd",
+        "game": "Seterra (Old Version)",
+        "phase": "game",
+        "position": 1,
+        "total": 500,
+        "updated_at": "2026-10-30T01:02:30.871605+00:00"
+      },
+      "games_complete": 0,
+      "games_partial": 0,
+      "games_not_applicable": 0,
+      "games_processed": 0,
+      "games_total": 500,
+      "selection_ready": true,
+      "games": [
+        {
+          "position": 1,
+          "game_id": "k6q4rqzd",
+          "collection_id": "lab1-popular500-20261030-g-k6q4rqzd",
+          "state": "running",
+          "details": {
+            "id": "k6q4rqzd",
+            "url": "seterraold",
+            "name": "Seterra (Old Version)",
+            "type": "game",
+            "runCount": "61570",
+            "first_started_at": "2026-10-30T01:02:30.880357+00:00",
+            "selection_snapshot_id": "lab1-popular500-20261030-catalog-games_metadata"
+          }
+        },
+        {
+          "position": 2,
+          "game_id": "o1y9wo6q",
+          "collection_id": "lab1-popular500-20261030-g-o1y9wo6q",
+          "state": "pending",
+          "details": {
+            "id": "o1y9wo6q",
+            "url": "sm64",
+            "name": "Super Mario 64",
+            "type": "game",
+            "runCount": "54743",
+            "selection_snapshot_id": "lab1-popular500-20261030-catalog-games_metadata"
+          }
+        },
+        {
+          "position": 3,
+          "game_id": "o1y9j9v6",
+          "collection_id": "lab1-popular500-20261030-g-o1y9j9v6",
+          "state": "pending",
+          "details": {
+            "id": "o1y9j9v6",
+            "url": "celeste",
+            "name": "Celeste",
+            "type": "game",
+            "runCount": "52398",
+            "selection_snapshot_id": "lab1-popular500-20261030-catalog-games_metadata"
+          }
+        },
+        {
+          "position": 4,
+          "game_id": "y65797de",
+          "collection_id": "lab1-popular500-20261030-g-y65797de",
+          "state": "pending",
+          "details": {
+            "id": "y65797de",
+            "url": "subsurf",
+            "name": "Subway Surfers",
+            "type": "game",
+            "runCount": "48044",
+            "selection_snapshot_id": "lab1-popular500-20261030-catalog-games_metadata"
+          }
+        },
+        {
+          "position": 5,
+          "game_id": "o1y9pyk6",
+          "collection_id": "lab1-popular500-20261030-g-o1y9pyk6",
+          "state": "pending",
+          "details": {
+            "id": "o1y9pyk6",
+            "url": "snake_game",
+            "name": "Google Snake",
+            "type": "game",
+            "runCount": "47945",
+            "selection_snapshot_id": "lab1-popular500-20261030-catalog-games_metadata"
+          }
+        },
+        {
+          "position": 6,
+          "game_id": "369p3p81",
+          "collection_id": "lab1-popular500-20261030-g-369p3p81",
+          "state": "pending",
+          "details": {
+            "id": "369p3p81",
+            "url": "ultrakill",
+            "name": "ULTRAKILL",
+            "type": "game",
+            "runCount": "47119",
+            "selection_snapshot_id": "lab1-popular500-20261030-catalog-games_metadata"
+          }
+        }
+      ],
+      "collections": {
+        "lab1-popular500-20261030-catalog": {
+          "collection": "lab1-popular500-20261030-catalog",
+          "snapshots": {
+            "games_metadata": {
+              "extracted": true,
+              "verified": true,
+              "phase": "ready",
+              "records": {
+                "checks": 52246,
+                "games": 52246,
+                "manifests": 1,
+                "responses": 264
+              },
+              "staging_format": "entity-v3",
+              "checkpoints": [
+                {
+                  "name": "catalog",
+                  "pages": 262,
+                  "pages_planned": 262,
+                  "source_pages": 262,
+                  "source_count": 52246,
+                  "unique_runs": null,
+                  "unique_games": 52246,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:00:09.330793"
+                }
+              ],
+              "completed_sections": 1,
+              "known_sections": 1,
+              "coverage_counts": {
+                "verified_public_partitions": 1
+              }
+            }
+          },
+          "budget": {
+            "limit": 650,
+            "used": 264
+          },
+          "http_telemetry": {
+            "attempts": 264,
+            "configured_page_window": 4,
+            "last_error": null,
+            "last_http_status": "200",
+            "last_pacing_interval_ms": 1500,
+            "network_bytes": 11841643,
+            "observed_rpm": "39.36",
+            "rate_policy": "recover-v1",
+            "recent_rpm": "39.62",
+            "status_counts": {
+              "200": 264
+            },
+            "median_response_ms": 1305.0,
+            "last_response_age_seconds": 451
+          },
+          "limiter": {
+            "inflight": false,
+            "next_at": "1793322460.4576445",
+            "rate": {
+              "rpm": 40,
+              "successes": 432,
+              "throttled": false
+            }
+          }
+        },
+        "lab1-popular500-20261030-g-k6q4rqzd": {
+          "collection": "lab1-popular500-20261030-g-k6q4rqzd",
+          "snapshots": {
+            "games_metadata": {
+              "extracted": true,
+              "verified": true,
+              "phase": "ready",
+              "records": {
+                "checks": 1,
+                "games": 1,
+                "manifests": 1,
+                "responses": 1
+              },
+              "staging_format": "entity-v3",
+              "checkpoints": [],
+              "completed_sections": 0,
+              "known_sections": 0,
+              "coverage_counts": {}
+            },
+            "runs": {
+              "extracted": false,
+              "verified": false,
+              "phase": "collecting",
+              "records": {},
+              "checkpoints": [
+                {
+                  "name": "9kv8yq3d-new",
+                  "pages": 1,
+                  "pages_planned": 1,
+                  "source_pages": 1,
+                  "source_count": 0,
+                  "unique_runs": 0,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:02:43.542269"
+                },
+                {
+                  "name": "9kv8yq3d-verified",
+                  "pages": 1,
+                  "pages_planned": 1,
+                  "source_pages": 1,
+                  "source_count": 0,
+                  "unique_runs": 0,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:02:46.590478"
+                },
+                {
+                  "name": "9kv8yq3d-rejected",
+                  "pages": 1,
+                  "pages_planned": 1,
+                  "source_pages": 1,
+                  "source_count": 0,
+                  "unique_runs": 0,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:02:49.942705"
+                },
+                {
+                  "name": "824nex3k-new",
+                  "pages": 1,
+                  "pages_planned": 1,
+                  "source_pages": 1,
+                  "source_count": 0,
+                  "unique_runs": 0,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:02:52.660259"
+                },
+                {
+                  "name": "824nex3k-verified",
+                  "pages": 1,
+                  "pages_planned": 1,
+                  "source_pages": 1,
+                  "source_count": 0,
+                  "unique_runs": 0,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:02:55.664460"
+                },
+                {
+                  "name": "824nex3k-rejected",
+                  "pages": 1,
+                  "pages_planned": 1,
+                  "source_pages": 1,
+                  "source_count": 0,
+                  "unique_runs": 0,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:02:58.708664"
+                },
+                {
+                  "name": "jdzly0g2-new",
+                  "pages": 1,
+                  "pages_planned": 1,
+                  "source_pages": 1,
+                  "source_count": 0,
+                  "unique_runs": 0,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:03:01.708865"
+                },
+                {
+                  "name": "jdzly0g2-verified",
+                  "pages": 1,
+                  "pages_planned": 1,
+                  "source_pages": 1,
+                  "source_count": 0,
+                  "unique_runs": 0,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:03:04.745070"
+                },
+                {
+                  "name": "jdzly0g2-rejected",
+                  "pages": 1,
+                  "pages_planned": 1,
+                  "source_pages": 1,
+                  "source_count": 0,
+                  "unique_runs": 0,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:03:07.785277"
+                },
+                {
+                  "name": "wk63j4ek-new",
+                  "pages": 1,
+                  "pages_planned": 1,
+                  "source_pages": 1,
+                  "source_count": 0,
+                  "unique_runs": 0,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:03:10.789482"
+                },
+                {
+                  "name": "wk63j4ek-verified",
+                  "pages": 1,
+                  "pages_planned": 1,
+                  "source_pages": 1,
+                  "source_count": 0,
+                  "unique_runs": 0,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:03:14.133710"
+                },
+                {
+                  "name": "wk63j4ek-rejected",
+                  "pages": 1,
+                  "pages_planned": 1,
+                  "source_pages": 1,
+                  "source_count": 0,
+                  "unique_runs": 0,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:03:16.953900"
+                },
+                {
+                  "name": "9kvnmqed-new",
+                  "pages": 1,
+                  "pages_planned": 1,
+                  "source_pages": 1,
+                  "source_count": 0,
+                  "unique_runs": 0,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:03:19.922100"
+                },
+                {
+                  "name": "9kvnmqed-verified",
+                  "pages": 1,
+                  "pages_planned": 1,
+                  "source_pages": 1,
+                  "source_count": 0,
+                  "unique_runs": 0,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:03:22.919852"
+                },
+                {
+                  "name": "9kvnmqed-rejected",
+                  "pages": 1,
+                  "pages_planned": 1,
+                  "source_pages": 1,
+                  "source_count": 0,
+                  "unique_runs": 0,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:03:26.023886"
+                },
+                {
+                  "name": "zd3q948k-new",
+                  "pages": 1,
+                  "pages_planned": 1,
+                  "source_pages": 1,
+                  "source_count": 0,
+                  "unique_runs": 0,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:03:28.984089"
+                },
+                {
+                  "name": "zd3q948k-verified",
+                  "pages": 1,
+                  "pages_planned": 1,
+                  "source_pages": 1,
+                  "source_count": 0,
+                  "unique_runs": 0,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:03:31.992313"
+                },
+                {
+                  "name": "zd3q948k-rejected",
+                  "pages": 1,
+                  "pages_planned": 1,
+                  "source_pages": 1,
+                  "source_count": 0,
+                  "unique_runs": 0,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:03:35.032539"
+                },
+                {
+                  "name": "mkewl8jk-new",
+                  "pages": 1,
+                  "pages_planned": 1,
+                  "source_pages": 1,
+                  "source_count": 0,
+                  "unique_runs": 0,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:03:38.108763"
+                },
+                {
+                  "name": "mkewl8jk-verified",
+                  "pages": 1,
+                  "pages_planned": 1,
+                  "source_pages": 1,
+                  "source_count": 0,
+                  "unique_runs": 0,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:03:41.112976"
+                },
+                {
+                  "name": "mkewl8jk-rejected",
+                  "pages": 1,
+                  "pages_planned": 1,
+                  "source_pages": 1,
+                  "source_count": 0,
+                  "unique_runs": 0,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:03:44.105189"
+                },
+                {
+                  "name": "z27lez0d-new",
+                  "pages": 1,
+                  "pages_planned": 1,
+                  "source_pages": 1,
+                  "source_count": 0,
+                  "unique_runs": 0,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:03:47.141388"
+                },
+                {
+                  "name": "z27lez0d-verified",
+                  "pages": 42,
+                  "pages_planned": 42,
+                  "source_pages": 42,
+                  "source_count": 4152,
+                  "unique_runs": 4152,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:04:54.979895"
+                },
+                {
+                  "name": "z27lez0d-rejected",
+                  "pages": 9,
+                  "pages_planned": 9,
+                  "source_pages": 9,
+                  "source_count": 808,
+                  "unique_runs": 808,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:05:11.552954"
+                },
+                {
+                  "name": "9kv7gz8k-new",
+                  "pages": 1,
+                  "pages_planned": 1,
+                  "source_pages": 1,
+                  "source_count": 0,
+                  "unique_runs": 0,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:05:14.549146"
+                },
+                {
+                  "name": "9kv7gz8k-verified",
+                  "pages": 27,
+                  "pages_planned": 27,
+                  "source_pages": 27,
+                  "source_count": 2671,
+                  "unique_runs": 2671,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:05:59.030963"
+                },
+                {
+                  "name": "9kv7gz8k-rejected",
+                  "pages": 5,
+                  "pages_planned": 5,
+                  "source_pages": 5,
+                  "source_count": 485,
+                  "unique_runs": 485,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:06:09.580035"
+                },
+                {
+                  "name": "8241o4m2-new",
+                  "pages": 1,
+                  "pages_planned": 1,
+                  "source_pages": 1,
+                  "source_count": 0,
+                  "unique_runs": 0,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:06:12.568234"
+                },
+                {
+                  "name": "8241o4m2-verified",
+                  "pages": 12,
+                  "pages_planned": 12,
+                  "source_pages": 12,
+                  "source_count": 1122,
+                  "unique_runs": 1122,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:06:33.920288"
+                },
+                {
+                  "name": "8241o4m2-rejected",
+                  "pages": 1,
+                  "pages_planned": 1,
+                  "source_pages": 1,
+                  "source_count": 92,
+                  "unique_runs": 92,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:06:36.932471"
+                },
+                {
+                  "name": "q253pzyk-new",
+                  "pages": 1,
+                  "pages_planned": 1,
+                  "source_pages": 1,
+                  "source_count": 0,
+                  "unique_runs": 0,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:06:39.952654"
+                },
+                {
+                  "name": "q253pzyk-verified",
+                  "pages": 11,
+                  "pages_planned": 11,
+                  "source_pages": 11,
+                  "source_count": 1051,
+                  "unique_runs": 1051,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:06:59.811677"
+                },
+                {
+                  "name": "q253pzyk-rejected",
+                  "pages": 2,
+                  "pages_planned": 2,
+                  "source_pages": 2,
+                  "source_count": 146,
+                  "unique_runs": 146,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:07:05.812032"
+                },
+                {
+                  "name": "zdnx3ge2-new",
+                  "pages": 1,
+                  "pages_planned": 1,
+                  "source_pages": 1,
+                  "source_count": 0,
+                  "unique_runs": 0,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:07:08.908217"
+                },
+                {
+                  "name": "zdnx3ge2-verified",
+                  "pages": 11,
+                  "pages_planned": 11,
+                  "source_pages": 11,
+                  "source_count": 1057,
+                  "unique_runs": 1057,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:07:28.659791"
+                },
+                {
+                  "name": "zdnx3ge2-rejected",
+                  "pages": 2,
+                  "pages_planned": 2,
+                  "source_pages": 2,
+                  "source_count": 152,
+                  "unique_runs": 152,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:07:34.748166"
+                },
+                {
+                  "name": "xk986z42-new",
+                  "pages": 1,
+                  "pages_planned": 1,
+                  "source_pages": 1,
+                  "source_count": 0,
+                  "unique_runs": 0,
+                  "unique_games": null,
+                  "coverage": "verified_public_partitions",
+                  "complete": true,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:07:37.756355"
+                },
+                {
+                  "name": "xk986z42-verified",
+                  "pages": 1,
+                  "pages_planned": 16,
+                  "source_pages": 16,
+                  "source_count": 1585,
+                  "unique_runs": 100,
+                  "unique_games": null,
+                  "coverage": null,
+                  "complete": false,
+                  "pass": 0,
+                  "updated_at": "2026-10-30T01:07:39.744485"
+                }
+              ],
+              "completed_sections": 37,
+              "known_sections": 38,
+              "coverage_counts": {
+                "verified_public_partitions": 37
+              },
+              "staging_format": "entity-v3",
+              "expected_sections": 84
+            }
+          },
+          "budget": {
+            "limit": 5000,
+            "used": 198
+          },
+          "http_telemetry": {
+            "attempts": 198,
+            "configured_page_window": 4,
+            "last_error": null,
+            "last_http_status": "200",
+            "last_pacing_interval_ms": 1500,
+            "network_bytes": 4829729,
+            "observed_rpm": "39.46",
+            "rate_policy": "recover-v1",
+            "recent_rpm": "39.54",
+            "status_counts": {
+              "200": 198
+            },
+            "median_response_ms": 691.0,
+            "last_response_age_seconds": 0
+          },
+          "limiter": {
+            "inflight": false,
+            "next_at": "1793322460.4576445",
+            "rate": {
+              "rpm": 40,
+              "successes": 432,
+              "throttled": false
+            }
+          },
+          "game_label": "Seterra (Old Version)",
+          "game_id": "k6q4rqzd"
+        }
+      }
+    }
+  },
+  "host_disk_watcher_pid": 3184
+}

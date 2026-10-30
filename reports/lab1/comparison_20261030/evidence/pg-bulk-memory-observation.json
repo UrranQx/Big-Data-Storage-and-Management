@@ -1,0 +1,17 @@
+{
+  "memory.current": "200634368",
+  "memory.max": "3221225472",
+  "memory.peak": "993951744",
+  "memory.swap.current": "0",
+  "memory.swap.peak": "0",
+  "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+  "memory.pressure": "some avg10=0.00 avg60=0.00 avg300=0.00 total=616\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=616",
+  "process_memory": [
+    "VmPeak:\t 1228508 kB",
+    "VmRSS:\t  191224 kB",
+    "VmSwap:\t       0 kB"
+  ],
+  "observed_at_unix": 1793378157.6979303,
+  "scope": "PG COPY process during first repetition; not a measurement of streaming S3 memory",
+  "phase": "pg_bulk"
+}

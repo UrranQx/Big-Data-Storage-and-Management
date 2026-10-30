@@ -28,7 +28,7 @@ def progress(collection, http=False):
     limiter = state / "limiter.json"
     result["limiter"] = read(limiter) if limiter.exists() else None
     responses = []
-    for kind in ("games_metadata", "runs", "players"):
+    for kind in ("games_metadata", "runs", "wr_history", "players"):
         root = state / "snapshots" / (collection + "-" + kind)
         if not root.exists():
             continue
@@ -52,12 +52,12 @@ def progress(collection, http=False):
             try:
                 with sqlite3.connect(f"file:{database}?mode=ro", uri=True, timeout=0.2) as db:
                     item["records"] = dict(db.execute("SELECT dataset,count(*) FROM records GROUP BY dataset"))
-                    if kind == "runs":
+                    if kind in ("runs", "wr_history"):
                         item["records"].pop("players", None)
                         item["records"]["checks"] = db.execute("SELECT count(*) FROM records WHERE dataset='checks' AND json_extract(document,'$.dataset')!='players'").fetchone()[0]
             except sqlite3.OperationalError:
                 item["counts_pending"] = True  # A writer may be creating/committing the package.
-            item["staging_format"] = "entity-v2"
+            item["staging_format"] = 'entities'
             if not item["extracted"]:
                 item["phase"] = "packing" if kind != "players" else "profiles"
         checkpoints = []
@@ -87,9 +87,15 @@ def progress(collection, http=False):
         item["coverage_counts"] = dict(Counter(c["coverage"] for c in checkpoints if c["coverage"]))
         config_path = root / "config.json"
         config = read(config_path) if config_path.exists() else {}
-        if kind == "runs" and config.get("repair_partitions"):
-            item["expected_sections"] = len(config["repair_partitions"])
-            item["retained_base_snapshot_id"] = config["repair_from_snapshot_id"]
+        if config.get('game_label'):
+            result['game_label'] = config['game_label']
+            result['game_id'] = config.get('game_id') or config.get('display_game_id')
+        if config.get('data_model'):
+            item['staging_format'] = config['data_model']
+        if kind == "runs" and (config.get("repair_partitions") or config.get('run_partition_strategy')=='date_large_v1'):
+            if config.get('repair_partitions'):
+                item["expected_sections"] = len(config["repair_partitions"])
+                item["retained_base_snapshot_id"] = config["repair_from_snapshot_id"]
             date_points = []
             for path in (root / "date-parts").glob("*/*/checkpoints/*.json"):
                 point = read(path)
@@ -101,7 +107,7 @@ def progress(collection, http=False):
                 item["latest_date_partition"] = max(date_points, key=lambda p:p["mtime"])
                 item["date_partitions_complete"] = sum(bool(p["complete"]) for p in date_points)
         metadata = state / "snapshots" / (collection + "-games_metadata") / "entity-package" / "entities.sqlite3"
-        if kind == "runs" and metadata.exists():
+        if kind in ("runs", "wr_history") and metadata.exists():
             import sqlite3
             try:
                 with sqlite3.connect(f"file:{metadata}?mode=ro", uri=True, timeout=0.2) as db:
@@ -109,7 +115,8 @@ def progress(collection, http=False):
                     from .jsonutil import loads
                     count = loads(row[0]).get("source_result", {}).get("category_count") if row else None
                     if count is not None and "expected_sections" not in item:
-                        item["expected_sections"] = count * 3
+                        item["expected_sections"] = count * (3 if kind=='runs' else 1)
+                        if config.get('smoke'):item['expected_sections']=3 if kind=='runs' else 1
             except sqlite3.OperationalError:
                 pass
         if http:
@@ -162,19 +169,24 @@ def batch_progress(batch_id):
                     if (retry := g["details"].get("coverage_retry", {})).get("state") == "running"
                     and retry.get("repair_collection_id")]
     reports = {c: progress(c) for c in collections}
+    continuation = read(root/'keep-running.json') if (root/'keep-running.json').exists() else None
+    if continuation is not None:
+        continuation['running'] = driver_running(root/'keep-running.lock')
     return {"batch": batch_id, "driver_running": driver_running(root / "driver.lock"),
+        "control": read(root / "control.json") if (root / "control.json").exists() else {},
+        "continuation": continuation,
         "driver": read(root / "status.json") if (root / "status.json").exists() else {},
         "games_complete": sum(g["state"] == "complete" for g in games),
         "games_partial": sum(g["state"] == "partial" for g in games),
         "games_not_applicable": sum(g["state"] == "not_applicable" for g in games),
         "games_processed": sum(g["state"] in ("complete", "partial", "unavailable", "not_applicable") for g in games),
-        "games_total": max(len(games), config.get("top") or config.get('sample_size') or 0) or None,
+        "games_total": max(len(games), config.get('game_limit') or config.get("top") or config.get('sample_size') or 0) or None,
         "selection_ready": (root / "selection.json").exists(),
         "games": games, "collections": reports}
 
 
 def render_collection(report):
-    lines = [report["collection"]]
+    lines = [report["collection"] + (f" | {report['game_label']} ({report.get('game_id') or '?'})" if report.get('game_label') else '')]
     budget = report.get("budget")
     metrics = report.get("http_telemetry", {})
     rate = (report.get("limiter") or {}).get("rate", {})
@@ -232,13 +244,35 @@ def render_batch(report):
              f"(complete={report['games_complete']}, partial={report.get('games_partial', 0)}, "
              f"not_applicable={report.get('games_not_applicable', 0)}) "
              f"| driver {active} | {driver.get('phase', 'not started')}"]
+    continuation = report.get('continuation')
+    if continuation:
+        state = 'running' if continuation['running'] else 'stopped'
+        lines.append(f"  Automatic continuation {state} until {continuation['until']}; "
+                     f"phase={continuation['phase']}; sessions restarted={continuation['started_sessions']}")
+    if report.get("control", {}).get("pause_requested"):
+        if report["driver_running"]:
+            lines.append("  Pause requested: finishing the admitted stage; no next stage will start")
+        elif driver.get("phase") == "paused":
+            lines.append("  Paused at a safe boundary; use batch resume with this collection ID")
+        else:
+            lines.append("  Pause requested; driver stopped. Existing Airflow tasks may still finish")
     if not report["selection_ready"]:
         lines.append("  Game selection pending: collecting directory/ranking")
     if driver.get("error"):
         lines.append("  Last error: " + driver["error"])
     if driver.get("reason"):
         lines.append("  Paused: " + driver["reason"])
-    for game in report["games"]:
+    games = report["games"]
+    if len(games) > 30:
+        focus = next((i for i,g in enumerate(games) if g['collection_id'] == driver.get('collection_id')), None)
+        if focus is None:
+            focus = next((i for i,g in enumerate(games) if g['state'] in ('running', 'failed', 'pending')), len(games)-1)
+        visible = set(range(max(0, focus-5), min(len(games), focus+6)))
+        attention = [i for i,g in enumerate(games) if g['state'] in ('failed', 'running', 'partial', 'unavailable')]
+        visible.update(attention[:5])
+        games = [g for i,g in enumerate(games) if i in visible]
+        lines.append(f"  Showing {len(games)}/{len(report['games'])} queue rows near the current game; full list: --json")
+    for game in games:
         lines.append(f"  {game['position']:2}. {game['details'].get('name', game['game_id'])}: {game['state']} [{game['collection_id']}]")
         retry = game["details"].get("coverage_retry")
         if retry:

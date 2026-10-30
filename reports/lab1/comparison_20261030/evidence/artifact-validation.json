@@ -1,0 +1,10 @@
+{
+  "measurements": 2055,
+  "statistic_groups": 286,
+  "matching_content_groups": 65,
+  "concurrent_calls": 540,
+  "all_medians_and_ranges_checked": true,
+  "png": 8,
+  "svg": 8,
+  "excluded_digest_comparison": "readonly_manifest_alias stores repeat-specific namespace; not a query result"
+}

@@ -1,0 +1,34 @@
+{
+  "checked_at": "2026-10-30T17:04:20.806737+00:00",
+  "batch": "lab1-popular500-20261030",
+  "driver_running": true,
+  "continuation_running": true,
+  "pause_requested": false,
+  "resumed_at": "2026-10-30T16:39:58.415172+00:00",
+  "continuation_phase": "watching",
+  "until": "2026-11-02T00:51:41.916756+00:00",
+  "status": {
+    "collection_id": "lab1-popular500-20261030-g-yd4o0z51",
+    "game": "Dead by Daylight",
+    "phase": "game",
+    "position": 110,
+    "total": 500,
+    "updated_at": "2026-10-30T16:59:38.701239+00:00"
+  },
+  "test_containers": [
+    "speedrun-comparison-20261030-postgres-1 exited",
+    "speedrun-comparison-20261030-mongo-1 exited",
+    "speedrun-comparison-20261030-garage-1 exited"
+  ],
+  "continuation_restart": {
+    "checked_at": "2026-10-30T17:04:00.663458+00:00",
+    "collection": "lab1-popular500-20261030",
+    "driver_running": true,
+    "pause_requested": false,
+    "resumed_at": "2026-10-30T16:39:58.415172+00:00",
+    "continuation_was_running": false,
+    "continuation_restart_submitted": true,
+    "until": "2026-11-02T00:51:41.916756+00:00",
+    "deadline_extended": false
+  }
+}

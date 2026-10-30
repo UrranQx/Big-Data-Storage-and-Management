@@ -12,7 +12,219 @@ from speedrun_etl.collect import validate_conf
 from speedrun_etl.entity_ods import EntityPackage
 
 
+class BatchPauseTests(unittest.TestCase):
+    def invoke(self, command, batch_id, *options):
+        from speedrun_etl.batch import main
+        with patch.object(sys, 'argv', ['batch', command, '--collection', batch_id, *options]):
+            main()
+
+    def test_pause_is_received_by_another_process_without_waiting_for_driver(self):
+        import subprocess
+        from speedrun_etl.batch import begin_stage
+        from speedrun_etl.jsonutil import atomic_write, file_lock, read
+        with TemporaryDirectory() as temp, patch.dict(os.environ, {'ETL_STATE': temp}):
+            root = Path(temp)/'batches/example'
+            atomic_write(root/'config.json', {'mode': 'top', 'top': 2, 'game_request_budget': 100})
+            with file_lock(root/'driver.lock'):
+                self.assertTrue(begin_stage(root, 'game', collection_id='example-g-one'))
+                result = subprocess.run([sys.executable, '-m', 'speedrun_etl.batch', 'pause',
+                                         '--collection', 'example'], capture_output=True, text=True, timeout=15)
+                self.assertEqual(0, result.returncode, result.stderr)
+                self.assertTrue(read(root/'control.json')['pause_requested'])
+                self.assertEqual('game', read(root/'status.json')['phase'])
+                self.assertFalse(begin_stage(root, 'game', collection_id='example-g-two'))
+                status = read(root/'status.json')
+                self.assertEqual(('paused', 'example-g-one'), (status['phase'], status['collection_id']))
+
+    def test_resume_restores_all_scope_strategy_and_session_settings(self):
+        from speedrun_etl.jsonutil import atomic_write, read
+        with TemporaryDirectory() as temp, patch.dict(os.environ, {'ETL_STATE': temp}), patch(
+                'speedrun_etl.batch.pg_connect'), patch('speedrun_etl.batch.run_queue') as run:
+            for mode in ('all', 'sample', 'top'):
+                with self.subTest(mode=mode):
+                    root = Path(temp)/'batches'/mode
+                    conf = {'mode': mode, 'top': 3 if mode == 'top' else None, 'game_request_budget': 321,
+                            'catalog_snapshot_id': 'shared-games_metadata', 'run_partition_strategy': 'date_large_v1'}
+                    if mode == 'sample':conf['sample_size'] = 4
+                    atomic_write(root/'config.json', conf)
+                    atomic_write(root/'runtime-policy.json', {'continue_on_drift': True, 'hours': 2.5,
+                                                              'session_request_budget': 777})
+                    atomic_write(root/'control.json', {'pause_requested': True})
+                    self.invoke('resume', mode)
+                    args, state, actual_root, actual_conf = run.call_args.args
+                    self.assertEqual(conf, actual_conf)
+                    self.assertEqual(root, actual_root)
+                    self.assertEqual((321, 777, 2.5, True), (args.game_request_budget, args.session_request_budget,
+                                                                          args.hours, args.continue_on_drift))
+                    self.assertEqual(mode == 'all', args.all)
+                    self.assertEqual(4 if mode == 'sample' else None, args.sample)
+                    self.assertFalse(read(root/'control.json')['pause_requested'])
+
+    def test_resume_does_not_queue_a_second_driver_or_cancel_an_active_pause(self):
+        from speedrun_etl.jsonutil import atomic_write, file_lock, read
+        with TemporaryDirectory() as temp, patch.dict(os.environ, {'ETL_STATE': temp}), patch(
+                'speedrun_etl.batch.pg_connect'), patch('speedrun_etl.batch.run_queue') as run:
+            root = Path(temp)/'batches/example'
+            atomic_write(root/'config.json', {'mode': 'all', 'top': None, 'game_request_budget': 100})
+            atomic_write(root/'control.json', {'pause_requested': True})
+            with file_lock(root/'driver.lock'):
+                self.invoke('resume', 'example')
+            run.assert_not_called()
+            self.assertTrue(read(root/'control.json')['pause_requested'])
+
+    def test_unknown_batch_and_scope_changes_are_rejected_without_side_effects(self):
+        from contextlib import redirect_stderr
+        from io import StringIO
+        from speedrun_etl.jsonutil import atomic_write, read
+        with TemporaryDirectory() as temp, patch.dict(os.environ, {'ETL_STATE': temp}), patch(
+                'speedrun_etl.batch.pg_connect') as database, redirect_stderr(StringIO()):
+            for command in ('pause', 'resume'):
+                with self.assertRaises(SystemExit):self.invoke(command, 'unknown')
+            self.assertFalse((Path(temp)/'batches/unknown').exists())
+            root = Path(temp)/'batches/example'
+            atomic_write(root/'config.json', {'mode': 'all', 'top': None, 'game_request_budget': 100})
+            atomic_write(root/'control.json', {'pause_requested': True})
+            with self.assertRaises(SystemExit):self.invoke('resume', 'example', '--top', '10')
+            self.assertTrue(read(root/'control.json')['pause_requested'])
+            database.assert_not_called()
+
+    @unittest.skipUnless(os.environ.get('ETL_INTEGRATION') == '1', 'Real control DB opt-in')
+    def test_game_finishes_before_pause_and_resume_skips_it_with_the_same_config(self):
+        from speedrun_etl.jsonutil import atomic_write, read
+        from speedrun_etl.storage import pg_connect
+        from speedrun_etl.progress import batch_progress
+        for stop_at in ('g1', 'g2'):
+            with self.subTest(stop_at=stop_at), TemporaryDirectory() as temp, patch.dict(os.environ, {'ETL_STATE': temp}):
+                batch_id = 'testpause'+uuid4().hex[:10]
+                root = Path(temp)/'batches'/batch_id
+                starts, waits = [], []
+                games = [{'id':g,'url':g,'name':g,'runCount':2-index} for index,g in enumerate(('g1','g2'))]
+                def fake_start(collection, conf):
+                    starts.append((collection, conf))
+                    atomic_write(Path(temp)/'collections'/collection/'budget.json', {'used': 1, 'limit': 100})
+                    package = EntityPackage(Path(temp)/'snapshots'/(collection+'-runs')/'entity-package')
+                    package.put('manifests', {'key': 'm', 'source_result': {
+                        'partitions': [{'coverage': 'verified_public_partitions'}]}})
+                    package.db.commit();package.db.close()
+                def fake_wait(collection, kinds):
+                    waits.append((collection, kinds))
+                    if collection.endswith('-g-'+stop_at):
+                        self.invoke('pause', batch_id)
+                        self.assertEqual('game', read(root/'status.json')['phase'])
+                        self.assertEqual(('games_metadata', 'runs', 'wr_history', 'players'), kinds)
+                        self.assertTrue(batch_progress(batch_id)['control']['pause_requested'])
+                with patch('speedrun_etl.batch.check_capacity'), patch('speedrun_etl.batch.start', side_effect=fake_start), patch(
+                        'speedrun_etl.batch.wait', side_effect=fake_wait), patch('speedrun_etl.batch.selection', return_value=games), patch(
+                        'speedrun_etl.batch.validate_catalog_input'):
+                    options = ('--all', '--catalog-snapshot', 'shared-games_metadata', '--runs-strategy', 'date-large',
+                               '--game-request-budget', '100', '--session-request-budget', '150', '--hours', '1.5',
+                               '--continue-on-drift')
+                    self.invoke('run', batch_id, *options)
+                    self.assertEqual('paused', read(root/'status.json')['phase'])
+                    with pg_connect(True) as conn:
+                        states = dict(conn.execute('SELECT game_id,state FROM entity_batch_queue WHERE batch_id=%s', [batch_id]).fetchall())
+                    self.assertEqual('complete', states[stop_at])
+                    if stop_at == 'g1':self.assertEqual('pending', states['g2'])
+                    first_count = len(starts)
+                    # A repeated run cannot silently cancel a durable pause or replace its session policy.
+                    self.invoke('run', batch_id, *options[:-1])
+                    self.assertEqual(first_count, len(starts))
+                    self.assertTrue(read(root/'runtime-policy.json')['continue_on_drift'])
+                    self.invoke('resume', batch_id)
+                self.assertEqual('complete', read(root/'status.json')['phase'])
+                self.assertEqual([batch_id+'-g-g1', batch_id+'-g-g2'], [c for c, _ in starts])
+                self.assertEqual(2, len(waits))
+                self.assertTrue(all(c['run_partition_strategy'] == 'date_large_v1' for _, c in starts))
+                self.assertEqual(1, read(Path(temp)/'collections'/(batch_id+'-g-g1')/'budget.json')['used'])
+
+    @unittest.skipUnless(os.environ.get('ETL_INTEGRATION') == '1', 'Real control DB opt-in')
+    def test_pause_during_catalog_or_ranking_stops_before_the_next_stage(self):
+        from speedrun_etl.jsonutil import read
+        for suffix in ('-catalog', '-ranking-v2'):
+            with self.subTest(stage=suffix), TemporaryDirectory() as temp, patch.dict(os.environ, {'ETL_STATE': temp}):
+                batch_id = 'testbootpause'+uuid4().hex[:8]
+                starts = []
+                def fake_wait(collection, kinds):
+                    if collection.endswith(suffix):self.invoke('pause', batch_id)
+                with patch('speedrun_etl.batch.start', side_effect=lambda c, conf: starts.append(c)), patch(
+                        'speedrun_etl.batch.wait', side_effect=fake_wait), patch('speedrun_etl.batch.selection') as select:
+                    self.invoke('run', batch_id, '--top', '1')
+                self.assertEqual('paused', read(Path(temp)/'batches'/batch_id/'status.json')['phase'])
+                self.assertEqual(batch_id+suffix, starts[-1])
+                self.assertFalse(any('-g-' in c for c in starts))
+                select.assert_not_called()
+
+    @unittest.skipUnless(os.environ.get('ETL_INTEGRATION') == '1', 'Real control DB opt-in')
+    def test_pause_request_does_not_mask_an_active_store_failure(self):
+        from speedrun_etl.jsonutil import read
+        from speedrun_etl.storage import pg_connect
+        with TemporaryDirectory() as temp, patch.dict(os.environ, {'ETL_STATE': temp}):
+            batch_id = 'testpausefail'+uuid4().hex[:8]
+            starts = []
+            def fake_wait(collection, kinds):
+                if collection.endswith('-g-g1'):
+                    self.invoke('pause', batch_id)
+                    raise RuntimeError('Store acknowledgement missing')
+            with patch('speedrun_etl.batch.start', side_effect=lambda c, conf: starts.append(c)), patch(
+                    'speedrun_etl.batch.wait', side_effect=fake_wait), patch('speedrun_etl.batch.selection', return_value=[
+                    {'id': g, 'url': g, 'name': g} for g in ('g1', 'g2')]):
+                with self.assertRaisesRegex(RuntimeError, 'acknowledgement'):
+                    self.invoke('run', batch_id, '--top', '2')
+            root = Path(temp)/'batches'/batch_id
+            self.assertEqual('failed', read(root/'status.json')['phase'])
+            self.assertTrue(read(root/'control.json')['pause_requested'])
+            with pg_connect(True) as conn:
+                states = dict(conn.execute('SELECT game_id,state FROM entity_batch_queue WHERE batch_id=%s', [batch_id]).fetchall())
+            self.assertEqual({'g1': 'failed', 'g2': 'pending'}, states)
+            self.assertNotIn(batch_id+'-g-g2', starts)
+
+
 class BatchTests(unittest.TestCase):
+    def test_popularity_order_is_numeric_stable_and_limited_after_sorting(self):
+        from speedrun_etl.batch import ordered_selection
+        games = [{'id':'z','runCount':'10'}, {'id':'b','runCount':'100'},
+                 {'id':'a','runCount':100}, {'id':'zero','runCount':'0'}]
+        conf = {'game_order':'run-count-desc', 'game_limit':2}
+        self.assertEqual(['a','b'], [g['id'] for g in ordered_selection(games, conf)])
+        self.assertEqual(ordered_selection(games, conf), ordered_selection(list(reversed(games)), conf))
+        self.assertEqual(games, ordered_selection(games, {}))
+        with self.assertRaisesRegex(ValueError, 'fewer'):ordered_selection(games, {**conf,'game_limit':5})
+        for count in (None, -1, 'unknown', 1.5, True):
+            with self.subTest(count=count), self.assertRaises(ValueError):
+                ordered_selection([{'id':'bad','runCount':count}], conf)
+
+    @unittest.skipUnless(os.environ.get('ETL_INTEGRATION') == '1', 'Real control DB opt-in')
+    def test_priority_queue_resume_preserves_order_limit_and_completed_games(self):
+        from speedrun_etl.batch import main
+        from speedrun_etl.jsonutil import atomic_write, read
+        from speedrun_etl.storage import pg_connect
+        batch_id = 'testpriority'+uuid4().hex[:10]
+        games = [{'id':g,'url':g,'name':g,'runCount':n} for g,n in [('g0',1),('g1',100),('g2',2000),('g3',100)]]
+        starts = []
+        with TemporaryDirectory() as temp:
+            def fake_start(collection, conf):
+                starts.append(collection)
+                atomic_write(Path(temp)/'collections'/collection/'budget.json', {'used':60,'limit':100})
+                package = EntityPackage(Path(temp)/'snapshots'/(collection+'-runs')/'entity-package')
+                package.put('manifests', {'key':'m','source_result':{'partitions':[{'coverage':'verified_public_partitions'}]}})
+                package.db.commit();package.db.close()
+            with patch.dict(os.environ, {'ETL_STATE':temp}), patch('speedrun_etl.batch.check_capacity'), patch(
+                    'speedrun_etl.batch.validate_catalog_input'), patch('speedrun_etl.batch.start', side_effect=fake_start), patch(
+                    'speedrun_etl.batch.wait'), patch('speedrun_etl.batch.selection', return_value=games):
+                with patch.object(sys,'argv',['batch','run','--collection',batch_id,'--all','--order','run-count-desc',
+                        '--limit-games','2','--catalog-snapshot','shared-games_metadata','--game-request-budget','100',
+                        '--session-request-budget','150']):main()
+                root = Path(temp)/'batches'/batch_id
+                self.assertEqual('session_paused', read(root/'status.json')['phase'])
+                self.assertEqual(['g2','g1'], read(root/'selection.json')['game_ids'])
+                with patch.object(sys,'argv',['batch','resume','--collection',batch_id]):main()
+                self.assertEqual('complete', read(root/'status.json')['phase'])
+                self.assertEqual('run-count-desc', read(root/'config.json')['game_order'])
+                with pg_connect(True) as conn:
+                    rows=conn.execute('SELECT game_id,state FROM entity_batch_queue WHERE batch_id=%s ORDER BY position',[batch_id]).fetchall()
+                self.assertEqual([('g2','complete'),('g1','complete')],rows)
+        self.assertEqual([batch_id+'-g-g2',batch_id+'-g-g1'], starts)
+
     def test_hash_sample_is_order_independent_and_covers_four_counter_bands(self):
         from collections import Counter
         from speedrun_etl.batch import stratified_selection
@@ -303,6 +515,22 @@ class BatchTests(unittest.TestCase):
         self.assertEqual(5000,conf["request_budget"])
         with self.assertRaises(ValueError):
             validate_conf({**conf,"game":"../bad"})
+
+    def test_source_url_punctuation_does_not_relax_ids_or_allow_paths(self):
+        conf = {'collection_id':'b-g', 'scope':'game', 'game':'ubermosh_vol.3',
+                'game_id':'2684jydp', 'selection_snapshot_id':'b-catalog-games_metadata'}
+        for slug in ('ubermosh_vol.3', '.hackmutation', 'e.y.e', 'ttt.', 'a|b'):
+            with self.subTest(slug=slug):
+                self.assertEqual(slug, validate_conf({**conf, 'game':slug})['game'])
+                self.assertEqual(slug, validate_conf({'collection_id':'one', 'scope':'single_game', 'game':slug})['game'])
+        for slug in ('', '.', '..', '../bad', 'a/b', 'a\\b', 'https://example.com', 'x?y', 'x#y', 'x\ny', None, 123):
+            with self.subTest(unsafe_slug=slug), self.assertRaises(ValueError):
+                validate_conf({**conf, 'game':slug})
+        for key in ('game_id', 'selection_snapshot_id'):
+            with self.subTest(id_field=key), self.assertRaises(ValueError):
+                validate_conf({**conf, key:'id.with.punctuation'})
+        with self.assertRaises(ValueError):
+            validate_conf({'collection_id':'one', 'scope':'single_game', 'game_id':'id|bad'})
 
     @unittest.skipUnless(os.environ.get("ETL_INTEGRATION") == "1", "Real control DB opt-in")
     def test_reviewed_selection_repair_preserves_started_chain_and_retires_pending(self):

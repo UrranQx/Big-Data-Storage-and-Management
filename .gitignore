@@ -5,6 +5,8 @@ __pycache__/
 .env.*
 !.env.example
 data/
+!/reports/lab1/comparison_20261030/data/
+!/reports/lab1/comparison_20261030/data/*.csv
 logs/
 volumes/
 .pytest_cache/

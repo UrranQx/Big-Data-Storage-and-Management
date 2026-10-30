@@ -10,6 +10,41 @@ from speedrun_etl.progress import progress, render_collection, render_batch, dri
 
 
 class ProgressTests(unittest.TestCase):
+    def test_automatic_continuation_deadline_and_liveness_are_visible(self):
+        report = {'batch':'b', 'driver':{'phase':'game'}, 'driver_running':True, 'games_complete':0,
+                  'games_total':2, 'selection_ready':True, 'games':[], 'collections':{},
+                  'continuation':{'running':True, 'until':'2026-10-30T00:00:00+00:00',
+                                  'phase':'watching', 'started_sessions':2}}
+        self.assertIn('Automatic continuation running until 2026-10-30T00:00:00+00:00', render_batch(report))
+        report['continuation']['running'] = False
+        self.assertIn('Automatic continuation stopped', render_batch(report))
+
+    def test_large_queue_output_keeps_current_failure_and_next_game_bounded(self):
+        games = [{'position':i+1, 'game_id':str(i), 'collection_id':f'b-g-{i}',
+                  'state':'complete' if i < 54 else 'failed' if i == 54 else 'pending', 'details':{}}
+                 for i in range(51413)]
+        report = {'batch':'b', 'driver':{'phase':'failed', 'collection_id':'b-g-54'}, 'driver_running':False,
+                  'games_complete':54, 'games_total':len(games), 'selection_ready':True,
+                  'games':games, 'collections':{}}
+        output = render_batch(report)
+        self.assertIn('Showing 11/51413 queue rows', output)
+        self.assertIn('failed [b-g-54]', output)
+        self.assertIn('pending [b-g-55]', output)
+        self.assertLess(len(output.splitlines()), 20)
+        self.assertNotIn('[b-g-51412]', output)
+
+    def test_pause_request_and_acknowledged_pause_are_distinct(self):
+        report = {'batch': 'b', 'driver': {'phase': 'game'}, 'driver_running': True,
+                  'control': {'pause_requested': True}, 'games_complete': 0, 'games_total': 2,
+                  'selection_ready': True, 'games': [], 'collections': {}}
+        self.assertIn('Pause requested: finishing', render_batch(report))
+        report['driver_running'] = False
+        self.assertIn('Existing Airflow tasks may still finish', render_batch(report))
+        report['driver']['phase'] = 'paused'
+        self.assertIn('Paused at a safe boundary', render_batch(report))
+        report['control']['pause_requested'] = False
+        self.assertNotIn('Pause requested', render_batch(report))
+
     def test_active_unfiltered_fallback_is_not_shown_as_a_completed_partial_date_section(self):
         with TemporaryDirectory() as temp,patch.dict(os.environ,{'ETL_STATE':temp}):
             root=Path(temp)/'snapshots/c-runs'

@@ -1,0 +1,14 @@
+{
+  "memory.current": "1610539008",
+  "memory.max": "1610612736",
+  "memory.swap.current": "633044992",
+  "memory.events": "low 0\nhigh 0\nmax 170125\noom 0\noom_kill 0\noom_group_kill 0",
+  "memory.pressure": "some avg10=17.81 avg60=16.08 avg300=15.61 total=132552624\nfull avg10=17.81 avg60=16.08 avg300=15.61 total=132550614",
+  "cpu.stat": "usage_usec 581633020\nuser_usec 439265398\nsystem_usec 142367622\nnr_periods 12389\nnr_throttled 4\nthrottled_usec 228439\nnr_bursts 0\nburst_usec 0",
+  "process_memory": [
+    "VmPeak:\t 3745308 kB",
+    "VmRSS:\t 1506656 kB",
+    "VmSwap:\t  450784 kB"
+  ],
+  "observed_at_unix": 1793376335.4220843
+}
