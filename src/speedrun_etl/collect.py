@@ -6,7 +6,6 @@ from pathlib import Path
 import re
 
 from .jsonutil import atomic_write, digest, read, utcnow
-from .ods import Package, pack_response, resolve_payload, restore
 from .source import Client, SourceError, staged_responses
 
 STATUSES = {0: "new", 1: "verified", 2: "rejected"}
@@ -771,6 +770,8 @@ def collect_runs(client, root, metadata_package):
         )
         body = metadata_package.decode(response["body"])
     else:
+        from .ods import restore
+
         response = next(
             r
             for r in metadata_package.records("responses")
@@ -1048,6 +1049,8 @@ def profiles(source, target):
 
 
 def seal(state, conf, kind, result, error=None):
+    from .ods import Package, pack_response
+
     root = location(state, conf, kind)
     package = Package(root / "package")
     for staged in staged_responses(root):
@@ -1093,6 +1096,8 @@ def seal(state, conf, kind, result, error=None):
 
 
 def extract(state, conf, kind):
+    from .ods import Package
+
     conf = validate_conf(conf)
     root = location(state, conf, kind)
     completed = root / "extracted.json"

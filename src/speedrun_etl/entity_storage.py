@@ -11,8 +11,8 @@ import time
 
 from .entity_ods import DATASETS, EntityPackage
 from .jsonutil import digest, dumps, loads, atomic_write
-from .ods import native_safe
-from .storage import pg_connect, Mongo, S3
+from .jsoncodec import native_safe
+from .connections import pg_connect, Mongo, S3
 
 
 def validate_namespace(value):

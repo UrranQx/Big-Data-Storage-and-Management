@@ -13,7 +13,7 @@ import psycopg
 from speedrun_etl.entity_ods import DATASETS
 from speedrun_etl.entity_storage import mongo_document
 from speedrun_etl.jsonutil import digest, dumps, read, utcnow
-from speedrun_etl.storage import Mongo, S3, pg_connect
+from speedrun_etl.connections import Mongo, S3, pg_connect
 
 
 def ods_namespace(conn):

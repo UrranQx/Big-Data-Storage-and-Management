@@ -19,7 +19,7 @@ from .capacity import check_capacity
 from .entity_ods import EntityPackage
 from .entity_storage import ready
 from .jsonutil import atomic_write, digest, dumps, file_lock, read, utcnow
-from .storage import pg_connect
+from .connections import pg_connect
 from .model import V2, V3, version, namespace, kinds as pipeline_kinds, role, dag_run_id
 
 

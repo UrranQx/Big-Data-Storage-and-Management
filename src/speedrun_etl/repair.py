@@ -10,7 +10,7 @@ from .collect import validate_conf
 from .entity_ods import EntityPackage
 from .entity_storage import ready
 from .jsonutil import atomic_write, file_lock, read, utcnow
-from .storage import pg_connect
+from .connections import pg_connect
 
 
 def validate_base(state, conf):

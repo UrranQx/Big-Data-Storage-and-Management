@@ -13,7 +13,7 @@ import time
 
 from .jsonutil import atomic_write, digest, dumps, loads, read
 from .model import V2, V3, run_core
-from .ods import native_safe
+from .jsoncodec import native_safe
 
 DATASETS = (
     "games",

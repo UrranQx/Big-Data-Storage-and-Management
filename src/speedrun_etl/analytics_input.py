@@ -13,7 +13,7 @@ import time
 
 from .entity_ods import EntityPackage
 from .jsonutil import atomic_write, digest, dumps, loads, utcnow
-from .storage import pg_connect
+from .connections import pg_connect
 from .storage_workloads import duration_ns
 
 

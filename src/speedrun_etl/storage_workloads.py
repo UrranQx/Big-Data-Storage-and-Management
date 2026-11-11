@@ -21,7 +21,7 @@ from .capacity import check_capacity
 from .entity_ods import DATASETS, EntityPackage
 from .entity_storage import batches, make_chunks, ready
 from .jsonutil import atomic_write, digest, dumps, file_lock, loads, read, utcnow
-from .storage import Mongo, S3, pg_connect
+from .connections import Mongo, S3, pg_connect
 from .experiment_inputs import verify_ref
 
 DATA = ("runs", "players", "games")

@@ -13,7 +13,7 @@ from .batch import counter_band, selection, stratified_selection
 from .entity_ods import EntityPackage
 from .entity_storage import ready
 from .jsonutil import atomic_write, dumps, read, utcnow
-from .storage import pg_connect
+from .connections import pg_connect
 
 
 def scenarios(populations, rows, metric):

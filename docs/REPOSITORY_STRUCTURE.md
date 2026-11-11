@@ -37,10 +37,12 @@ DATA_MODEL.md; фактическое состояние автора — docs/H
 | archive/ | Исследовательские прототипы; не подключаются к DAG или рабочему образу |
 | data/, exports/ | Локальные данные и пакеты передачи, исключены из Git |
 
-Исходники legacy ods.py/storage.py и прототип repack.py сохранены для истории
-проверок; текущие DAG их не используют для ODS-загрузки. Старый queue_driver
-отключён; прежний benchmark.py заменён реализацией entity-v2. fresh_cycle.py — одноразовая
-последовательность на стенде автора, не команда для компьютера коллеги.
+Общие подключения находятся в connections.py, общий JSON-кодек — в jsoncodec.py.
+Прежние загрузчики, локальный Package и grouped-history прототип изолированы
+в speedrun_etl/legacy/. Совместимые ods.py/storage.py/repack.py сохраняют
+прежние импорты для тестов и replay. Действующие загрузчики используют connections
+напрямую. queue_driver только сообщает о переходе на batch; одноразовый
+fresh_cycle удалён. Прежние SQL сохранены для интеграционных тестов.
 
 Состояние и raw находятся в named Docker volumes. В Git и пакет передачи
 не включаются .env, infra/garage.local.toml, volumes, полный staging и архив

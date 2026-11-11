@@ -10,7 +10,7 @@ from speedrun_etl.entity_ods import EntityPackage
 from speedrun_etl.entity_storage import mongo_document, read_entity, ready
 from speedrun_etl.jsonutil import digest, dumps
 from speedrun_etl.model import run_core
-from speedrun_etl.storage import Mongo, pg_connect
+from speedrun_etl.connections import Mongo, pg_connect
 
 
 COLLECTION = "lab1-popular500-20261030-g-4pd0n31e"

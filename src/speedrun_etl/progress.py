@@ -265,7 +265,7 @@ def driver_running(path):
 
 
 def batch_progress(batch_id):
-    from .storage import pg_connect
+    from .connections import pg_connect
 
     state = Path(os.environ["ETL_STATE"])
     root = state / "batches" / batch_id

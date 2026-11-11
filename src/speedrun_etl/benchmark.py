@@ -20,7 +20,7 @@ from .entity_ods import DATASETS, EntityPackage
 from .entity_storage import init_entities, load, mongo_document, ready, shard
 from .jsonutil import atomic_write, digest, dumps, file_lock, loads, read
 from .progress import driver_running
-from .storage import pg_connect, Mongo, S3
+from .connections import pg_connect, Mongo, S3
 from .experiment_inputs import isolated, verify_ref
 from .model import kinds, version
 
