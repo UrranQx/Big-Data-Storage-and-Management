@@ -5,8 +5,9 @@
 from pathlib import Path
 import re
 
-from .jsonutil import atomic_write, digest, read, utcnow
+from .jsonutil import atomic_write, digest, read
 from .source import Client, SourceError, staged_responses
+from .ods import restore
 
 STATUSES = {0: "new", 1: "verified", 2: "rejected"}
 DATE_SPLIT_MIN_RUNS = 10000
@@ -770,8 +771,6 @@ def collect_runs(client, root, metadata_package):
         )
         body = metadata_package.decode(response["body"])
     else:
-        from .ods import restore
-
         response = next(
             r
             for r in metadata_package.records("responses")

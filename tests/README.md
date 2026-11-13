@@ -10,3 +10,7 @@ Unit-тесты используют синтетические ответы и 
 Команды офлайн-проверки и ограничения — [DEVELOPMENT.md](../docs/DEVELOPMENT.md).
 
 Архивные прототипы в `archive/research/` не входят в рабочий test discovery.
+
+После ЛР1 рабочий ODS — PostgreSQL. `test_postgres_mode.py` проверяет одиночный
+ODS, очистку staging и точный replay после неё. Его реальные интеграции включаются
+`ETL_PG_INTEGRATION=1` на изолированном PostgreSQL; Mongo/S3 не требуются.

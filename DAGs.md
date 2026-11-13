@@ -1,5 +1,10 @@
 # DAG для ЛР1
 
+**13 ноября, после сдачи ЛР1:** по умолчанию каждый DAG загружает только PostgreSQL.
+После finalize DAG players задача cleanup проверяет данные PG и удаляет временные
+копии завершённой игры. Описание трёх загрузчиков ниже относится к явному режиму
+`infra/compose.lab1.yaml`. Политика и команды — [POSTGRES_ONLY](docs/POSTGRES_ONLY.md).
+
 В текущей модели `entity-v3` реализованы четыре DAG в каталоге [dags/ods](dags/ods):
 
 ```mermaid

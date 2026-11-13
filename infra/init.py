@@ -8,6 +8,8 @@ from pathlib import Path
 import subprocess
 
 from speedrun_etl.entity_storage import init_entities
+from speedrun_etl.staging import init_archive
+from speedrun_etl.settings import stores
 
 auth = Path(os.environ["AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_PASSWORDS_FILE"])
 auth.parent.mkdir(parents=True, exist_ok=True)
@@ -23,4 +25,6 @@ for name, slots, description in (
         ["airflow", "pools", "set", name, str(slots), description], check=True
     )
 init_entities()
-print("Airflow and three ODS stores initialized")
+init_entities("entity_v3")
+init_archive()
+print("Airflow and ODS initialized:", ", ".join(stores()))

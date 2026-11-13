@@ -1,0 +1,54 @@
+# Исторический стенд: docker compose -f compose.yaml -f infra/compose.lab1.yaml ...
+x-lab1-env: &lab1-env
+  ETL_STORES: postgres,mongo,garage
+  ETL_STAGING_CLEANUP: "0"
+  MONGO_PASSWORD: ${MONGO_PASSWORD:?configure for lab1}
+  S3_ACCESS_KEY: ${S3_ACCESS_KEY:?configure for lab1}
+  S3_SECRET_KEY: ${S3_SECRET_KEY:?configure for lab1}
+services:
+  mongo:
+    image: mongo:8.0@sha256:6657bf2413fefc5be649390318f5b4cd7328e982722f8ce2ac6dfa6f0a42cb03
+    command: [mongod, --wiredTigerCacheSizeGB, "0.25"]
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ods
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:?configure for lab1}
+    volumes: [mongo-data:/data/db]
+    mem_limit: 768m
+    healthcheck:
+      test: [CMD, mongosh, --quiet, --eval, "quit(db.adminCommand('ping').ok ? 0 : 1)"]
+      interval: 15s
+      retries: 12
+  garage:
+    image: dxflrs/garage:v2.4.1@sha256:9c96caa2612d3411acc5b0e6701fb238dbfba33e533a6d7d3d811a4b12d0d020
+    command: [/garage, server, --single-node, --default-bucket]
+    environment:
+      GARAGE_DEFAULT_ACCESS_KEY: ${S3_ACCESS_KEY:?configure for lab1}
+      GARAGE_DEFAULT_SECRET_KEY: ${S3_SECRET_KEY:?configure for lab1}
+      GARAGE_DEFAULT_BUCKET: speedrun-ods
+    volumes:
+      - ./infra/garage.local.toml:/etc/garage.toml:ro
+      - garage-meta:/var/lib/garage/meta
+      - garage-data:/var/lib/garage/data
+    mem_limit: 768m
+    healthcheck:
+      test: [CMD, /garage, status]
+      interval: 15s
+      retries: 12
+  init:
+    build:
+      args:
+        ETL_EXTRAS: "[lab1]"
+    environment: *lab1-env
+    depends_on:
+      mongo: {condition: service_healthy}
+      garage: {condition: service_healthy}
+  scheduler:
+    environment: *lab1-env
+  api-server:
+    environment: *lab1-env
+  dag-processor:
+    environment: *lab1-env
+volumes:
+  mongo-data:
+  garage-meta:
+  garage-data:

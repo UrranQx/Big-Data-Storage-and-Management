@@ -43,6 +43,13 @@ class EntityPackage:
             raise ValueError("Unknown package role")
         self.role = role
         self.root = Path(root)
+        if (
+            not (self.root / "entities.sqlite3").exists()
+            and (self.root.parent / "retired.json").exists()
+        ):
+            raise RuntimeError(
+                "Staging was retired to PostgreSQL; use staging.open_package(reference)"
+            )
         self.root.mkdir(parents=True, exist_ok=True)
         self.db = sqlite3.connect(self.root / "entities.sqlite3")
         self.db.execute("PRAGMA journal_mode=WAL")

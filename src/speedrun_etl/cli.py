@@ -7,11 +7,12 @@ import json
 import os
 from pathlib import Path
 from urllib.request import Request, urlopen
-from datetime import datetime, timezone
 
 from .collect import location, snapshot_id, validate_conf
 from .jsonutil import digest, dumps, read
-from .model import V2, V3, version, namespace, kinds, dag_run_id
+from .model import V2, V3, version, kinds, dag_run_id
+from .settings import stores
+from .staging import open_package, manifest as snapshot_manifest, archive_info
 
 
 def api(method, path, body=None, token=None):
@@ -56,7 +57,7 @@ def main():
     parser.add_argument(
         "--metadata-only",
         action="store_true",
-        help="Collect only the selected game card/metadata in three ODS",
+        help="Collect only the selected game card/metadata in configured ODS",
     )
     strategy = parser.add_mutually_exclusive_group()
     strategy.add_argument(
@@ -208,45 +209,38 @@ def main():
             if not (root / "config.json").exists():
                 continue
             reference = read(root / "extracted.json")
-            from .entity_ods import EntityPackage
-
-            package = EntityPackage(reference["package_uri"], role=reference["role"])
             result["snapshots"][kind] = {
                 "verification": read(root / "verified.json"),
-                "manifest": list(package.records("manifests")),
+                "manifest": [snapshot_manifest(root)],
             }
-            package.db.close()
         print(dumps(result))
     elif args.command == "replay":
-        from .entity_ods import EntityPackage
         from .entity_storage import load
 
         for kind in kinds(conf):
             if not (location(state, conf, kind) / "config.json").exists():
                 continue
             reference = read(location(state, conf, kind) / "extracted.json")
-            package = EntityPackage(reference["package_uri"], role=reference["role"])
-            for store in ("postgres", "mongo", "garage"):
-                result = load(
-                    store,
-                    package,
-                    reference["snapshot_id"],
-                    namespace=reference.get("namespace", "entity_v2"),
-                    role=reference["role"],
-                )
-                print(
-                    dumps(
-                        {
-                            "snapshot": snapshot_id(conf, kind),
-                            "store": store,
-                            "digest": result["digest"],
-                        }
+            with open_package(reference) as package:
+                for store in stores():
+                    result = load(
+                        store,
+                        package,
+                        reference["snapshot_id"],
+                        namespace=reference.get("namespace", "entity_v2"),
+                        role=reference["role"],
                     )
-                )
-            package.db.close()
+                    print(
+                        dumps(
+                            {
+                                "snapshot": snapshot_id(conf, kind),
+                                "store": store,
+                                "digest": result["digest"],
+                            }
+                        )
+                    )
     else:
         from .entity_storage import read_entity
-        from .entity_ods import EntityPackage
 
         if not args.id:
             parser.error("history requires --id")
@@ -268,10 +262,12 @@ def main():
             else "runs"
         )
         reference = read(location(state, conf, kind) / "extracted.json")
-        package = EntityPackage(reference["package_uri"], role=reference["role"])
-        summary = package.summary()
-        package.db.close()
-        for name in ("postgres", "mongo", "garage"):
+        if (location(state, conf, kind) / "retired.json").exists():
+            summary = archive_info(reference)["summary"]
+        else:
+            with open_package(reference) as package:
+                summary = package.summary()
+        for name in stores():
             options = {
                 "namespace": reference.get("namespace", "entity_v2"),
                 "role": reference["role"],

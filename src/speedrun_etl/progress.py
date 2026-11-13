@@ -52,6 +52,13 @@ def progress(collection, http=False):
             else "collecting"
         )
         item["records"] = {}
+        retired = root / "retired.json"
+        if retired.exists():
+            item["records"] = {
+                name: value["count"] for name, value in read(retired)["summary"].items()
+            }
+            item["staging_format"] = "postgresql"
+            item["staging_retired"] = True
         if (root / "failed.json").exists() and not item["verified"]:
             item["last_error"] = read(root / "failed.json")
         if (root / "package").exists():

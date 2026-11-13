@@ -1,0 +1,20 @@
+name: speedrun-data
+services:
+  postgres:
+    image: postgres:16@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
+      AIRFLOW_DB_PASSWORD: ${AIRFLOW_DB_PASSWORD:?}
+      ODS_DB_PASSWORD: ${ODS_DB_PASSWORD:?}
+      CONTROL_DB_PASSWORD: ${CONTROL_DB_PASSWORD:?}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./postgres-init.sh:/docker-entrypoint-initdb.d/01-databases.sh:ro
+    ports: ["127.0.0.1:${TRANSFER_PG_PORT:-5433}:5432"]
+    healthcheck:
+      test: [CMD, pg_isready, -h, 127.0.0.1, -U, postgres]
+      interval: 2s
+      retries: 60
+volumes:
+  postgres-data:

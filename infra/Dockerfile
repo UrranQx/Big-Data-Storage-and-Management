@@ -2,7 +2,8 @@ FROM apache/airflow:3.3.2-python3.11@sha256:a6685a7a708ed6fa910c2c05458d7f2b0db9
 COPY --chown=airflow:root infra/airflow-constraints-3.11.txt /opt/airflow/constraints.txt
 COPY --chown=airflow:root pyproject.toml /opt/project/pyproject.toml
 COPY --chown=airflow:root src /opt/project/src
-RUN pip install --no-cache-dir "apache-airflow==3.3.2" "apache-airflow-providers-standard==1.19.0" /opt/project --constraint /opt/airflow/constraints.txt && pip check
+ARG ETL_EXTRAS=""
+RUN pip install --no-cache-dir "apache-airflow==3.3.2" "apache-airflow-providers-standard==1.19.0" "/opt/project${ETL_EXTRAS}" --constraint /opt/airflow/constraints.txt && pip check
 COPY --chown=airflow:root sql /opt/project/sql
 COPY --chown=airflow:root tests /opt/project/tests
 COPY --chown=airflow:root infra/*.py /opt/project/infra/

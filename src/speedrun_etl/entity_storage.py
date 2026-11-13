@@ -4,7 +4,6 @@
 
 import gzip
 import hashlib
-import os
 from pathlib import Path
 import re
 import time
@@ -13,6 +12,7 @@ from .entity_ods import DATASETS, EntityPackage
 from .jsonutil import digest, dumps, loads, atomic_write
 from .jsoncodec import native_safe
 from .connections import pg_connect, Mongo, S3
+from .settings import stores
 
 
 def validate_namespace(value):
@@ -89,11 +89,12 @@ def init_entities(namespace="entity_v2"):
                        c.observed->'values'->'place' AS place
                 FROM seen s JOIN entity_v3.runs r ON r.key=s.observed->>'version_key'
                 LEFT JOIN context c ON c.source_id=r.source_id""")
-    with Mongo() as store:
-        db = store.client[namespace]
-        for dataset in DATASETS:
-            db[dataset].create_index([("source_id", 1), ("projection", 1)])
-        db.runs.create_index([("game_id", 1), ("category_id", 1), ("status", 1)])
+    if "mongo" in stores():
+        with Mongo() as store:
+            db = store.client[namespace]
+            for dataset in DATASETS:
+                db[dataset].create_index([("source_id", 1), ("projection", 1)])
+            db.runs.create_index([("game_id", 1), ("category_id", 1), ("status", 1)])
     with pg_connect(True) as conn:
         conn.execute("""CREATE TABLE IF NOT EXISTS entity_receipts (
             namespace text NOT NULL,snapshot_id text NOT NULL,role text NOT NULL,store text NOT NULL,
@@ -184,7 +185,6 @@ def load(
     """Пишет пакет в выбранный ODS, сверяет чтение и сохраняет receipt готовности."""
     from psycopg import sql
     from psycopg.types.json import Jsonb
-    from pymongo import UpdateOne
 
     namespace = validate_namespace(namespace)
     manifest = next(package.records("manifests"), {})
@@ -224,6 +224,8 @@ def load(
                     if actual != {r["key"]: raw for r, raw in batch}:
                         raise ValueError("Postgres entity readback differs")
     elif name == "mongo":
+        from pymongo import UpdateOne
+
         with Mongo() as store:
             from pymongo.write_concern import WriteConcern
 
@@ -376,10 +378,9 @@ def ready(snapshot_id, namespace="entity_v2", role="all", expected=None):
             WHERE namespace=%s AND snapshot_id=%s AND role=%s""",
             [namespace, snapshot_id, role],
         ).fetchall()
-    if {r[0] for r in rows} != {"postgres", "mongo", "garage"} or len(
-        {r[1] for r in rows}
-    ) != 1:
-        raise RuntimeError("Entity snapshot not acknowledged by all three stores")
+    rows = [r for r in rows if r[0] in stores()]
+    if {r[0] for r in rows} != set(stores()) or len({r[1] for r in rows}) != 1:
+        raise RuntimeError("Entity snapshot not acknowledged by configured stores")
     if expected and {r[1] for r in rows} != {expected}:
         raise RuntimeError("Entity receipt belongs to another package")
     return {"digest": rows[0][1], "stores": {r[0]: r[2] for r in rows}}
@@ -519,7 +520,7 @@ def main():
     init_entities(args.namespace)
     results = []
     for repeat in range(2):
-        for name in ("postgres", "mongo", "garage"):
+        for name in stores():
             result = load(name, package, sid, args.namespace)
             results.append(result)
             print(dumps({"repeat": repeat + 1, **result}), flush=True)
@@ -539,13 +540,13 @@ def main():
                     package.summary(),
                     args.namespace,
                 )
-                for name in ("postgres", "mongo", "garage")
+                for name in stores()
             ]
             if len({digest(r) for r in reads}) != 1 or first not in reads[0]:
                 raise ValueError("Entity/history read differs between stores")
     atomic_write(Path(args.package) / "stores_verified.json", evidence)
     package.db.close()
-    print("Three stores and replay verified", flush=True)
+    print("Configured stores and replay verified", flush=True)
 
 
 if __name__ == "__main__":

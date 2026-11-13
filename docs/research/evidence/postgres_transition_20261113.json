@@ -1,0 +1,208 @@
+{
+  "observed_at": "2026-11-13T12:36:51.138277+00:00",
+  "scope": "post_lab1_postgresql_transition_before_lab2",
+  "implementation": {
+    "branch": "codex/postgres-only",
+    "base_refactor_commit": "25424f2",
+    "changes_local": true,
+    "pushed": false
+  },
+  "tests": {
+    "full": {
+      "run": 181,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "seconds": 87.741
+    },
+    "new_image_postgres_only_mongo_s3_stopped": {
+      "run": 8,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 13.03
+    },
+    "ruff_changed_files": "passed",
+    "dag_import_errors": [],
+    "runtime_dags": {
+      "games_metadata": [
+        "cleanup",
+        "collect",
+        "finalize",
+        "initialize",
+        "load_postgres",
+        "needs_child",
+        "trigger_runs"
+      ],
+      "runs": [
+        "collect",
+        "finalize",
+        "initialize",
+        "load_postgres",
+        "needs_child",
+        "trigger_next"
+      ],
+      "wr_history": [
+        "collect",
+        "finalize",
+        "initialize",
+        "load_postgres",
+        "needs_child",
+        "trigger_players"
+      ],
+      "players": [
+        "cleanup",
+        "collect",
+        "finalize",
+        "initialize",
+        "load_postgres"
+      ]
+    },
+    "windows_restore_script": "real_restore_and_row_counts_passed"
+  },
+  "postgres": {
+    "ods_counts": {
+      "blocks": 104,
+      "checks": 1377017,
+      "games": 52518,
+      "manifests": 541,
+      "players": 280600,
+      "responses": 23047,
+      "runs": 981599,
+      "wr_history": 20570
+    },
+    "source_ids": {
+      "players": 280595,
+      "runs": 981592
+    },
+    "ods_bytes": 3871112215,
+    "control_bytes": 103242775,
+    "all_ods_rows_unchanged": true,
+    "all_control_historical_rows_unchanged": true,
+    "transfer_restored_all_rows_equal": true,
+    "transfer_files": {
+      "speedrun_ods.dump": {
+        "bytes": 718639001,
+        "sha256": "922ea78d202631e74c70aef30ea1836ce57ba95b46c377e1ecf7114f823d3aaf"
+      },
+      "speedrun_control.dump": {
+        "bytes": 100585919,
+        "sha256": "20699a052b4f84fddb80eb6abd832932fe559f17b9e0d4252bc7d3f773c487d4"
+      }
+    }
+  },
+  "staging": {
+    "bytes_before": 17840529699,
+    "bytes_after": 5267715369,
+    "retired_snapshots": 536,
+    "cleaned_game_chains": 134,
+    "largest_remaining_directories": [
+      [
+        "lab1-popular500-20261030-g-y65797de-runs",
+        4572585718
+      ],
+      [
+        "lab1-popular500-20261030-catalog-games_metadata",
+        396975053
+      ],
+      [
+        "lab1-popular500-20261030-g-y65797de-players",
+        287022312
+      ],
+      [
+        "lab1-popular500-20261030-g-y65797de-wr_history",
+        1503382
+      ],
+      [
+        "lab1-popular500-20261030-g-o1y7pv1q-runs",
+        304986
+      ],
+      [
+        "lab1-popular500-20261030-g-y65797de-games_metadata",
+        199918
+      ],
+      [
+        "lab1-popular500-20261030-g-w6jg0ex6-runs",
+        130908
+      ],
+      [
+        "lab1-popular500-20261030-g-yd4o0z51-runs",
+        116892
+      ]
+    ],
+    "partial_runs_kept": true,
+    "shared_catalog_kept": true,
+    "automatic_cleanup": true
+  },
+  "source": {
+    "new_http": 0,
+    "total_attempts_unchanged": 23047,
+    "budget_digest": "959c3808cd84b1b9ab5681b21b00de8c572cab932c0b0dd1db9bb113787ecc28",
+    "queue": [
+      [
+        "lab1-popular500-20261030",
+        "complete",
+        133
+      ],
+      [
+        "lab1-popular500-20261030",
+        "not_applicable",
+        1
+      ],
+      [
+        "lab1-popular500-20261030",
+        "partial",
+        1
+      ],
+      [
+        "lab1-popular500-20261030",
+        "pending",
+        365
+      ]
+    ],
+    "controls": {
+      "lab1-popular500-20261030": {
+        "pause_requested": true,
+        "requested_at": "2026-10-30T21:27:10.454346+00:00",
+        "resumed_at": "2026-10-30T21:25:46.855091+00:00",
+        "updated_at": "2026-10-30T21:27:10.454346+00:00"
+      }
+    },
+    "scheduler_started": false
+  },
+  "history_after_cleanup": {
+    "game": "Portal",
+    "run_id": "yv2r2oom",
+    "digest": "834296380ea5ccafbcbee8a99510033bb83c4b725c23e64ed72c6fc244d8ac10",
+    "versions": 1,
+    "checks": 1
+  },
+  "decommission": {
+    "project": "speedrun-lab1",
+    "removed_containers": [
+      "speedrun-lab1-mongo-1",
+      "speedrun-lab1-garage-1"
+    ],
+    "removed_volumes": [
+      "speedrun-lab1_mongo-data",
+      "df81a9bc8820c42c44a03f02c5b3eaa7978f4a39a0f9c760d75bfe784496e502",
+      "speedrun-lab1_garage-data",
+      "speedrun-lab1_garage-meta"
+    ],
+    "ods_unchanged": true,
+    "transfer_restore_verified": true
+  },
+  "artifacts": {
+    "private_transfer_directory": "exports/postgres-handoff-20261113",
+    "zip": "exports/postgres-handoff-20261113.zip",
+    "verification": "exports/postgres-handoff-20261113/verified.json",
+    "local_logs": "exports/postgres-transition-20261113"
+  },
+  "log_sha256": {
+    "final-tests.txt": "9a920192c0cdf2991635b0436a3a09fdc1986e4236f5095b53e38a744d6044b0",
+    "postgres-only-tests.txt": "340c2c1dbad0004d690e0e2c8f6177d20be899ef947953c32d84c11fd47a0260",
+    "staging-applied.jsonl": "47c101f57933144b1216bc61f105d4c60134284571e865f079128c4d8c96f569",
+    "restore-windows.txt": "7d58ff5def0e2c0f1b1e8cadad5b2ba5807d722c7f6d28bf226d628eb1fff7c4",
+    "ruff.txt": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+  },
+  "lab2_implemented": false
+}

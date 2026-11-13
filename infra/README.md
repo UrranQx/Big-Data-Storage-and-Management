@@ -1,6 +1,14 @@
+# Рабочий контур после сдачи ЛР1
+
+С 13 ноября основной Compose использует только PostgreSQL. Передача ODS/control
+и очистка staging описаны в [POSTGRES_ONLY.md](../docs/POSTGRES_ONLY.md).
+Инструкции cold backup трёх сервисов далее относятся к историческому стенду ЛР1;
+он доступен через `-f compose.yaml -f infra/compose.lab1.yaml`.
+
+
 # Инфраструктура ЛР1
 
-Compose в корне запускает Airflow, PostgreSQL, MongoDB и Garage. Локальные
+Трёхсервисная конфигурация ЛР1 запускает Airflow, PostgreSQL, MongoDB и Garage. Локальные
 секреты создаются `configure.py`, существующие настройки не перезаписываются.
 Все сервисы Airflow используют один образ.
 

@@ -8,8 +8,7 @@ from datetime import datetime, timezone
 import os
 from pathlib import Path
 import re
-import shutil
-import sys
+import shutil as shutil  # Compatibility for existing capacity probes/tests.
 import time
 from urllib.error import HTTPError
 
@@ -21,6 +20,7 @@ from .entity_storage import ready
 from .jsonutil import atomic_write, digest, dumps, file_lock, read, utcnow
 from .connections import pg_connect
 from .model import V2, V3, version, namespace, kinds as pipeline_kinds, role, dag_run_id
+from .staging import manifest as snapshot_manifest
 
 
 def token():
@@ -182,14 +182,9 @@ def wait(collection, kinds):
                     role=role(kind),
                 )
                 if kind == "wr_history":
-                    package = EntityPackage(ref["package_uri"])
-                    try:
-                        results["wr_history"] = (
-                            next(package.records("manifests")).get("source_result")
-                            or {}
-                        )
-                    finally:
-                        package.db.close()
+                    results["wr_history"] = (
+                        snapshot_manifest(ref_path.parent).get("source_result") or {}
+                    )
             return results
         time.sleep(15)
 
@@ -567,7 +562,7 @@ def main():
         "--continue-on-drift",
         action="store_true",
         default=None,
-        help="Keep known pagination gaps in the retry list and continue after all three stores acknowledge them",
+        help="Keep known pagination gaps in the retry list and continue after configured stores acknowledge them",
     )
     strategy = parser.add_mutually_exclusive_group()
     strategy.add_argument(
@@ -942,11 +937,9 @@ def run_queue(args, state, root, conf):
                     },
                 )
             chain_results = wait(collection, pipeline_kinds(conf))
-            package = EntityPackage(
-                state / "snapshots" / (collection + "-runs") / "entity-package"
-            )
-            result = next(package.records("manifests"))["source_result"]
-            package.db.close()
+            result = snapshot_manifest(state / "snapshots" / (collection + "-runs"))[
+                "source_result"
+            ]
             status = result_state(result)
             retry = drift_retry_partitions(result) if status == "partial" else None
             wr_details = {}
@@ -995,13 +988,13 @@ def run_queue(args, state, root, conf):
         if status != "complete":
             if status == "not_applicable":
                 print(
-                    "Game has no full-game categories; scope result retained in three stores, continuing",
+                    "Game has no full-game categories; scope result retained in configured ODS, continuing",
                     flush=True,
                 )
             elif args.continue_on_drift and retry:
                 print(
                     f"Game coverage=partial; {len(retry)} drifting sections retained for retry; "
-                    "three stores acknowledged, continuing to the next game",
+                    "configured stores acknowledged, continuing to the next game",
                     flush=True,
                 )
             else:

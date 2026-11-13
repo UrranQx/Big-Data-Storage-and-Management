@@ -1,10 +1,11 @@
-"""Создаёт цепочку DAG сущностей и подтверждает три загрузки каждого входа.
+"""Создаёт цепочку DAG сущностей и подтверждает выбранные загрузки каждого входа.
 
 Источник использует общий pacing; trigger_next направляет v3 в WR, v2 в players."""
 
 from datetime import timedelta
 import os
 from .model import V3, version, namespace, role, dag_run_id
+from .settings import stores
 
 
 def needs_child(conf):
@@ -24,7 +25,7 @@ def next_kind(kind, conf):
 
 
 def make_dag(kind, child=None):
-    """Создаёт DAG с тремя загрузками, общей проверкой и условным запуском ребёнка."""
+    """Создаёт DAG с загрузками ODS, проверкой и условным запуском ребёнка."""
     from airflow.sdk import dag, task, get_current_context
     from airflow.providers.standard.operators.trigger_dagrun import (
         TriggerDagRunOperator,
@@ -112,11 +113,10 @@ def make_dag(kind, child=None):
 
         @task(pool="ods_load", execution_timeout=timedelta(hours=4))
         def load(reference, name):
-            from .entity_ods import EntityPackage
+            from .staging import open_package
             from .entity_storage import load as write
 
-            package = EntityPackage(reference["package_uri"], role=reference["role"])
-            try:
+            with open_package(reference) as package:
                 return write(
                     name,
                     package,
@@ -124,8 +124,6 @@ def make_dag(kind, child=None):
                     namespace=reference.get("namespace", "entity_v2"),
                     role=reference["role"],
                 )
-            finally:
-                package.db.close()
 
         @task(trigger_rule="all_done")
         def finalize(conf):
@@ -164,10 +162,9 @@ def make_dag(kind, child=None):
                 raise
             forwarded = dict(conf)
             if kind == "games_metadata" and version(conf) == V3 and needs_child(conf):
-                from .entity_ods import EntityPackage
+                from .staging import open_package
 
-                package = EntityPackage(reference["package_uri"])
-                try:
+                with open_package(reference) as package:
                     result = (
                         next(package.records("manifests")).get("source_result") or {}
                     )
@@ -176,8 +173,6 @@ def make_dag(kind, child=None):
                         result.get("game_name") or conf.get("game") or "game",
                     )
                     forwarded["display_game_id"] = result["game_id"]
-                finally:
-                    package.db.close()
             destination = next_kind(kind, forwarded)
             return {
                 **forwarded,
@@ -195,8 +190,19 @@ def make_dag(kind, child=None):
         conf = initialize()
         reference = collect(conf)
         done = finalize(conf)
-        for name in ("postgres", "mongo", "garage"):
+        for name in stores():
             load.override(task_id="load_" + name)(reference, name) >> done
+        if kind == "players" or kind == "games_metadata":
+
+            @task
+            def cleanup(conf):
+                from .staging import auto_cleanup
+
+                if kind == "games_metadata" and needs_child(conf):
+                    return {"skipped": "downstream_needs_staging"}
+                return auto_cleanup(os.environ["ETL_STATE"], conf["collection_id"])
+
+            cleanup(done)
         if child:
 
             @task.short_circuit

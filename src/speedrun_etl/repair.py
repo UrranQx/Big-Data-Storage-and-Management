@@ -262,7 +262,7 @@ def main():
             else "complete_with_gaps"
         )
         save_status(root, phase, states=totals, total=sum(totals.values()))
-        print(f"Repair confirmed in three stores; queue now {totals}", flush=True)
+        print(f"Repair confirmed in configured ODS; queue now {totals}", flush=True)
 
 
 if __name__ == "__main__":
