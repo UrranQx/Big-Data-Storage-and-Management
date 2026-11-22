@@ -1,5 +1,6 @@
 #!/bin/bash
 set -euo pipefail
+echo 'Before Postgres init'
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname postgres \
   -v airflow_password="$AIRFLOW_DB_PASSWORD" \
   -v ods_password="$ODS_DB_PASSWORD" \
@@ -14,3 +15,4 @@ REVOKE ALL ON DATABASE airflow FROM PUBLIC;
 REVOKE ALL ON DATABASE speedrun_ods FROM PUBLIC;
 REVOKE ALL ON DATABASE speedrun_control FROM PUBLIC;
 SQL
+echo 'Before Postgres init'

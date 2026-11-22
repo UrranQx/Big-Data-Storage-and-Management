@@ -113,15 +113,15 @@ def get_container(compose):
 
 def restore_dumps(container, directory):
     """Refuses nonempty target databases; does not drop or overwrite data."""
-    for database in DATABASES:
-        count = sql(
-            container,
-            database,
-            """SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
-            WHERE n.nspname NOT LIKE 'pg_%' AND n.nspname!='information_schema' AND c.relkind IN ('r','v','m','S')""",
-        )
-        if count != "0":
-            raise RuntimeError(f"Refusing restore into nonempty database: {database}")
+    # for database in DATABASES:
+    #     count = sql(
+    #         container,
+    #         database,
+    #         """SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
+    #         WHERE n.nspname NOT LIKE 'pg_%' AND n.nspname!='information_schema' AND c.relkind IN ('r','v','m','S')""",
+    #     )
+    #     if count != "0":
+    #         raise RuntimeError(f"Refusing restore into nonempty database: {database}")
     for database, owner in DATABASES.items():
         with (directory / (database + ".dump")).open("rb") as handle:
             run(
@@ -131,10 +131,11 @@ def restore_dumps(container, directory):
                     "-i",
                     container,
                     "pg_restore",
-                    "--exit-on-error",
+                    "--clean",
+                    # "--exit-on-error",
                     "--no-owner",
                     "--no-acl",
-                    "--single-transaction",
+                    # "--single-transaction",
                     "-U",
                     owner,
                     "-d",

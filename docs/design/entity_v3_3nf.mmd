@@ -1,0 +1,257 @@
+erDiagram
+    direction LR
+    game {
+        text game_id PK
+    }
+    game_version {
+        bigint version_id PK
+        text game_id FK
+        text name
+        text slug
+        text website_url
+        text game_type
+        bigint run_count
+        bigint total_player_count
+        bigint active_player_count
+        timestamptz added_at
+        timestamptz updated_at
+        integer release_year
+        smallint release_month
+        smallint release_day
+        text default_timer_code
+    }
+    platform {
+        text platform_id PK
+    }
+    platform_definition {
+        bigint version_id PK, FK
+        text platform_id PK, FK
+        text name
+        text source_url
+        integer release_year
+    }
+    game_platform {
+        bigint version_id PK, FK
+        integer position PK
+        text platform_id FK
+    }
+    game_timer {
+        bigint version_id PK, FK
+        integer position PK
+        text timer_code
+    }
+    game_region {
+        bigint version_id PK, FK
+        integer position PK
+        text region_id
+    }
+    category {
+        text category_id PK
+        text game_id FK
+    }
+    category_definition {
+        bigint version_id PK, FK
+        text category_id PK, FK
+        text name
+        text source_url
+        text rules_text
+        boolean archived
+        boolean is_per_level
+        boolean is_misc
+        boolean enforce_ms
+        boolean exact_players
+        integer num_players
+        text player_match_mode
+        text time_direction
+        integer source_position
+    }
+    game_level {
+        text level_id PK
+        text game_id FK
+    }
+    level_definition {
+        bigint version_id PK, FK
+        text level_id PK, FK
+        text name
+        text source_url
+        boolean archived
+        integer source_position
+    }
+    variable {
+        text variable_id PK
+        text game_id FK
+    }
+    variable_value {
+        text value_id PK
+        text variable_id FK
+    }
+    variable_definition {
+        bigint version_id PK, FK
+        text variable_id PK, FK
+        text name
+        text source_url
+        text default_value_id FK
+        boolean archived
+        boolean is_mandatory
+        boolean is_subcategory
+        boolean is_obsoleting
+        boolean is_user_defined
+        text display_mode
+        integer source_position
+    }
+    value_definition {
+        bigint version_id PK, FK
+        text value_id PK, FK
+        text name
+        text source_url
+        text rules_text
+        boolean archived
+        integer source_position
+    }
+    variable_category {
+        bigint version_id PK, FK
+        text variable_id PK, FK
+        text category_id PK, FK
+    }
+    variable_level {
+        bigint version_id PK, FK
+        text variable_id PK, FK
+        text level_id PK, FK
+    }
+    player {
+        text player_id PK
+    }
+    player_version {
+        bigint version_id PK
+        text player_id FK
+        text display_name
+        text profile_url
+        text area_id
+        integer power_level
+        text color1_id
+        text color2_id
+        text color_animate
+        timestamptz signed_up_at
+        timestamptz updated_at
+    }
+    game_moderator {
+        bigint version_id PK, FK
+        integer position PK
+        text player_id FK
+        text forum_id
+        text moderator_level
+    }
+    run {
+        text run_id PK
+    }
+    run_version {
+        bigint version_id PK
+        text run_id FK
+        text category_id FK
+        text game_without_category_id FK
+        text platform_id FK
+        text level_id FK
+        text region_id
+        integer status_code
+        boolean is_emulated
+        boolean enforce_ms
+        timestamptz performed_at
+        timestamptz submitted_at
+        timestamptz verified_at
+        text submitted_by_id FK
+        text verified_by_id FK
+        text comment_text
+        text video_state
+    }
+    run_participant {
+        bigint version_id PK, FK
+        integer position PK
+        text player_id FK
+        text guest_name
+    }
+    run_time {
+        bigint version_id PK, FK
+        text source_field PK
+        text source_duration
+    }
+    run_value {
+        bigint version_id PK, FK
+        integer position PK
+        text value_id FK
+    }
+    run_video {
+        bigint version_id PK, FK
+        integer position PK
+        text source_video
+    }
+    wr_scope {
+        text scope_key PK
+        text category_id FK
+        text game_without_category_id FK
+        integer verified_filter
+        integer obsolete_filter
+        integer emulator_filter
+        integer video_filter
+    }
+    wr_scope_value {
+        text scope_key PK, FK
+        integer position PK
+        text value_id FK
+    }
+    wr_event {
+        bigint event_id PK
+        text scope_key FK
+        timestamptz performed_at
+    }
+    wr_event_run {
+        bigint event_id PK, FK
+        integer position PK
+        text run_id FK
+    }
+    game ||..o{ game_version : "game_id"
+    game_version ||--o{ platform_definition : "version_id"
+    platform ||--o{ platform_definition : "platform_id"
+    game_version ||--o{ game_platform : "version_id"
+    platform ||..o{ game_platform : "platform_id"
+    game_version ||--o{ game_timer : "version_id"
+    game_version ||--o{ game_region : "version_id"
+    game o|..o{ category : "game_id"
+    game_version ||--o{ category_definition : "version_id"
+    category ||--o{ category_definition : "category_id"
+    game o|..o{ game_level : "game_id"
+    game_version ||--o{ level_definition : "version_id"
+    game_level ||--o{ level_definition : "level_id"
+    game o|..o{ variable : "game_id"
+    variable o|..o{ variable_value : "variable_id"
+    game_version ||--o{ variable_definition : "version_id"
+    variable ||--o{ variable_definition : "variable_id"
+    variable_value o|..o{ variable_definition : "default_value_id"
+    game_version ||--o{ value_definition : "version_id"
+    variable_value ||--o{ value_definition : "value_id"
+    category ||--o{ variable_category : "category_id"
+    variable_definition ||--o{ variable_category : "version_id, variable_id"
+    game_level ||--o{ variable_level : "level_id"
+    variable_definition ||--o{ variable_level : "version_id, variable_id"
+    player ||..o{ player_version : "player_id"
+    game_version ||--o{ game_moderator : "version_id"
+    player ||..o{ game_moderator : "player_id"
+    run ||..o{ run_version : "run_id"
+    category o|..o{ run_version : "category_id"
+    game o|..o{ run_version : "game_without_category_id"
+    platform o|..o{ run_version : "platform_id"
+    game_level o|..o{ run_version : "level_id"
+    player o|..o{ run_version : "submitted_by_id"
+    player o|..o{ run_version : "verified_by_id"
+    run_version ||--o{ run_participant : "version_id"
+    player o|..o{ run_participant : "player_id"
+    run_version ||--o{ run_time : "version_id"
+    run_version ||--o{ run_value : "version_id"
+    variable_value ||..o{ run_value : "value_id"
+    run_version ||--o{ run_video : "version_id"
+    category o|..o{ wr_scope : "category_id"
+    game o|..o{ wr_scope : "game_without_category_id"
+    wr_scope ||--o{ wr_scope_value : "scope_key"
+    variable_value ||..o{ wr_scope_value : "value_id"
+    wr_scope ||..o{ wr_event : "scope_key"
+    wr_event ||--o{ wr_event_run : "event_id"
+    run o|..o{ wr_event_run : "run_id"
