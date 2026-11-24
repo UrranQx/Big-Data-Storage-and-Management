@@ -4,8 +4,9 @@ from datetime import timedelta
 from pathlib import Path
 import os
 
-from airflow.sdk import Asset, dag, get_current_context, task
+from airflow.sdk import Asset, Metadata, dag, get_current_context, task
 
+from speedrun_etl.data_quality import DDS_READY
 from speedrun_etl.dds import ODS_READY
 
 
@@ -30,7 +31,7 @@ def normalize_entity_v3():
             raise ValueError("DDS requires an ODS asset event with snapshot IDs")
         return PokeReturnValue(verify_snapshot_batches(batches), batches)
 
-    @task(execution_timeout=timedelta(hours=4))
+    @task(execution_timeout=timedelta(hours=4), outlets=[Asset(DDS_READY)])
     def normalize(batches):
         from speedrun_etl.dds import load_batch
 
@@ -39,7 +40,9 @@ def normalize_entity_v3():
                 "DDS_SCHEMA_SQL", "/opt/project/docs/design/entity_v3_3nf.sql"
             )
         )
-        return [load_batch(batch, ddl) for batch in batches]
+        results = [load_batch(batch, ddl) for batch in batches]
+        yield Metadata(Asset(DDS_READY), {"batches": batches})
+        return results
 
     normalize(verified_snapshots())
 
