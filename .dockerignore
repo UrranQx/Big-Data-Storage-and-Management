@@ -14,7 +14,10 @@ __pycache__
 .ruff_cache
 .mypy_cache
 reports
-docs
+docs/*
+!docs/design/
+docs/design/*
+!docs/design/entity_v3_3nf.sql
 infra/garage.local.toml
 .uv-cache
 exports

@@ -26,7 +26,9 @@ def next_kind(kind, conf):
 
 def make_dag(kind, child=None):
     """Создаёт DAG с загрузками ODS, проверкой и условным запуском ребёнка."""
-    from airflow.sdk import dag, task, get_current_context
+    from airflow.sdk import Asset, Metadata, dag, task, get_current_context
+    from .dds import ODS_READY
+    from airflow.sdk.exceptions import AirflowSkipException
     from airflow.providers.standard.operators.trigger_dagrun import (
         TriggerDagRunOperator,
     )
@@ -202,7 +204,32 @@ def make_dag(kind, child=None):
                     return {"skipped": "downstream_needs_staging"}
                 return auto_cleanup(os.environ["ETL_STATE"], conf["collection_id"])
 
-            cleanup(done)
+            cleaned = cleanup(done)
+
+            @task(outlets=[Asset(ODS_READY)])
+            def publish_dds_input(conf):
+                from .collect import snapshot_id
+                from .model import kinds
+
+                if version(conf) != V3 or (
+                    kind == "games_metadata" and needs_child(conf)
+                ):
+                    raise AirflowSkipException(
+                        "DDS waits for the terminal entity-v3 stage"
+                    )
+                if "postgres" not in stores():
+                    raise AirflowSkipException("DDS requires PostgreSQL ODS")
+                stages = kinds(conf) if kind == "players" else (kind,)
+                yield Metadata(
+                    Asset(ODS_READY),
+                    {
+                        "snapshots": {
+                            stage: snapshot_id(conf, stage) for stage in stages
+                        }
+                    },
+                )
+
+            cleaned >> publish_dds_input(done)
         if child:
 
             @task.short_circuit

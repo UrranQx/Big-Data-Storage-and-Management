@@ -33,7 +33,8 @@ x-airflow: &airflow
     - etl-state:/opt/airflow/state
     - airflow-logs:/opt/airflow/logs
     - ./src:/opt/project/src:ro
-    - ./dags/ods:/opt/airflow/dags/ods:ro
+    - ./dags:/opt/airflow/dags:ro
+    - ./docs/design/entity_v3_3nf.sql:/opt/project/docs/design/entity_v3_3nf.sql:ro
     - ./tests:/opt/project/tests:ro
   logging:
     driver: local
