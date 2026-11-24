@@ -7,11 +7,10 @@ CREATE TABLE dim_game (
     game_id text PRIMARY KEY,
     release_year integer,
     release_month smallint CHECK (release_month BETWEEN 1 AND 12),
-    release_day smallint CHECK (release_day BETWEEN 1 AND 31),
+    release_day smallint CHECK (release_day BETWEEN 1 AND 31)
 );
-CREATE UNIQUE INDEX ON dim_game (title);
 
--- SCD3
+-- Наблюдаемая версия метаданных игры.
 CREATE TABLE dim_game_version (
     game_version_id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     game_id text NOT NULL REFERENCES dim_game,
@@ -24,7 +23,7 @@ CREATE TABLE dim_game_version (
     active_player_count bigint,
     default_timer_code text,
     valid_from timestamptz,
-    valid_to timestamptz NULL
+    valid_to timestamptz NULL,
     CHECK (valid_to IS NULL or valid_to >= valid_from)
 );
 
@@ -33,33 +32,33 @@ CREATE TABLE dim_platform (
 );
 
 CREATE TABLE dim_platform_definition (
-    game_version_id bigint NOT NULL dim_game_version,
+    game_version_id bigint NOT NULL REFERENCES dim_game_version(game_version_id),
     platform_id text NOT NULL REFERENCES dim_platform,
     name text,
     source_url text,
     release_year integer,
-    PRIMARY KEY (version_id, platform_id)
+    PRIMARY KEY (game_version_id, platform_id)
 );
 
 CREATE TABLE game_platform (
-    game_version_id bigint NOT NULL dim_game_version,
+    game_version_id bigint NOT NULL REFERENCES dim_game_version(game_version_id),
     position integer NOT NULL CHECK (position >= 0),
     platform_id text NOT NULL REFERENCES dim_platform,
-    PRIMARY KEY (version_id, position)
+    PRIMARY KEY (game_version_id, position)
 );
 
 CREATE TABLE dim_game_timer (
-    game_version_id bigint NOT NULL dim_game_version,
+    game_version_id bigint NOT NULL REFERENCES dim_game_version(game_version_id),
     position integer NOT NULL CHECK (position >= 0),
     timer_code text NOT NULL,
-    PRIMARY KEY (version_id, position)
+    PRIMARY KEY (game_version_id, position)
 );
 
 CREATE TABLE dim_game_region (
-    game_version_id bigint NOT NULL dim_game_version,
+    game_version_id bigint NOT NULL REFERENCES dim_game_version(game_version_id),
     position integer NOT NULL CHECK (position >= 0),
     region_id text NOT NULL,
-    PRIMARY KEY (version_id, position)
+    PRIMARY KEY (game_version_id, position)
 );
 
 CREATE TABLE dim_category (
@@ -68,7 +67,7 @@ CREATE TABLE dim_category (
 );
 
 CREATE TABLE dim_category_definition (
-    game_version_id bigint NOT NULL dim_game_version,
+    game_version_id bigint NOT NULL REFERENCES dim_game_version(game_version_id),
     category_id text NOT NULL REFERENCES dim_category,
     name text,
     source_url text,
@@ -84,7 +83,7 @@ CREATE TABLE dim_category_definition (
     source_position integer,
     valid_from timestamptz,
     valid_to timestamptz NULL,
-    PRIMARY KEY (version_id, category_id),
+    PRIMARY KEY (game_version_id, category_id),
     CHECK (valid_to IS NULL or valid_to >= valid_from)
 );
 
@@ -93,9 +92,9 @@ CREATE TABLE dim_game_level (
     game_id text REFERENCES dim_game
 );
 
--- SCD3
+-- Определение уровня в составе версии метаданных игры.
 CREATE TABLE dim_level_definition (
-    game_version_id bigint NOT NULL dim_game_version,
+    game_version_id bigint NOT NULL REFERENCES dim_game_version(game_version_id),
     level_id text NOT NULL REFERENCES dim_game_level,
     name text,
     source_url text,
@@ -103,7 +102,7 @@ CREATE TABLE dim_level_definition (
     source_position integer,
     valid_from timestamptz,
     valid_to timestamptz NULL,
-    PRIMARY KEY (version_id, level_id),
+    PRIMARY KEY (game_version_id, level_id),
     CHECK (valid_to IS NULL or valid_to >= valid_from)
 );
 
@@ -118,7 +117,7 @@ CREATE TABLE dim_variable_value (
 );
 
 CREATE TABLE dim_variable_definition (
-    game_version_id bigint NOT NULL dim_game_version,
+    game_version_id bigint NOT NULL REFERENCES dim_game_version(game_version_id),
     variable_id text NOT NULL REFERENCES dim_variable,
     name text,
     source_url text,
@@ -132,35 +131,35 @@ CREATE TABLE dim_variable_definition (
     source_position integer,
     valid_from timestamptz,
     valid_to timestamptz NULL,
-    PRIMARY KEY (version_id, variable_id),
+    PRIMARY KEY (game_version_id, variable_id),
     CHECK (valid_to IS NULL or valid_to >= valid_from)
 );
 
 CREATE TABLE dim_value_definition (
-    game_version_id bigint NOT NULL dim_game_version,
+    game_version_id bigint NOT NULL REFERENCES dim_game_version(game_version_id),
     value_id text NOT NULL REFERENCES dim_variable_value,
     name text,
     source_url text,
     rules_text text,
     archived boolean,
     source_position integer,
-    PRIMARY KEY (version_id, value_id)
+    PRIMARY KEY (game_version_id, value_id)
 );
 
 CREATE TABLE dim_variable_category (
-    version_id bigint NOT NULL,
+    game_version_id bigint NOT NULL,
     variable_id text NOT NULL,
     category_id text NOT NULL REFERENCES dim_category,
-    PRIMARY KEY (version_id, variable_id, category_id),
-    FOREIGN KEY (version_id, variable_id) REFERENCES dim_variable_definition
+    PRIMARY KEY (game_version_id, variable_id, category_id),
+    FOREIGN KEY (game_version_id, variable_id) REFERENCES dim_variable_definition
 );
 
 CREATE TABLE dim_variable_level (
-    version_id bigint NOT NULL,
+    game_version_id bigint NOT NULL,
     variable_id text NOT NULL,
     level_id text NOT NULL REFERENCES dim_game_level,
-    PRIMARY KEY (version_id, variable_id, level_id),
-    FOREIGN KEY (version_id, variable_id) REFERENCES dim_variable_definition
+    PRIMARY KEY (game_version_id, variable_id, level_id),
+    FOREIGN KEY (game_version_id, variable_id) REFERENCES dim_variable_definition
 );
 
 CREATE TABLE dim_player (
@@ -184,12 +183,12 @@ CREATE TABLE dim_player_version (
 );
 
 CREATE TABLE dim_game_moderator (
-    game_version_id bigint NOT NULL dim_game_version,
+    game_version_id bigint NOT NULL REFERENCES dim_game_version(game_version_id),
     position integer NOT NULL CHECK (position >= 0),
     player_id text NOT NULL REFERENCES dim_player,
     forum_id text,
     moderator_level text,
-    PRIMARY KEY (version_id, position)
+    PRIMARY KEY (game_version_id, position)
 );
 
 CREATE TABLE fact_run (
@@ -251,8 +250,8 @@ CREATE TABLE dim_run_video (
 
 CREATE TABLE dim_wr_scope (
     scope_key text PRIMARY KEY,
-    category_id text REFERENCES category,
-    game_without_category_id text REFERENCES game,
+    category_id text REFERENCES dim_category,
+    game_without_category_id text REFERENCES dim_game,
     verified_filter integer,
     obsolete_filter integer,
     emulator_filter integer,
@@ -276,7 +275,7 @@ CREATE TABLE fact_wr_event (
 CREATE TABLE fact_wr_event_run (
     event_id bigint NOT NULL REFERENCES fact_wr_event,
     position integer NOT NULL CHECK (position >= 0),
-    run_id text REFERENCES run,
+    run_id text REFERENCES fact_run,
     PRIMARY KEY (event_id, position)
 );
 

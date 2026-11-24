@@ -1,10 +1,13 @@
 erDiagram
     direction LR
-    game {
+    dim_game {
         text game_id PK
+        integer release_year
+        smallint release_month
+        smallint release_day
     }
-    game_version {
-        bigint version_id PK
+    dim_game_version {
+        bigint game_version_id PK
         text game_id FK
         text name
         text slug
@@ -13,44 +16,41 @@ erDiagram
         bigint run_count
         bigint total_player_count
         bigint active_player_count
-        timestamptz added_at
-        timestamptz updated_at
-        integer release_year
-        smallint release_month
-        smallint release_day
         text default_timer_code
+        timestamptz valid_from
+        timestamptz valid_to
     }
-    platform {
+    dim_platform {
         text platform_id PK
     }
-    platform_definition {
-        bigint version_id PK, FK
+    dim_platform_definition {
+        bigint game_version_id PK, FK
         text platform_id PK, FK
         text name
         text source_url
         integer release_year
     }
     game_platform {
-        bigint version_id PK, FK
+        bigint game_version_id PK, FK
         integer position PK
         text platform_id FK
     }
-    game_timer {
-        bigint version_id PK, FK
+    dim_game_timer {
+        bigint game_version_id PK, FK
         integer position PK
         text timer_code
     }
-    game_region {
-        bigint version_id PK, FK
+    dim_game_region {
+        bigint game_version_id PK, FK
         integer position PK
         text region_id
     }
-    category {
+    dim_category {
         text category_id PK
         text game_id FK
     }
-    category_definition {
-        bigint version_id PK, FK
+    dim_category_definition {
+        bigint game_version_id PK, FK
         text category_id PK, FK
         text name
         text source_url
@@ -64,29 +64,33 @@ erDiagram
         text player_match_mode
         text time_direction
         integer source_position
+        timestamptz valid_from
+        timestamptz valid_to
     }
-    game_level {
+    dim_game_level {
         text level_id PK
         text game_id FK
     }
-    level_definition {
-        bigint version_id PK, FK
+    dim_level_definition {
+        bigint game_version_id PK, FK
         text level_id PK, FK
         text name
         text source_url
         boolean archived
         integer source_position
+        timestamptz valid_from
+        timestamptz valid_to
     }
-    variable {
+    dim_variable {
         text variable_id PK
         text game_id FK
     }
-    variable_value {
+    dim_variable_value {
         text value_id PK
         text variable_id FK
     }
-    variable_definition {
-        bigint version_id PK, FK
+    dim_variable_definition {
+        bigint game_version_id PK, FK
         text variable_id PK, FK
         text name
         text source_url
@@ -98,9 +102,11 @@ erDiagram
         boolean is_user_defined
         text display_mode
         integer source_position
+        timestamptz valid_from
+        timestamptz valid_to
     }
-    value_definition {
-        bigint version_id PK, FK
+    dim_value_definition {
+        bigint game_version_id PK, FK
         text value_id PK, FK
         text name
         text source_url
@@ -108,20 +114,21 @@ erDiagram
         boolean archived
         integer source_position
     }
-    variable_category {
-        bigint version_id PK, FK
+    dim_variable_category {
+        bigint game_version_id PK, FK
         text variable_id PK, FK
         text category_id PK, FK
     }
-    variable_level {
-        bigint version_id PK, FK
+    dim_variable_level {
+        bigint game_version_id PK, FK
         text variable_id PK, FK
         text level_id PK, FK
     }
-    player {
+    dim_player {
         text player_id PK
+        timestamptz signed_up_at
     }
-    player_version {
+    dim_player_version {
         bigint version_id PK
         text player_id FK
         text display_name
@@ -131,20 +138,20 @@ erDiagram
         text color1_id
         text color2_id
         text color_animate
-        timestamptz signed_up_at
-        timestamptz updated_at
+        timestamptz valid_from
+        timestamptz valid_to
     }
-    game_moderator {
-        bigint version_id PK, FK
+    dim_game_moderator {
+        bigint game_version_id PK, FK
         integer position PK
         text player_id FK
         text forum_id
         text moderator_level
     }
-    run {
+    fact_run {
         text run_id PK
     }
-    run_version {
+    fact_run_version {
         bigint version_id PK
         text run_id FK
         text category_id FK
@@ -162,29 +169,31 @@ erDiagram
         text verified_by_id FK
         text comment_text
         text video_state
+        timestamptz valid_from
+        timestamptz valid_to
     }
-    run_participant {
+    dim_run_participant {
         bigint version_id PK, FK
         integer position PK
         text player_id FK
         text guest_name
     }
-    run_time {
+    dim_run_time {
         bigint version_id PK, FK
         text source_field PK
         text source_duration
     }
-    run_value {
+    dim_run_value {
         bigint version_id PK, FK
         integer position PK
         text value_id FK
     }
-    run_video {
+    dim_run_video {
         bigint version_id PK, FK
         integer position PK
         text source_video
     }
-    wr_scope {
+    dim_wr_scope {
         text scope_key PK
         text category_id FK
         text game_without_category_id FK
@@ -193,65 +202,65 @@ erDiagram
         integer emulator_filter
         integer video_filter
     }
-    wr_scope_value {
+    dim_wr_scope_value {
         text scope_key PK, FK
         integer position PK
         text value_id FK
     }
-    wr_event {
+    fact_wr_event {
         bigint event_id PK
         text scope_key FK
         timestamptz performed_at
     }
-    wr_event_run {
+    fact_wr_event_run {
         bigint event_id PK, FK
         integer position PK
         text run_id FK
     }
-    game ||..o{ game_version : "game_id"
-    game_version ||--o{ platform_definition : "version_id"
-    platform ||--o{ platform_definition : "platform_id"
-    game_version ||--o{ game_platform : "version_id"
-    platform ||..o{ game_platform : "platform_id"
-    game_version ||--o{ game_timer : "version_id"
-    game_version ||--o{ game_region : "version_id"
-    game o|..o{ category : "game_id"
-    game_version ||--o{ category_definition : "version_id"
-    category ||--o{ category_definition : "category_id"
-    game o|..o{ game_level : "game_id"
-    game_version ||--o{ level_definition : "version_id"
-    game_level ||--o{ level_definition : "level_id"
-    game o|..o{ variable : "game_id"
-    variable o|..o{ variable_value : "variable_id"
-    game_version ||--o{ variable_definition : "version_id"
-    variable ||--o{ variable_definition : "variable_id"
-    variable_value o|..o{ variable_definition : "default_value_id"
-    game_version ||--o{ value_definition : "version_id"
-    variable_value ||--o{ value_definition : "value_id"
-    category ||--o{ variable_category : "category_id"
-    variable_definition ||--o{ variable_category : "version_id, variable_id"
-    game_level ||--o{ variable_level : "level_id"
-    variable_definition ||--o{ variable_level : "version_id, variable_id"
-    player ||..o{ player_version : "player_id"
-    game_version ||--o{ game_moderator : "version_id"
-    player ||..o{ game_moderator : "player_id"
-    run ||..o{ run_version : "run_id"
-    category o|..o{ run_version : "category_id"
-    game o|..o{ run_version : "game_without_category_id"
-    platform o|..o{ run_version : "platform_id"
-    game_level o|..o{ run_version : "level_id"
-    player o|..o{ run_version : "submitted_by_id"
-    player o|..o{ run_version : "verified_by_id"
-    run_version ||--o{ run_participant : "version_id"
-    player o|..o{ run_participant : "player_id"
-    run_version ||--o{ run_time : "version_id"
-    run_version ||--o{ run_value : "version_id"
-    variable_value ||..o{ run_value : "value_id"
-    run_version ||--o{ run_video : "version_id"
-    category o|..o{ wr_scope : "category_id"
-    game o|..o{ wr_scope : "game_without_category_id"
-    wr_scope ||--o{ wr_scope_value : "scope_key"
-    variable_value ||..o{ wr_scope_value : "value_id"
-    wr_scope ||..o{ wr_event : "scope_key"
-    wr_event ||--o{ wr_event_run : "event_id"
-    run o|..o{ wr_event_run : "run_id"
+    dim_game ||..o{ dim_game_version : "game_id"
+    dim_game_version ||--o{ dim_platform_definition : "game_version_id"
+    dim_platform ||--o{ dim_platform_definition : "platform_id"
+    dim_game_version ||--o{ game_platform : "game_version_id"
+    dim_platform ||..o{ game_platform : "platform_id"
+    dim_game_version ||--o{ dim_game_timer : "game_version_id"
+    dim_game_version ||--o{ dim_game_region : "game_version_id"
+    dim_game o|..o{ dim_category : "game_id"
+    dim_game_version ||--o{ dim_category_definition : "game_version_id"
+    dim_category ||--o{ dim_category_definition : "category_id"
+    dim_game o|..o{ dim_game_level : "game_id"
+    dim_game_version ||--o{ dim_level_definition : "game_version_id"
+    dim_game_level ||--o{ dim_level_definition : "level_id"
+    dim_game o|..o{ dim_variable : "game_id"
+    dim_variable o|..o{ dim_variable_value : "variable_id"
+    dim_game_version ||--o{ dim_variable_definition : "game_version_id"
+    dim_variable ||--o{ dim_variable_definition : "variable_id"
+    dim_variable_value o|..o{ dim_variable_definition : "default_value_id"
+    dim_game_version ||--o{ dim_value_definition : "game_version_id"
+    dim_variable_value ||--o{ dim_value_definition : "value_id"
+    dim_category ||--o{ dim_variable_category : "category_id"
+    dim_variable_definition ||--o{ dim_variable_category : "game_version_id, variable_id"
+    dim_game_level ||--o{ dim_variable_level : "level_id"
+    dim_variable_definition ||--o{ dim_variable_level : "game_version_id, variable_id"
+    dim_player ||..o{ dim_player_version : "player_id"
+    dim_game_version ||--o{ dim_game_moderator : "game_version_id"
+    dim_player ||..o{ dim_game_moderator : "player_id"
+    fact_run ||..o{ fact_run_version : "run_id"
+    dim_category o|..o{ fact_run_version : "category_id"
+    dim_game o|..o{ fact_run_version : "game_without_category_id"
+    dim_platform o|..o{ fact_run_version : "platform_id"
+    dim_game_level o|..o{ fact_run_version : "level_id"
+    dim_player o|..o{ fact_run_version : "submitted_by_id"
+    dim_player o|..o{ fact_run_version : "verified_by_id"
+    fact_run_version ||--o{ dim_run_participant : "version_id"
+    dim_player o|..o{ dim_run_participant : "player_id"
+    fact_run_version ||--o{ dim_run_time : "version_id"
+    fact_run_version ||--o{ dim_run_value : "version_id"
+    dim_variable_value ||..o{ dim_run_value : "value_id"
+    fact_run_version ||--o{ dim_run_video : "version_id"
+    dim_category o|..o{ dim_wr_scope : "category_id"
+    dim_game o|..o{ dim_wr_scope : "game_without_category_id"
+    dim_wr_scope ||--o{ dim_wr_scope_value : "scope_key"
+    dim_variable_value ||..o{ dim_wr_scope_value : "value_id"
+    dim_wr_scope ||..o{ fact_wr_event : "scope_key"
+    fact_wr_event ||--o{ fact_wr_event_run : "event_id"
+    fact_run o|..o{ fact_wr_event_run : "run_id"
