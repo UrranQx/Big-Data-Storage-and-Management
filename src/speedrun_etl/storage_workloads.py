@@ -6,7 +6,6 @@ import argparse
 from collections import Counter, defaultdict
 from contextlib import contextmanager
 from datetime import datetime, timezone
-from decimal import Decimal, localcontext
 import csv
 import gzip
 import hashlib
@@ -22,6 +21,7 @@ from .entity_ods import DATASETS, EntityPackage
 from .entity_storage import batches, make_chunks, ready
 from .jsonutil import atomic_write, digest, dumps, file_lock, loads, read, utcnow
 from .connections import Mongo, S3, pg_connect
+from .timing import duration_ns
 from .experiment_inputs import verify_ref
 
 DATA = ("runs", "players", "games")
@@ -55,19 +55,6 @@ def scratch(namespace):
     if not re.fullmatch(r"test_wl_[a-z0-9_]{1,36}", namespace):
         raise ValueError("Only an explicit test_wl_* namespace is allowed")
     return namespace
-
-
-def duration_ns(value):
-    if not isinstance(value, str) or not re.fullmatch(r"\d+(?:\.\d+)?s", value):
-        return None
-    with localcontext() as ctx:
-        ctx.prec = max(28, len(value) + 12)
-        number = Decimal(value[:-1]) * 10**9
-    return (
-        int(number)
-        if number == number.to_integral_value() and number <= 2**63 - 1
-        else None
-    )
 
 
 def project_run(row, raw, seen, snapshot, context=None):

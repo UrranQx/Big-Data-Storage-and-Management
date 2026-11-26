@@ -1,0 +1,50 @@
+# Запуск и демонстрация ЛР3
+
+Нужны Docker Desktop, существующие `.env` и PostgreSQL ODS. Команды выполняются из корня проекта. Новый сбор не требуется.
+
+## Подготовка
+
+```powershell
+python infra/configure_lab3.py
+docker compose --profile lab3 build init superset-init
+docker compose up -d postgres
+docker compose run --rm --no-deps --user airflow --entrypoint python init -m speedrun_etl.marts prepare-dds
+docker compose run --rm --no-deps --user airflow --entrypoint python init -m speedrun_etl.marts prepare-analytics
+docker compose --profile lab3 up -d superset openmetadata
+docker compose run --rm --no-deps --user airflow --entrypoint python init -m speedrun_etl.marts build
+docker compose exec -T superset /app/.venv/bin/python /app/lab3/provision_superset.py
+docker compose run --rm --no-deps --user airflow --entrypoint python init -m speedrun_etl.analytics_metadata
+```
+
+Скрипт генерации дописывает отсутствующие секреты в локальный `.env`, не выводя значения. Пароли веб-интерфейсов находятся в `SUPERSET_ADMIN_PASSWORD` и `OPENMETADATA_ADMIN_PASSWORD`. Superset: пользователь `admin`; OpenMetadata: `admin@open-metadata.org`.
+
+Перед запуском планировщика оставить DAG сбора на паузе и проверить отсутствие незавершённых запусков:
+
+```powershell
+docker compose run --rm --no-deps --user airflow --entrypoint airflow init dags pause --treat-dag-id-as-regex --yes '^(games_metadata|runs|wr_history|players)$'
+docker compose up -d api-server dag-processor scheduler
+```
+
+Не использовать `down -v`. История, ODS, checkpoints и прежняя ручная пауза сохраняются. Первичная нормализация большого архива может занять значительное время; повтор уже обработанных пакетов пропускается.
+
+## Что показать
+
+1. [Airflow](http://localhost:8080): `normalize_entity_v3`, `check_data_quality`, `refresh_marts`, `sync_analytics_metadata`. Объяснить Assets, проверку качества и атомарную публикацию. Ручной повтор `refresh_marts` использует те же входы и не запускает источник.
+2. [Раннер](http://localhost:8088/superset/dashboard/lab3-runner/): выбрать профиль и сопоставимое поле, сравнить цель и распределение мест, посмотреть новые игры и основания рекомендаций. Затем показать когорты, форму и паутинку.
+3. [Борьба за рекорды](http://localhost:8088/superset/dashboard/lab3-records/): изменить окно 7/30/90 дней, найти плато, открыть выбранную категорию в истории и разборе видео. Показать исходные события WR отдельно от реконструкции.
+4. [Страны](http://localhost:8088/superset/dashboard/lab3-countries/): объяснить медальный порядок и числовые баллы. Изменить игру, затем выбрать страну и проверить сохранение её глобального места в выбранном поле.
+5. [OpenMetadata](http://localhost:8585): найти `speedrun_postgres.speedrun_ods.speedrun_marts.country_medals`, открыть Lineage и пройти к DDS и ODS. Повторить для `pb` и `goal` с lineage колонок.
+
+Ключевые проверки: массовые ничьи Break Dirt; один PB вместо нескольких публикаций игрока; смена платформенного поля в Super Mario 64; неизвестные страны и малые когорты; отсутствие удвоения после повторной сборки.
+
+## Проверка UI
+
+Установленный Microsoft Edge используется в отдельном headless-сеансе:
+
+```powershell
+python -m venv exports/lab3-tools/venv
+exports/lab3-tools/venv/Scripts/python.exe -m pip install -r infra/requirements-lab3-demo.txt
+exports/lab3-tools/venv/Scripts/python.exe infra/verify_lab3_ui.py
+```
+
+Сценарий сохраняет снимки дашбордов и статусы запросов графиков. Токены, cookies и пароли в отчёт не сохраняются.

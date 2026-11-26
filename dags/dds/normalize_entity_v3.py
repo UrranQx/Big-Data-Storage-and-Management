@@ -1,8 +1,8 @@
 """DDS запускается по событию подтверждённой загрузки ODS."""
 
+import os
 from datetime import timedelta
 from pathlib import Path
-import os
 
 from airflow.sdk import Asset, Metadata, dag, get_current_context, task
 
@@ -21,6 +21,7 @@ def normalize_entity_v3():
     @task.sensor(poke_interval=15, timeout=600, mode="reschedule")
     def verified_snapshots():
         from airflow.sdk import PokeReturnValue
+
         from speedrun_etl.dds import verify_snapshot_batches
 
         events = get_current_context()["triggering_asset_events"]
@@ -33,6 +34,7 @@ def normalize_entity_v3():
 
     @task(execution_timeout=timedelta(hours=4), outlets=[Asset(DDS_READY)])
     def normalize(batches):
+        from speedrun_etl.analytics_dds import load_analytics_batch
         from speedrun_etl.dds import load_batch
 
         ddl = Path(
@@ -41,6 +43,8 @@ def normalize_entity_v3():
             )
         )
         results = [load_batch(batch, ddl) for batch in batches]
+        for batch in batches:
+            load_analytics_batch(batch)
         yield Metadata(Asset(DDS_READY), {"batches": batches})
         return results
 

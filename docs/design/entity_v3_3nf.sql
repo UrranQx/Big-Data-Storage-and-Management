@@ -279,4 +279,8 @@ CREATE TABLE fact_wr_event_run (
     PRIMARY KEY (event_id, position)
 );
 
+CREATE INDEX game_version_timeline ON dim_game_version (game_id, valid_from);
+CREATE INDEX player_version_timeline ON dim_player_version (player_id, valid_from);
+CREATE INDEX run_version_timeline ON fact_run_version (run_id, valid_from);
+
 COMMIT;

@@ -1,5 +1,11 @@
 # Структура рабочего проекта ЛР1
 
+Дополнение ЛР3: `sql/lab3_dds.sql` расширяет DDS наблюдениями источника,
+`sql/marts/` содержит расчёты витрин, `dags/marts/` — обновление и синхронизацию
+каталога. `infra/provision_superset.py` и `superset_assets.py` задают три
+дашборда; `src/speedrun_etl/analytics_metadata.py` публикует lineage.
+Текущая документация — [reports/lab3](../reports/lab3/README.md).
+
 После сдачи ЛР1 основной Compose использует PostgreSQL. `settings.py` выбирает
 рабочие ODS, `staging.py` проверяет и удаляет завершённые копии; `infra/postgres_transfer.py`
 создаёт комплект передачи БД. Исторический трёхсервисный стенд — `infra/compose.lab1.yaml`.

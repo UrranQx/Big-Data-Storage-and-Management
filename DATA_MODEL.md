@@ -4,7 +4,11 @@
 entity-v3 и сырые данные сохраняются; удаляются проверенные файловые копии
 завершённых игр. Точный состав пакетов хранится в control PG (`staging_archives`),
 так что история/raw/replay не зависят от постоянного SQLite staging. Подробнее —
-[POSTGRES_ONLY.md](docs/POSTGRES_ONLY.md). DDS ЛР2 пока не реализован.
+[POSTGRES_ONLY.md](docs/POSTGRES_ONLY.md). DDS ЛР2 реализован в
+`speedrun_3nf`. В ЛР3 добавлены наблюдения мест, участников, стран, таймеров
+и покрытия (`sql/lab3_dds.sql`). Представления `speedrun_marts` публикуют
+проверенный срез таблиц `speedrun_build_*`; каждая строка содержит `build_id`
+и `as_of`. [Модель аналитики и ограничения](reports/lab3/REPORT.md).
 
 ## Актуальное состояние: entity-v3, 30 октября
 

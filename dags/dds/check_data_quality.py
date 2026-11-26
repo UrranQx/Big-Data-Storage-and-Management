@@ -3,8 +3,9 @@
 import json
 import logging
 
-from airflow.sdk import Asset, dag, get_current_context, task
+from airflow.sdk import Asset, Metadata, dag, get_current_context, task
 
+from speedrun_etl.analytics_quality import DDS_VALIDATED
 from speedrun_etl.data_quality import DDS_READY
 
 
@@ -15,10 +16,11 @@ from speedrun_etl.data_quality import DDS_READY
     tags=["dds", "data-quality"],
 )
 def check_data_quality():
-    @task
+    @task(outlets=[Asset(DDS_VALIDATED)])
     def validate():
         from airflow.sdk.exceptions import AirflowFailException
-        from speedrun_etl.data_quality import check_quality
+
+        from speedrun_etl.analytics_quality import validate_dds
 
         events = get_current_context()["triggering_asset_events"]
         batches = [
@@ -27,19 +29,19 @@ def check_data_quality():
             for event in items
             for batch in event.extra["batches"]
         ]
-        if not batches:
-            raise AirflowFailException("Data Quality requires a successful DDS event")
+        conf = get_current_context()["dag_run"].conf or {}
+        if not batches and conf.get("collection"):
+            from speedrun_etl.marts import collection_batches
 
-        report = check_quality(batches)
-        logging.getLogger(__name__).info("Data Quality: %s", json.dumps(report))
-        if any(report["anomalies"].values()) or any(
-            volume["ods"] != volume["dds_matched"]
-            for batch in report["batches"]
-            for volume in batch["volumes"].values()
-        ):
+            batches = collection_batches(conf["collection"])
+        if not batches:
             raise AirflowFailException(
-                "Data Quality failed. See the report in task logs."
+                "Data Quality requires a DDS event or an explicit existing collection"
             )
+
+        report = validate_dds(batches)
+        logging.getLogger(__name__).info("Data Quality: %s", json.dumps(report))
+        yield Metadata(Asset(DDS_VALIDATED), {**report, "batches": batches})
         return report
 
     validate()

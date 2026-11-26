@@ -1,0 +1,368 @@
+{
+  "context": [
+    {
+      "build_id": "ebc37b659eceb2fb31ead13c137de450fc56163099727eff7e88f254e2aacbe1",
+      "as_of": "2026-10-30 21:28:36.387757+00:00",
+      "collection_id": "lab1-popular500-20261030",
+      "method_version": "6d1c11b5ecc60ac697a9dc3cda6f5577d66217d0408f23a157a39b8e3afc64b5"
+    }
+  ],
+  "quality": [
+    {
+      "build_id": "ebc37b659eceb2fb31ead13c137de450fc56163099727eff7e88f254e2aacbe1",
+      "as_of": "2026-10-30 21:28:36.387757+00:00",
+      "source_runs": 873668,
+      "unresolved_scope_runs": 0,
+      "observed_runs": 873668,
+      "invalid_timer": 51008,
+      "orphaned_runs": 0,
+      "missing_participants": 4,
+      "missing_scope_value": 35933,
+      "unknown_direction": 0,
+      "missing_submission_date": 3557,
+      "missing_performed_date": 1013,
+      "missing_source_place": 426603,
+      "quarantined_date_anomalies": 47
+    }
+  ],
+  "validation": [
+    {
+      "check_name": "empty_pb",
+      "failures": 0
+    },
+    {
+      "check_name": "invalid_pb",
+      "failures": 0
+    },
+    {
+      "check_name": "invalid_cohort",
+      "failures": 0
+    },
+    {
+      "check_name": "invalid_survival",
+      "failures": 0
+    },
+    {
+      "check_name": "medal_order",
+      "failures": 0
+    },
+    {
+      "check_name": "missing_manifest",
+      "failures": 0
+    }
+  ],
+  "counts": [
+    {
+      "batches": 133,
+      "field_run_rows": 1297251,
+      "analytical_runs": 654705,
+      "personal_bests": 580728,
+      "fields": 32960,
+      "games": 126,
+      "reconstructed_events": 3385304,
+      "source_wr_events": 20425,
+      "survival_points": 523141
+    }
+  ],
+  "medals_top10": [
+    {
+      "country_name": "США",
+      "gold": 914,
+      "silver": 416,
+      "bronze": 398,
+      "medal_score": "159108416",
+      "overall_rank": 1
+    },
+    {
+      "country_name": "Канада",
+      "gold": 217,
+      "silver": 92,
+      "bronze": 85,
+      "medal_score": "37772362",
+      "overall_rank": 2
+    },
+    {
+      "country_name": "Великобритания",
+      "gold": 152,
+      "silver": 71,
+      "bronze": 75,
+      "medal_score": "26460810",
+      "overall_rank": 3
+    },
+    {
+      "country_name": "Россия",
+      "gold": 125,
+      "silver": 38,
+      "bronze": 36,
+      "medal_score": "21752007",
+      "overall_rank": 4
+    },
+    {
+      "country_name": "Бразилия",
+      "gold": 114,
+      "silver": 26,
+      "bronze": 21,
+      "medal_score": "19834209",
+      "overall_rank": 5
+    },
+    {
+      "country_name": "Германия",
+      "gold": 97,
+      "silver": 28,
+      "bronze": 52,
+      "medal_score": "16878961",
+      "overall_rank": 6
+    },
+    {
+      "country_name": "Австралия",
+      "gold": 90,
+      "silver": 40,
+      "bronze": 22,
+      "medal_score": "15666712",
+      "overall_rank": 7
+    },
+    {
+      "country_name": "Франция",
+      "gold": 85,
+      "silver": 37,
+      "bronze": 33,
+      "medal_score": "14796027",
+      "overall_rank": 8
+    },
+    {
+      "country_name": "Польша",
+      "gold": 82,
+      "silver": 16,
+      "bronze": 24,
+      "medal_score": "14265594",
+      "overall_rank": 9
+    },
+    {
+      "country_name": "Япония",
+      "gold": 68,
+      "silver": 72,
+      "bronze": 45,
+      "medal_score": "11854521",
+      "overall_rank": 10
+    }
+  ],
+  "recommendation_evaluation": [
+    {
+      "build_id": "ebc37b659eceb2fb31ead13c137de450fc56163099727eff7e88f254e2aacbe1",
+      "as_of": "2026-10-30 21:28:36.387757+00:00",
+      "method": "popularity",
+      "train_until": "2025-10-30 21:28:36.387757+00:00",
+      "test_until": "2026-10-30 21:28:36.387757+00:00",
+      "eligible_people": 123685,
+      "test_people": 2000,
+      "people_with_new_game": 19,
+      "people_with_recommendations": 2000,
+      "hits": 5,
+      "conditional_hit_at_5_pct": "26.3157894736842105",
+      "overall_hit_at_5_pct": "0.25000000000000000000"
+    },
+    {
+      "build_id": "ebc37b659eceb2fb31ead13c137de450fc56163099727eff7e88f254e2aacbe1",
+      "as_of": "2026-10-30 21:28:36.387757+00:00",
+      "method": "smoothed_lift",
+      "train_until": "2025-10-30 21:28:36.387757+00:00",
+      "test_until": "2026-10-30 21:28:36.387757+00:00",
+      "eligible_people": 123685,
+      "test_people": 2000,
+      "people_with_new_game": 19,
+      "people_with_recommendations": 1825,
+      "hits": 4,
+      "conditional_hit_at_5_pct": "21.0526315789473684",
+      "overall_hit_at_5_pct": "0.20000000000000000000"
+    }
+  ],
+  "demo_selection": [
+    {
+      "build_id": "ebc37b659eceb2fb31ead13c137de450fc56163099727eff7e88f254e2aacbe1",
+      "as_of": "2026-10-30 21:28:36.387757+00:00",
+      "holder_id": "1xyv79mx",
+      "runner": "RealXones [1xyv79mx]",
+      "scope_id": "7bf8443d0d9222b87606377efe721240",
+      "scope_name": "Hollow Knight · Any% · Any% Glitch=No Major Glitches · Все платформы · time",
+      "game_name": "Hollow Knight",
+      "publications": 20
+    }
+  ],
+  "examples": [
+    {
+      "game_name": "Celeste",
+      "scope_name": "Celeste · Any% · Все платформы · igt",
+      "field_size": 7041,
+      "wr_seconds": "1484.0830000000000000",
+      "top10_gap_pct": "4.68046598471918350"
+    },
+    {
+      "game_name": "Super Mario 64",
+      "scope_name": "Super Mario 64 · 16 Star · Platform=EMU · Все платформы · time",
+      "field_size": 5004,
+      "wr_seconds": "886.3300000000000000",
+      "top10_gap_pct": "2.66266514729276906"
+    },
+    {
+      "game_name": "Super Mario 64",
+      "scope_name": "Super Mario 64 · 16 Star · Platform=N64 · Все платформы · time",
+      "field_size": 2211,
+      "wr_seconds": "872.8700000000000000",
+      "top10_gap_pct": "2.68768545144179546"
+    },
+    {
+      "game_name": "Super Mario 64",
+      "scope_name": "Super Mario 64 · 70 Star · Platform=EMU · Все платформы · time",
+      "field_size": 1474,
+      "wr_seconds": "2790.0000000000000000",
+      "top10_gap_pct": "2.72401433691756272"
+    },
+    {
+      "game_name": "Super Mario 64",
+      "scope_name": "Super Mario 64 · 70 Star · Platform=N64 · Все платформы · time",
+      "field_size": 1299,
+      "wr_seconds": "2771.0000000000000000",
+      "top10_gap_pct": "1.80440274269216889"
+    },
+    {
+      "game_name": "Super Mario 64",
+      "scope_name": "Super Mario 64 · 16 Star · Platform=VC · Все платформы · time",
+      "field_size": 881,
+      "wr_seconds": "892.8000000000000000",
+      "top10_gap_pct": "5.25985663082437276"
+    },
+    {
+      "game_name": "Super Mario 64",
+      "scope_name": "Super Mario 64 · 120 Star · Platform=N64 · Все платформы · time",
+      "field_size": 738,
+      "wr_seconds": "5714.0000000000000000",
+      "top10_gap_pct": "1.96009800490024501"
+    },
+    {
+      "game_name": "Super Mario 64",
+      "scope_name": "Super Mario 64 · 1 Star · Platform=N64 · Все платформы · time",
+      "field_size": 604,
+      "wr_seconds": "413.6800000000000000",
+      "top10_gap_pct": "3.16186424289305744"
+    },
+    {
+      "game_name": "Super Mario 64",
+      "scope_name": "Super Mario 64 · 120 Star · Platform=EMU · Все платформы · time",
+      "field_size": 590,
+      "wr_seconds": "5858.0000000000000000",
+      "top10_gap_pct": "3.46534653465346535"
+    },
+    {
+      "game_name": "Super Mario 64",
+      "scope_name": "Super Mario 64 · 1 Star · Platform=EMU · Все платформы · time",
+      "field_size": 587,
+      "wr_seconds": "417.2000000000000000",
+      "top10_gap_pct": "6.30393096836049856"
+    },
+    {
+      "game_name": "Super Mario 64",
+      "scope_name": "Super Mario 64 · 70 Star · Platform=VC · Все платформы · time",
+      "field_size": 406,
+      "wr_seconds": "2806.0000000000000000",
+      "top10_gap_pct": "3.63506771204561654"
+    },
+    {
+      "game_name": "Celeste",
+      "scope_name": "Celeste · All Red Berries · Все платформы · igt",
+      "field_size": 336,
+      "wr_seconds": "2682.3450000000000000",
+      "top10_gap_pct": "3.64166429001489368"
+    },
+    {
+      "game_name": "Super Mario 64",
+      "scope_name": "Super Mario 64 · 0 Star · Platform=N64 · Все платформы · time",
+      "field_size": 238,
+      "wr_seconds": "374.1900000000000000",
+      "top10_gap_pct": "4.84780459125043427"
+    },
+    {
+      "game_name": "Celeste",
+      "scope_name": "Celeste · True Ending · Farewell Skip=No Farewell Skip · Все платформы · igt",
+      "field_size": 209,
+      "wr_seconds": "2531.9970000000000000",
+      "top10_gap_pct": "11.45419998522905043"
+    },
+    {
+      "game_name": "Super Mario 64",
+      "scope_name": "Super Mario 64 · 120 Star · Platform=VC · Все платформы · time",
+      "field_size": 207,
+      "wr_seconds": "5959.0000000000000000",
+      "top10_gap_pct": "3.25557979526766236"
+    },
+    {
+      "game_name": "Celeste",
+      "scope_name": "Celeste · 100% · Все платформы · igt",
+      "field_size": 174,
+      "wr_seconds": "5836.3720000000000000",
+      "top10_gap_pct": "6.40430390660499365"
+    },
+    {
+      "game_name": "Celeste",
+      "scope_name": "Celeste · All C-Sides · Все платформы · igt",
+      "field_size": 158,
+      "wr_seconds": "255.6120000000000000",
+      "top10_gap_pct": "11.13993083266826284"
+    },
+    {
+      "game_name": "Super Mario 64",
+      "scope_name": "Super Mario 64 · 0 Star · Platform=EMU · Все платформы · time",
+      "field_size": 149,
+      "wr_seconds": "383.8500000000000000",
+      "top10_gap_pct": "6.57288003126221180"
+    },
+    {
+      "game_name": "Celeste",
+      "scope_name": "Celeste · Bny% · Все платформы · igt",
+      "field_size": 147,
+      "wr_seconds": "1845.5030000000000000",
+      "top10_gap_pct": "9.69058300094879282"
+    },
+    {
+      "game_name": "Celeste",
+      "scope_name": "Celeste · All Hearts · Все платформы · igt",
+      "field_size": 118,
+      "wr_seconds": "2993.8360000000000000",
+      "top10_gap_pct": "8.41756195062120971"
+    }
+  ],
+  "queue": [
+    {
+      "state": "complete",
+      "count": 133
+    },
+    {
+      "state": "not_applicable",
+      "count": 1
+    },
+    {
+      "state": "partial",
+      "count": 1
+    },
+    {
+      "state": "pending",
+      "count": 365
+    }
+  ],
+  "receipts": [
+    {
+      "namespace": "entity_v3",
+      "store": "garage",
+      "count": 541
+    },
+    {
+      "namespace": "entity_v3",
+      "store": "mongo",
+      "count": 541
+    },
+    {
+      "namespace": "entity_v3",
+      "store": "postgres",
+      "count": 541
+    }
+  ]
+}

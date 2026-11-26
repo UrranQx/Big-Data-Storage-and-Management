@@ -29,10 +29,17 @@ x-airflow: &airflow
     ETL_MAX_RPM: ${ETL_MAX_RPM:-40}
     ETL_PAGE_CONCURRENCY: ${ETL_PAGE_CONCURRENCY:-4}
     PYTHONPATH: /opt/project/src
+    SUPERSET_URL: http://superset:8088
+    SUPERSET_ADMIN_PASSWORD: ${SUPERSET_ADMIN_PASSWORD:-}
+    ANALYTICS_READER_PASSWORD: ${ANALYTICS_READER_PASSWORD:-}
+    OPENMETADATA_URL: http://openmetadata:8585/api
+    OPENMETADATA_ADMIN_PASSWORD: ${OPENMETADATA_ADMIN_PASSWORD:-}
   volumes:
     - etl-state:/opt/airflow/state
     - airflow-logs:/opt/airflow/logs
     - ./src:/opt/project/src:ro
+    - ./sql:/opt/project/sql:ro
+    - ./infra:/opt/project/infra:ro
     - ./dags:/opt/airflow/dags:ro
     - ./docs/design/entity_v3_3nf.sql:/opt/project/docs/design/entity_v3_3nf.sql:ro
     - ./tests:/opt/project/tests:ro
@@ -76,7 +83,7 @@ services:
     mem_limit: 1g
   scheduler:
     <<: *airflow
-    command: [bash, /opt/project/scheduler.sh]
+    command: scheduler
     mem_limit: 2500m
     healthcheck:
       test: [CMD, curl, --fail, http://localhost:8974/health]
@@ -100,7 +107,127 @@ services:
       interval: 30s
       retries: 12
 
+  lab3-init:
+    image: speedrun-lab1-airflow:local
+    profiles: [lab3]
+    user: "0:0"
+    entrypoint: [python, /opt/project/infra/lab3_databases.py]
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?configure}
+      SUPERSET_DB_PASSWORD: ${SUPERSET_DB_PASSWORD:-}
+      OPENMETADATA_DB_PASSWORD: ${OPENMETADATA_DB_PASSWORD:-}
+      ANALYTICS_READER_PASSWORD: ${ANALYTICS_READER_PASSWORD:-}
+    volumes:
+      - ./infra:/opt/project/infra:ro
+      - ./data/lab3/keys:/opt/project/keys
+    depends_on:
+      postgres: {condition: service_healthy}
+    mem_limit: 256m
+
+  superset-init:
+    image: speedrun-lab3-superset:local
+    build:
+      context: .
+      dockerfile: infra/Dockerfile.superset
+    profiles: [lab3]
+    entrypoint: [/bin/sh, -c]
+    command: ["superset db upgrade && superset init && python /app/lab3/superset_init.py"]
+    environment: &superset-env
+      SUPERSET_CONFIG_PATH: /app/lab3/superset_config.py
+      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY:-}
+      SUPERSET_DB_PASSWORD: ${SUPERSET_DB_PASSWORD:-}
+      SUPERSET_ADMIN_PASSWORD: ${SUPERSET_ADMIN_PASSWORD:-}
+      ANALYTICS_READER_PASSWORD: ${ANALYTICS_READER_PASSWORD:-}
+    volumes:
+      - ./infra:/app/lab3:ro
+    depends_on:
+      lab3-init: {condition: service_completed_successfully}
+    mem_limit: 1200m
+
+  superset:
+    image: speedrun-lab3-superset:local
+    profiles: [lab3]
+    environment: *superset-env
+    entrypoint: [/app/.venv/bin/gunicorn]
+    command: ["--bind", "0.0.0.0:8088", "--workers", "1", "--threads", "4", "--timeout", "120", "superset.app:create_app()"]
+    ports: ["127.0.0.1:8088:8088"]
+    volumes:
+      - ./infra:/app/lab3:ro
+    depends_on:
+      superset-init: {condition: service_completed_successfully}
+    mem_limit: 1200m
+    healthcheck:
+      test: [CMD, curl, --fail, http://localhost:8088/health]
+      interval: 15s
+      retries: 20
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.3.0@sha256:4f6bdcb742e892539c6ac49b0dd3e4e182e90218546e8c6a22db378c344acb60
+    profiles: [lab3]
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    volumes:
+      - lab3-search:/usr/share/elasticsearch/data
+    mem_limit: 1200m
+    healthcheck:
+      test: [CMD, curl, --fail, "http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s"]
+      interval: 15s
+      retries: 20
+
+  openmetadata-migrate:
+    image: docker.getcollate.io/openmetadata/server:2.0.9@sha256:8575ad1b61866f76075f096c40ec4e9ee19339dcab50169adec9b69bec380f98
+    profiles: [lab3]
+    command: ["./bootstrap/openmetadata-ops.sh", "migrate"]
+    environment: &openmetadata-env
+      DB_DRIVER_CLASS: org.postgresql.Driver
+      DB_SCHEME: postgresql
+      DB_PARAMS: "sslmode=disable"
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_USER: openmetadata
+      DB_USER_PASSWORD: ${OPENMETADATA_DB_PASSWORD:-}
+      OM_DATABASE: openmetadata
+      ELASTICSEARCH_HOST: elasticsearch
+      ELASTICSEARCH_PORT: "9200"
+      ELASTICSEARCH_SCHEME: http
+      SEARCH_TYPE: elasticsearch
+      OPENMETADATA_HEAP_OPTS: "-Xms512m -Xmx1024m"
+      PIPELINE_SERVICE_CLIENT_ENABLED: "false"
+      AUTHENTICATION_PROVIDER: basic
+      AUTHENTICATION_ENABLE_SELF_SIGNUP: "false"
+      AUTHORIZER_ADMIN_PRINCIPALS: '[admin]'
+      AUTHENTICATION_PUBLIC_KEYS: '[http://openmetadata:8585/api/v1/system/config/jwks]'
+      RSA_PUBLIC_KEY_FILE_PATH: /opt/lab3/keys/public_key.der
+      RSA_PRIVATE_KEY_FILE_PATH: /opt/lab3/keys/private_key.der
+      FERNET_KEY: ${OPENMETADATA_FERNET_KEY:-}
+      SERVER_HOST_API_URL: http://openmetadata:8585/api
+      OPENMETADATA_SERVER_URL: http://localhost:8585
+    volumes:
+      - ./data/lab3/keys:/opt/lab3/keys:ro
+    depends_on:
+      lab3-init: {condition: service_completed_successfully}
+      elasticsearch: {condition: service_healthy}
+    mem_limit: 1800m
+
+  openmetadata:
+    image: docker.getcollate.io/openmetadata/server:2.0.9@sha256:8575ad1b61866f76075f096c40ec4e9ee19339dcab50169adec9b69bec380f98
+    profiles: [lab3]
+    environment: *openmetadata-env
+    ports: ["127.0.0.1:8585:8585"]
+    volumes:
+      - ./data/lab3/keys:/opt/lab3/keys:ro
+    depends_on:
+      openmetadata-migrate: {condition: service_completed_successfully}
+    mem_limit: 2000m
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, http://localhost:8586/healthcheck]
+      interval: 20s
+      retries: 20
+
 volumes:
   postgres-data:
   etl-state:
   airflow-logs:
+  lab3-search:
