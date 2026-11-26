@@ -21,7 +21,9 @@ def local_environment():
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", default="reports/lab3/final/screenshots")
+    parser.add_argument(
+        "--output", default="reports/lab3/acceptance_20261126/screenshots"
+    )
     parser.add_argument(
         "--dashboard", choices=["runner", "records", "countries", "all"], default="all"
     )
@@ -99,6 +101,13 @@ def main():
             page.screenshot(path=str(destination / (key + ".png")), full_page=True)
             alerts = page.locator('[role="alert"]').all_text_contents()
             actual_chart_ids = {r["chart_id"] for r in requests if r["chart_id"]}
+            expected_charts = {"runner": 14, "records": 7, "countries": 3}[key]
+            if len(actual_chart_ids) != expected_charts:
+                failures.append(
+                    {
+                        "error": f"Expected {expected_charts} charts, got {len(actual_chart_ids)}"
+                    }
+                )
             results[key] = {
                 "charts": len(actual_chart_ids),
                 "chart_requests": list(requests),

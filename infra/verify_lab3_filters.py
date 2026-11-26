@@ -13,18 +13,34 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def main():
-    output = ROOT / "reports/lab3/final"
+    output = ROOT / "reports/lab3/acceptance_20261126"
     output.mkdir(parents=True, exist_ok=True)
     evidence = {}
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(channel="msedge", headless=True)
         page = browser.new_page(viewport={"width": 1700, "height": 1100})
         responses = {}
+        filter_responses = []
 
         def capture(response):
             if "/api/v1/chart/data" not in response.url:
                 return
             body = response.request.post_data_json or {}
+            filter_id = body.get("form_data", {}).get("native_filter_id")
+            if filter_id:
+                try:
+                    result = response.json()
+                    filter_responses.append(
+                        {
+                            "filter": filter_id,
+                            "queries": body.get("queries"),
+                            "rows": [
+                                r.get("data", [])[:3] for r in result.get("result", [])
+                            ],
+                        }
+                    )
+                except PlaywrightError:
+                    pass
             chart_id = body.get("form_data", {}).get("slice_id")
             if chart_id:
                 try:
@@ -57,17 +73,38 @@ def main():
             return result["result"][0]["data"]
 
         def select(key, value):
+            # Wait for the previous filter update to settle before typing into
+            # the next React-controlled, debounced option search.
+            page.wait_for_load_state("networkidle", timeout=120000)
             control = page.get_by_role(
                 "combobox", name="NATIVE_FILTER-" + key, exact=True
             )
             control.locator(
                 "xpath=ancestor::div[contains(@class,'ant-select-selector')]"
             ).click()
-            control.fill(value)
+            control.fill("")
+            control.press_sequentially(value, delay=25)
             option = page.locator(
                 ".ant-select-dropdown:not(.ant-select-dropdown-hidden) .ant-select-item-option"
             ).filter(has_text=re.compile("^" + re.escape(value) + "$"))
-            option.first.click(timeout=30000)
+            try:
+                option.first.click(timeout=30000)
+            except PlaywrightError:
+                print(
+                    json.dumps(
+                        {
+                            "key": key,
+                            "input": control.input_value(),
+                            "dropdowns": page.locator(
+                                ".ant-select-dropdown:not(.ant-select-dropdown-hidden)"
+                            ).all_text_contents(),
+                            "recent_filter_requests": filter_responses[-6:],
+                        },
+                        ensure_ascii=True,
+                    ),
+                    flush=True,
+                )
+                raise
             control.press("Escape")
 
         def apply():

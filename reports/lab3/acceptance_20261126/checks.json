@@ -1,0 +1,161 @@
+{
+  "checked_at": "2026-11-26T17:21:19.706325+00:00",
+  "build_id": "cef0cb6d0c3ec3fa535d95228cd8f1960028ec5c0759e5f124fe4b0111306e0d",
+  "airflow_runs": [
+    {
+      "dag_id": "check_data_quality",
+      "run_id": "asset_triggered__2026-11-26T17:03:23.252010+00:00_snrVHrfA",
+      "state": "success",
+      "start_date": "2026-11-26T17:03:23.834179+00:00",
+      "end_date": "2026-11-26T17:03:25.109087+00:00"
+    },
+    {
+      "dag_id": "normalize_entity_v3",
+      "run_id": "lab3-final-replay",
+      "state": "success",
+      "start_date": "2026-11-26T17:03:16.974303+00:00",
+      "end_date": "2026-11-26T17:03:23.851606+00:00"
+    },
+    {
+      "dag_id": "refresh_marts",
+      "run_id": "asset_triggered__2026-11-26T17:03:24.282249+00:00_eniP0uRp",
+      "state": "success",
+      "start_date": "2026-11-26T17:03:25.059878+00:00",
+      "end_date": "2026-11-26T17:03:26.45453+00:00"
+    },
+    {
+      "dag_id": "sync_analytics_metadata",
+      "run_id": "asset_triggered__2026-11-26T17:03:26.003176+00:00_dLpROS9o",
+      "state": "success",
+      "start_date": "2026-11-26T17:03:26.424858+00:00",
+      "end_date": "2026-11-26T17:03:46.073473+00:00"
+    }
+  ],
+  "source_dags": [
+    {
+      "dag_id": "games_metadata",
+      "is_paused": true
+    },
+    {
+      "dag_id": "players",
+      "is_paused": true
+    },
+    {
+      "dag_id": "runs",
+      "is_paused": true
+    },
+    {
+      "dag_id": "wr_history",
+      "is_paused": true
+    }
+  ],
+  "active_source_runs": 0,
+  "superset": {
+    "datasets": 28,
+    "charts": 24,
+    "dashboards": 3,
+    "duplicate_dataset_names": false,
+    "duplicate_chart_names": false,
+    "duplicate_dashboard_slugs": false
+  },
+  "services": [
+    {
+      "Service": "api-server",
+      "State": "running",
+      "Health": "healthy"
+    },
+    {
+      "Service": "dag-processor",
+      "State": "running",
+      "Health": "healthy"
+    },
+    {
+      "Service": "elasticsearch",
+      "State": "running",
+      "Health": "healthy"
+    },
+    {
+      "Service": "openmetadata",
+      "State": "running",
+      "Health": "healthy"
+    },
+    {
+      "Service": "postgres",
+      "State": "running",
+      "Health": "healthy"
+    },
+    {
+      "Service": "scheduler",
+      "State": "running",
+      "Health": "healthy"
+    },
+    {
+      "Service": "superset",
+      "State": "running",
+      "Health": "healthy"
+    }
+  ],
+  "unit_and_integration_tests": {
+    "run": 194,
+    "passed": 167,
+    "skipped": 27,
+    "failures": 0,
+    "errors": 0,
+    "lab3_integration_passed": 5,
+    "duration_seconds": 19.536,
+    "note": "Full suite run earlier in this acceptance session with ETL_LAB3_INTEGRATION=1 and temporary ETL_STATE; not rerun for documentation or virtual dataset changes."
+  },
+  "dashboard_charts": {
+    "runner": 14,
+    "records": 7,
+    "countries": 3
+  },
+  "native_filter_scenarios": [
+    "country_filter_preserves_global_rank",
+    "game_and_percent_category_filters",
+    "target_filter",
+    "complete_radar",
+    "sufficient_cohort"
+  ],
+  "metadata": {
+    "build_id": "cef0cb6d0c3ec3fa535d95228cd8f1960028ec5c0759e5f124fe4b0111306e0d",
+    "tables": 83,
+    "dashboards": 3,
+    "pipelines": 4,
+    "edges": 154,
+    "medal_upstream_edges": 11,
+    "medal_column_mappings": 4
+  },
+  "completed_at": "2026-11-26T17:23:41.055677+00:00",
+  "final_image_check": {
+    "compose_build": "init superset-init passed",
+    "isolated_imports": "marts and analytics_metadata passed, no network or data mounts",
+    "files_match_workspace": {
+      "infra/superset_assets.py": "9513d041e9c55eda46e1c4565c1ef62538fcf9ad5f63e890a9674a43550214cb",
+      "src/speedrun_etl/marts.py": "5b66395d789ede6eb050f3eb135d66687971ad11bb207d93b766fa2f7c9075c7",
+      "sql/marts/01_base.sql": "f6bcc973f3af1f2374edb33646446841615529ff7655b624dfc76b8686b06f38"
+    }
+  },
+  "static_checks": {
+    "ruff_check": "passed",
+    "ruff_format": "passed",
+    "git_diff_check": "passed",
+    "secret_scan_values": 16,
+    "secret_scan_matches": 0
+  },
+  "evidence_sha256": {
+    "filter_validation.json": "a104d7f1dbb8ad3cf716ba9a056d26c932103ddaf23ac49cf64502216f01f069",
+    "metadata_validation.json": "290acd5c303592f49c22c9faa953d4959ef57d3d01041dc394c4a85416e314f5",
+    "ui_validation.json": "9569c269cb0dd40645df898cc5e8a6153d956ae3a81865ad95be4ad78aaed173",
+    "validation.json": "237a46a2258345180574f202009f50942bf5b82ab796a3ba47fbd3a083212194",
+    "screenshots/airflow.png": "98a48605862c0082022e5808a263ff2a36e14166fe857934f6e949a5e9b1d0bd",
+    "screenshots/cohort_sufficient.png": "f04d9db69cc45267e145f631769d24439eeb62271c18c34c049b7ceb1168f11f",
+    "screenshots/countries.png": "58e4d29db0afb7a756f1ac8d2e12721dc635bd7bb26a40f8433021e07472db74",
+    "screenshots/country_filter.png": "64c3a6ba7f7e308cd3cf8d7cd85d2ce911a694a902262b31cc3c4df1030c851e",
+    "screenshots/country_filter_checkpoint_repeat.png": "8c999f6e8b41d8dcfe5806892c26c90816d0ed8dcf251addbabd930b945ae0b0",
+    "screenshots/lineage.png": "d44c863017710028b73dc0d70f2d39d5752907281b1b0a758cbbad52ae7e6246",
+    "screenshots/radar_complete.png": "e1c58b8d5b2f04f467258a3563638b6f667a6012066675ab37a321f715e5b8e5",
+    "screenshots/records.png": "cf74bd58ba1d7e6a74b389aaf586a2f8101c78a2d2a92a168a26a4fc3968a061",
+    "screenshots/runner.png": "75ac095afb01b6740a26955bcd88fbc826ab763d832fc5f59312cea0c0b4c2ee"
+  }
+}

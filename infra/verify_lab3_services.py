@@ -9,7 +9,10 @@ from verify_lab3_ui import local_environment
 
 def main():
     env = local_environment()
-    output = Path(__file__).resolve().parents[1] / "reports/lab3/final/screenshots"
+    output = (
+        Path(__file__).resolve().parents[1]
+        / "reports/lab3/acceptance_20261126/screenshots"
+    )
     output.mkdir(parents=True, exist_ok=True)
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(channel="msedge", headless=True)

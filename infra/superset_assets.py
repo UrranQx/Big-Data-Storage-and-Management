@@ -58,6 +58,25 @@ TARGET = "{% if targets %} {{ targets|where_in }} {% else %} ('top10') {% endif 
 BASIS = "{% if basis %} {{ basis|where_in }} {% else %} ('performed_at') {% endif %}"
 
 
+def cohort_query(table):
+    # Resolve one person's entry bin first; a correlated IN otherwise repeats
+    # profile lookups for every historical survival point.
+    return (
+        "WITH anchor AS MATERIALIZED (SELECT DISTINCT p.scope_id,p.target_code,p.start_gap_bin,s.scope_name "
+        "FROM speedrun_marts.cohort_member p JOIN speedrun_marts.scope s USING(scope_id) WHERE "
+        + person()
+        + " AND "
+        + field()
+        + " AND p.target_code IN "
+        + TARGET
+        + ") SELECT c.*,a.scope_name,c.entry_year::text AS cohort_year,"
+        + RUNNER
+        + " FROM speedrun_marts."
+        + table
+        + " c JOIN anchor a USING(scope_id,target_code,start_gap_bin)"
+    )
+
+
 def datasets():
     result = {
         "runner_selector": "SELECT * FROM speedrun_marts.runner_selector",
@@ -151,31 +170,8 @@ def datasets():
         + "CASE WHEN p.strength IS NULL THEN 'Нет данных' ELSE 'Есть наблюдения' END AS availability "
         + "FROM selected r CROSS JOIN axes a LEFT JOIN speedrun_marts.runner_profile p "
         + "ON p.holder_id=r.holder_id AND p.tag=a.tag",
-        "cohorts": """SELECT c.*,s.scope_name,"""
-        + RUNNER
-        + """ FROM speedrun_marts.cohort_summary c
-            JOIN speedrun_marts.scope s USING(scope_id) WHERE """
-        + field()
-        + " AND c.target_code IN "
-        + TARGET
-        + """
-            AND c.start_gap_bin IN (SELECT p.start_gap_bin FROM speedrun_marts.cohort_member p
-              WHERE p.scope_id=c.scope_id AND p.target_code=c.target_code AND """
-        + person()
-        + ")",
-        "survival": """SELECT c.*,s.scope_name,c.entry_year::text AS cohort_year,"""
-        + RUNNER
-        + """
-            FROM speedrun_marts.cohort_survival c JOIN speedrun_marts.scope s USING(scope_id)
-            WHERE """
-        + field()
-        + " AND c.target_code IN "
-        + TARGET
-        + """
-            AND c.start_gap_bin IN (SELECT p.start_gap_bin FROM speedrun_marts.cohort_member p
-              WHERE p.scope_id=c.scope_id AND p.target_code=c.target_code AND """
-        + person()
-        + ")",
+        "cohorts": cohort_query("cohort_summary"),
+        "survival": cohort_query("cohort_survival"),
         "rivals": """WITH anchor AS (SELECT p.* FROM speedrun_marts.runner_window p
               JOIN speedrun_marts.scope s USING(scope_id) WHERE """
         + person()
@@ -190,7 +186,8 @@ def datasets():
                    w.median_seconds<a.median_seconds AS faster_median
             FROM anchor a JOIN speedrun_marts.runner_window w USING(scope_id,window_days)
             JOIN speedrun_marts.scope s USING(scope_id) WHERE w.sample_size>=5
-            ORDER BY abs(w.median_seconds-a.median_seconds),w.holder_id LIMIT 21""",
+              AND w.holder_id<>a.holder_id
+            ORDER BY abs(w.median_seconds-a.median_seconds),w.holder_id LIMIT 20""",
         "recent_distribution": """WITH recent AS (
             SELECT p.*,row_number() OVER(ORDER BY submitted_at DESC,run_id) AS n,s.scope_name
             FROM speedrun_marts.run p JOIN speedrun_marts.scope s USING(scope_id)
@@ -285,7 +282,12 @@ def datasets():
     rendered = {}
     for name, query in result.items():
         prefix = PREFIX
-        if name in {"runner_selector", "scope_selector", "medal_selector", "parameters"}:
+        if name in {
+            "runner_selector",
+            "scope_selector",
+            "medal_selector",
+            "parameters",
+        }:
             # Keep Superset's own search predicate on filter-option datasets.
             prefix = ""
         elif name == "personal_scope_selector":
@@ -373,6 +375,8 @@ def charts():
             "place",
             ["seconds"],
             groupby=["series"],
+            x_axis_title="Место в поле",
+            y_axis_title="Время, с",
         ),
         table(
             "wr_opportunities",
@@ -449,12 +453,16 @@ def charts():
             ["reached_pct"],
             groupby=["cohort_year"],
             seriesType="step",
+            x_axis_title="Дней после первой публикации",
+            y_axis_title="Достигли цели, %",
         ),
         line(
             "form",
             "05 · Публикации, PB и форма за 10 ранов",
             "submitted_at",
             ["seconds", "pb_seconds", "median_seconds", "q1_seconds", "q3_seconds"],
+            x_axis_title="Дата подачи",
+            y_axis_title="Время, с",
         ),
         (
             "recent_distribution",
@@ -538,6 +546,8 @@ def charts():
             "event_at",
             ["seconds"],
             seriesType="step",
+            x_axis_title="Дата по выбранному основанию",
+            y_axis_title="Время, с",
         ),
         table(
             "revival",

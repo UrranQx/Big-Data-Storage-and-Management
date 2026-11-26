@@ -59,8 +59,8 @@ fresh_cycle удалён. Прежние SQL сохранены для инте�
 не включаются .env, infra/garage.local.toml, volumes, полный staging и архив
 archive/backups/data.zip. .env.example содержит только безопасные заглушки.
 
-ЛР2 (DDS/SCD/Data Quality) и ЛР3 (витрины/Superset/OpenMetadata) остаются
-следующими этапами. Их заготовки в структуре не означают развёрнутые сервисы.
+ЛР2 (DDS/SCD/Data Quality) и ЛР3 (витрины/Superset/OpenMetadata) реализованы
+в ветке `lab3`; результаты проверки и демонстрация — в `reports/lab3/`.
 GitHub: https://github.com/UrranQx/Big-Data-Storage-and-Management, main.
 Первичная публикация выполнена; новые локальные изменения не считаются
 опубликованными до отдельного успешного push.
