@@ -330,6 +330,9 @@ def synchronize():
             "speedrun_3nf.dim_game_version",
             "speedrun_3nf.dim_category_definition",
             "speedrun_3nf.dim_variable_definition",
+            "speedrun_3nf.dim_variable_category",
+            "speedrun_3nf.dim_variable_level",
+            "speedrun_3nf.dim_run_value",
             "speedrun_3nf.dim_value_definition",
             "speedrun_3nf.dim_platform_definition",
         ],
@@ -371,7 +374,7 @@ def synchronize():
         "game_similarity": ["game_portfolio"],
         "game_transition": ["game_portfolio"],
         "destination_category": ["game_portfolio", "scope", "pb"],
-        "demo_selection": ["run", "scope", "field"],
+        "demo_selection": ["run", "scope", "field", "runner_profile", "runner_window"],
         "coverage": ["speedrun_3nf.snapshot_coverage"],
         "runner_selector": ["pb"],
         "source_wr": [
@@ -536,6 +539,12 @@ def synchronize():
         + tables["speedrun_marts.country_medals"]["id"]
         + "?upstreamDepth=3&downstreamDepth=2",
     )
+    column_edges = sum(
+        len(edge.get("lineageDetails", {}).get("columnsLineage", []))
+        for edge in proof.get("upstreamEdges", [])
+    )
+    if column_edges < 2:
+        raise ValueError("Readback did not confirm medal column lineage")
     return {
         "build_id": build[0],
         "tables": len(tables),
@@ -543,6 +552,7 @@ def synchronize():
         "pipelines": len(pipelines),
         "edges": edges,
         "medal_upstream_edges": len(proof.get("upstreamEdges", [])),
+        "medal_column_mappings": column_edges,
     }
 
 

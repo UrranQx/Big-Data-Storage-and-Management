@@ -1,0 +1,40 @@
+{
+  "regression": {
+    "tests": 194,
+    "passed": 167,
+    "skipped": 27,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 19.536,
+    "isolation": "Temporary ETL_STATE; ETL_LAB3_INTEGRATION=1; legacy integration suites disabled"
+  },
+  "sql_literal_round_trip": {
+    "passed": 5,
+    "cases": [
+      "percent",
+      "double percent",
+      "quote",
+      "SQL-like text",
+      "Cyrillic"
+    ]
+  },
+  "docker_build": {
+    "passed": true,
+    "base_setuptools": "84.0.0",
+    "base_wheel": "0.48.0",
+    "pip_check": "passed"
+  },
+  "airflow": {
+    "run_id": "lab3-final-replay",
+    "collection": "lab1-popular500-20261030",
+    "normalize_entity_v3": "success",
+    "check_data_quality": "success",
+    "refresh_marts": "success",
+    "sync_analytics_metadata": "success",
+    "checked_at": "2026-11-26T17:04:00Z"
+  },
+  "ui_acceptance": {
+    "complete": false,
+    "remaining": "Runner option lookup timed out for Chexhuman in verify_lab3_filters.py; final screenshots and report still need refresh"
+  }
+}

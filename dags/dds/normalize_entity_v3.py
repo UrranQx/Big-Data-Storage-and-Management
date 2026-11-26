@@ -28,8 +28,16 @@ def normalize_entity_v3():
         batches = [
             event.extra["snapshots"] for items in events.values() for event in items
         ]
+        conf = get_current_context()["dag_run"].conf or {}
+        if not batches and conf.get("collection"):
+            from speedrun_etl.marts import collection_batches
+
+            # Explicit replay of committed ODS receipts; no source tasks are run.
+            batches = collection_batches(conf["collection"])
         if not batches:
-            raise ValueError("DDS requires an ODS asset event with snapshot IDs")
+            raise ValueError(
+                "DDS requires an ODS event or an explicit existing collection"
+            )
         return PokeReturnValue(verify_snapshot_batches(batches), batches)
 
     @task(execution_timeout=timedelta(hours=4), outlets=[Asset(DDS_READY)])

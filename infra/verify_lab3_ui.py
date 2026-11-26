@@ -21,7 +21,7 @@ def local_environment():
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", default="reports/lab3/screenshots")
+    parser.add_argument("--output", default="reports/lab3/final/screenshots")
     parser.add_argument(
         "--dashboard", choices=["runner", "records", "countries", "all"], default="all"
     )
@@ -58,6 +58,9 @@ def main():
                     failures.append({"error": result["error"]})
             requests.append(
                 {
+                    "chart_id": (response.request.post_data_json or {})
+                    .get("form_data", {})
+                    .get("slice_id"),
                     "status": response.status,
                     "rows": [x.get("rowcount") for x in data.get("result", [])],
                 }
@@ -95,8 +98,9 @@ def main():
             page.evaluate("window.scrollTo(0,0)")
             page.screenshot(path=str(destination / (key + ".png")), full_page=True)
             alerts = page.locator('[role="alert"]').all_text_contents()
+            actual_chart_ids = {r["chart_id"] for r in requests if r["chart_id"]}
             results[key] = {
-                "charts": page.locator(".dashboard-component-chart-holder").count(),
+                "charts": len(actual_chart_ids),
                 "chart_requests": list(requests),
                 "failures": list(failures),
                 "alerts": alerts,
@@ -108,7 +112,8 @@ def main():
         json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     if any(
-        result["failures"] or result["client_errors"] for result in results.values()
+        result["failures"] or result["client_errors"] or result["alerts"]
+        for result in results.values()
     ):
         raise SystemExit("Some chart requests failed")
 

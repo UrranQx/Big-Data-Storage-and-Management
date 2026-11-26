@@ -1,0 +1,313 @@
+{
+  "runner": {
+    "charts": 14,
+    "chart_requests": [
+      {
+        "chart_id": 1,
+        "status": 200,
+        "rows": [
+          1
+        ]
+      },
+      {
+        "chart_id": 3,
+        "status": 200,
+        "rows": [
+          4
+        ]
+      },
+      {
+        "chart_id": 2,
+        "status": 200,
+        "rows": [
+          857
+        ]
+      },
+      {
+        "chart_id": 6,
+        "status": 200,
+        "rows": [
+          100
+        ]
+      },
+      {
+        "chart_id": 4,
+        "status": 200,
+        "rows": [
+          57
+        ]
+      },
+      {
+        "chart_id": 5,
+        "status": 200,
+        "rows": [
+          30
+        ]
+      },
+      {
+        "chart_id": 9,
+        "status": 200,
+        "rows": [
+          20
+        ]
+      },
+      {
+        "chart_id": 8,
+        "status": 200,
+        "rows": [
+          0
+        ]
+      },
+      {
+        "chart_id": 11,
+        "status": 200,
+        "rows": [
+          0
+        ]
+      },
+      {
+        "chart_id": 24,
+        "status": 200,
+        "rows": [
+          6
+        ]
+      },
+      {
+        "chart_id": 10,
+        "status": 200,
+        "rows": [
+          1
+        ]
+      },
+      {
+        "chart_id": 12,
+        "status": 200,
+        "rows": [
+          1
+        ]
+      },
+      {
+        "chart_id": 20,
+        "status": 200,
+        "rows": [
+          2
+        ]
+      },
+      {
+        "chart_id": null,
+        "status": 200,
+        "rows": [
+          8
+        ]
+      },
+      {
+        "chart_id": null,
+        "status": 200,
+        "rows": [
+          1000
+        ]
+      },
+      {
+        "chart_id": null,
+        "status": 200,
+        "rows": [
+          6
+        ]
+      },
+      {
+        "chart_id": null,
+        "status": 200,
+        "rows": [
+          3
+        ]
+      },
+      {
+        "chart_id": null,
+        "status": 200,
+        "rows": [
+          8
+        ]
+      },
+      {
+        "chart_id": null,
+        "status": 200,
+        "rows": [
+          8
+        ]
+      },
+      {
+        "chart_id": 7,
+        "status": 200,
+        "rows": [
+          27
+        ]
+      }
+    ],
+    "failures": [],
+    "alerts": [],
+    "client_errors": []
+  },
+  "records": {
+    "charts": 7,
+    "chart_requests": [
+      {
+        "chart_id": 15,
+        "status": 200,
+        "rows": [
+          65
+        ]
+      },
+      {
+        "chart_id": 16,
+        "status": 200,
+        "rows": [
+          17
+        ]
+      },
+      {
+        "chart_id": 13,
+        "status": 200,
+        "rows": [
+          10000
+        ]
+      },
+      {
+        "chart_id": 14,
+        "status": 200,
+        "rows": [
+          2
+        ]
+      },
+      {
+        "chart_id": 19,
+        "status": 200,
+        "rows": [
+          1
+        ]
+      },
+      {
+        "chart_id": 18,
+        "status": 200,
+        "rows": [
+          10000
+        ]
+      },
+      {
+        "chart_id": 17,
+        "status": 200,
+        "rows": [
+          12
+        ]
+      },
+      {
+        "chart_id": null,
+        "status": 200,
+        "rows": [
+          126
+        ]
+      },
+      {
+        "chart_id": null,
+        "status": 200,
+        "rows": [
+          3
+        ]
+      },
+      {
+        "chart_id": null,
+        "status": 200,
+        "rows": [
+          2
+        ]
+      },
+      {
+        "chart_id": null,
+        "status": 200,
+        "rows": [
+          3
+        ]
+      },
+      {
+        "chart_id": null,
+        "status": 200,
+        "rows": [
+          1000
+        ]
+      },
+      {
+        "chart_id": null,
+        "status": 200,
+        "rows": [
+          3
+        ]
+      },
+      {
+        "chart_id": null,
+        "status": 200,
+        "rows": [
+          3
+        ]
+      }
+    ],
+    "failures": [],
+    "alerts": [],
+    "client_errors": []
+  },
+  "countries": {
+    "charts": 3,
+    "chart_requests": [
+      {
+        "chart_id": 23,
+        "status": 200,
+        "rows": [
+          1
+        ]
+      },
+      {
+        "chart_id": 21,
+        "status": 200,
+        "rows": [
+          127
+        ]
+      },
+      {
+        "chart_id": 22,
+        "status": 200,
+        "rows": [
+          20
+        ]
+      },
+      {
+        "chart_id": null,
+        "status": 200,
+        "rows": [
+          132
+        ]
+      },
+      {
+        "chart_id": null,
+        "status": 200,
+        "rows": [
+          1000
+        ]
+      },
+      {
+        "chart_id": null,
+        "status": 200,
+        "rows": [
+          2
+        ]
+      },
+      {
+        "chart_id": null,
+        "status": 200,
+        "rows": [
+          127
+        ]
+      }
+    ],
+    "failures": [],
+    "alerts": [],
+    "client_errors": []
+  }
+}

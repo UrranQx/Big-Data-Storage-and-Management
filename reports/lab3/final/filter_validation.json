@@ -1,0 +1,88 @@
+{
+  "country_filter_preserves_global_rank": [
+    {
+      "country_name": "Россия",
+      "gold": 125,
+      "silver": 38,
+      "bronze": 36,
+      "medal_score": 21752007,
+      "overall_rank": 4
+    }
+  ],
+  "game_and_percent_category_filters": {
+    "game": "Celeste",
+    "category": "Any%",
+    "countries": 3,
+    "podium_contributions": 3
+  },
+  "target_filter": {
+    "top10": [
+      {
+        "target_code": "top10",
+        "place": 196,
+        "field_size": 1103,
+        "pb_seconds": 2219.0,
+        "threshold_seconds": 1909.0,
+        "improvement_seconds": 310.0,
+        "improvement_pct": 16.238868517548454,
+        "sufficient_field": true
+      }
+    ],
+    "top50": [
+      {
+        "target_code": "top50",
+        "place": 196,
+        "field_size": 1103,
+        "pb_seconds": 2219.0,
+        "threshold_seconds": 1979.0,
+        "improvement_seconds": 240.0,
+        "improvement_pct": 12.12733703890854,
+        "sufficient_field": true
+      }
+    ]
+  },
+  "complete_radar": [
+    {
+      "tag": "Any%",
+      "strength": 70.27493109848697,
+      "game_count": 2,
+      "scope_count": 5,
+      "availability": "Есть наблюдения"
+    },
+    {
+      "tag": "100%",
+      "strength": 60.738778852551306,
+      "game_count": 2,
+      "scope_count": 4,
+      "availability": "Есть наблюдения"
+    },
+    {
+      "tag": "Low%",
+      "strength": 78.57142857142857,
+      "game_count": 1,
+      "scope_count": 2,
+      "availability": "Есть наблюдения"
+    },
+    {
+      "tag": "All Bosses",
+      "strength": 100.0,
+      "game_count": 1,
+      "scope_count": 1,
+      "availability": "Есть наблюдения"
+    },
+    {
+      "tag": "Glitchless",
+      "strength": 84.21052631578948,
+      "game_count": 1,
+      "scope_count": 1,
+      "availability": "Есть наблюдения"
+    },
+    {
+      "tag": "No Major Glitches",
+      "strength": 97.02774108322325,
+      "game_count": 1,
+      "scope_count": 8,
+      "availability": "Есть наблюдения"
+    }
+  ]
+}

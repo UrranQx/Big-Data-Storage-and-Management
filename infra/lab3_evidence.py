@@ -1,6 +1,7 @@
 """Print a small, non-secret verification summary of the published archive."""
 
 import json
+from datetime import UTC, datetime
 
 from speedrun_etl.connections import pg_connect
 
@@ -14,6 +15,14 @@ def rows(conn, query):
 def main():
     with pg_connect() as conn:
         report = {
+            "checked_at": datetime.now(UTC).isoformat(),
+            "ods_versions": rows(
+                conn,
+                """SELECT
+                (SELECT count(*) FROM entity_v3.runs) AS runs,
+                (SELECT count(*) FROM entity_v3.players) AS players,
+                (SELECT count(*) FROM entity_v3.manifests) AS manifests""",
+            ),
             "context": rows(conn, "SELECT * FROM speedrun_marts.context"),
             "quality": rows(conn, "SELECT * FROM speedrun_marts.quality_summary"),
             "validation": rows(
@@ -40,6 +49,10 @@ def main():
                 conn, "SELECT * FROM speedrun_marts.recommendation_evaluation"
             ),
             "demo_selection": rows(conn, "SELECT * FROM speedrun_marts.demo_selection"),
+            "unknown_medals": rows(
+                conn,
+                "SELECT count(*) AS contributions FROM speedrun_marts.country_contribution WHERE country_code='UNKNOWN'",
+            ),
             "examples": rows(
                 conn,
                 """SELECT game_name,scope_name,field_size,wr_seconds,top10_gap_pct

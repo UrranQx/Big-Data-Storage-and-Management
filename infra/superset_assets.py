@@ -106,10 +106,10 @@ def datasets():
         + RUNNER
         + """,c.category_name,c.values_name,c.strong_people AS category_strong_people
             FROM ranked r LEFT JOIN LATERAL (
-              SELECT d.category_name,d.values_name,sum(d.strong_people) AS strong_people
+              SELECT d.category_name,d.values_name,max(d.strong_people) AS strong_people
               FROM speedrun_marts.destination_category d JOIN selected p ON p.game_id=d.source_game
               WHERE d.destination_game=r.destination_game GROUP BY d.scope_id,d.category_name,d.values_name
-              ORDER BY sum(d.strong_people) DESC,sum(d.transitioned_people) DESC,d.scope_id LIMIT 1
+              ORDER BY max(d.strong_people) DESC,max(d.transitioned_people) DESC,d.scope_id LIMIT 1
             ) c ON true""",
         "transitions": "SELECT 'Из: ' || t.source_name AS source_name,'В: ' || t.destination_name AS destination_name,t.transitioned_people,t.lift,"
         + RUNNER
@@ -142,7 +142,15 @@ def datasets():
         + RUNNER
         + " FROM speedrun_marts.runner_profile p WHERE "
         + person()
-        + " GROUP BY p.holder_name",
+        + " GROUP BY p.holder_name HAVING count(DISTINCT p.tag)=6",
+        "profile_values": "WITH selected AS (SELECT p.* FROM speedrun_marts.runner_selector p WHERE "
+        + person()
+        + "), axes(tag) AS (VALUES "
+        + ",".join("('" + tag + "')" for _, tag in PROFILE_AXES)
+        + ") SELECT r.runner,a.tag,p.strength,p.game_count,p.scope_count,"
+        + "CASE WHEN p.strength IS NULL THEN 'Нет данных' ELSE 'Есть наблюдения' END AS availability "
+        + "FROM selected r CROSS JOIN axes a LEFT JOIN speedrun_marts.runner_profile p "
+        + "ON p.holder_id=r.holder_id AND p.tag=a.tag",
         "cohorts": """SELECT c.*,s.scope_name,"""
         + RUNNER
         + """ FROM speedrun_marts.cohort_summary c
@@ -196,7 +204,7 @@ def datasets():
         + " FROM recent r WHERE n<=10",
         "activity": "SELECT a.*,s.scope_name,s.game_name FROM speedrun_marts.activity a JOIN speedrun_marts.scope s USING(scope_id) WHERE a.window_days="
         + WINDOW
-        + " AND s.field_platform='all' AND "
+        + " AND s.field_platform='all' AND (a.wr_improvements>0 OR a.top10_pbs>0 OR a.top10_entries>0) AND "
         + game(),
         "calendar": "SELECT c.*,s.scope_name,s.game_name,"
         + WINDOW
@@ -232,7 +240,7 @@ def datasets():
           ) SELECT s.scope_name,p.run_id,p.holder_name,p.seconds,p.performed_at,p.video_url,
             'https://www.speedrun.com/runs/' || p.run_id AS run_url,
             CASE WHEN p.run_id=ANY(e.previous_run_ids) THEN 'Предыдущий WR'
-                 WHEN p.run_id=ANY(e.run_ids) THEN 'Новый WR' ELSE 'Следующие улучшения' END AS role,
+                 WHEN p.run_id=ANY(e.run_ids) THEN 'Новый WR' ELSE 'После события: лучше прежнего WR' END AS role,
             'Кандидат на проверку по видео; причина скачка данными не доказана'::text AS interpretation
           FROM episode e JOIN speedrun_marts.run p ON p.scope_id=e.scope_id
           JOIN speedrun_marts.scope s ON s.scope_id=p.scope_id
@@ -271,7 +279,21 @@ def datasets():
         "source_history": "SELECT * FROM speedrun_marts.source_wr s WHERE " + game(),
         "recommendation_evaluation": "SELECT * FROM speedrun_marts.recommendation_evaluation",
     }
-    return {name: PREFIX + query for name, query in result.items()}
+    # PostgreSQL WhereInMacro compiles literals for psycopg2 (%%), but the
+    # virtual dataset is subsequently compiled again by SQLAlchemy. Undo only
+    # percent escaping here; where_in still handles SQL quotes safely.
+    rendered = {}
+    for name, query in result.items():
+        prefix = PREFIX
+        if name in {"runner_selector", "scope_selector", "medal_selector", "parameters"}:
+            # Keep Superset's own search predicate on filter-option datasets.
+            prefix = ""
+        elif name == "personal_scope_selector":
+            prefix = "{% set runners = filter_values('runner', remove_filter=True) %}\n"
+        rendered[name] = (prefix + query).replace(
+            "|where_in", "|where_in|replace('%%', '%')"
+        )
+    return rendered
 
 
 def metric(column, aggregate="MAX", label=None):
@@ -302,6 +324,13 @@ def charts():
                 "page_length": 15,
                 "include_search": True,
                 "allow_rearrange_columns": True,
+                "show_cell_bars": False,
+                "column_config": {
+                    column: {"d3NumberFormat": ",.2f"}
+                    for column in cols
+                    if column.endswith(("_seconds", "_pct"))
+                    or column in ("recommendation_score", "strength", "median_gap")
+                },
             },
         )
 
@@ -441,7 +470,7 @@ def charts():
         ),
         (
             "profile",
-            "08 · Профиль по типам категорий",
+            "08 · Паутинка · при наличии всех 6 осей",
             "profile",
             "radar",
             {
@@ -453,6 +482,11 @@ def charts():
                     for _, tag in PROFILE_AXES
                 },
             },
+        ),
+        table(
+            "profile_values",
+            "Профиль: оценки и наличие данных",
+            ["tag", "strength", "game_count", "scope_count", "availability"],
         ),
         table(
             "rivals",
@@ -627,6 +661,7 @@ DASHBOARDS = {
             "form",
             "recent_distribution",
             "profile",
+            "profile_values",
             "rivals",
             "recommendation_evaluation",
         ],
@@ -647,7 +682,7 @@ DASHBOARDS = {
 }
 
 NOTES = {
-    "runner": "Архивный срез, не текущий сайт. Время в секундах. Цели рассчитаны по всему сопоставимому полю до выбора раннера. Линия PB относится к опубликованным успешным ранам. Когорты: календарные дни, минимум 30 наблюдений; пустая оценка означает недостаточно данных. Рекомендации — наблюдаемые переходы, не доказательство переноса навыка. Паутинка: средний лучший перцентиль по игре; неизвестные оси не равны нулю. Соперники: минимум 5 публикаций за выбранное окно, максимум 10 на человека.",
+    "runner": "Архивный срез, не текущий сайт. Время в секундах. Цели рассчитаны по всему сопоставимому полю до выбора раннера. Линия PB относится к опубликованным успешным ранам. Когорты: календарные дни, минимум 30 наблюдений; пустая оценка означает недостаточно данных. Рекомендации — наблюдаемые переходы, не доказательство переноса навыка. Профиль: средний лучший перцентиль по игре. Паутинка строится только при наличии всех 6 осей; иначе смотрите таблицу оценок рядом — неизвестные значения не равны нулю. Соперники: минимум 5 публикаций за выбранное окно, максимум 10 на человека.",
     "records": "История реконструирована по ранам, верифицированным в архивном срезе. Одновременные результаты обработаны вместе. Предполагаемый скип или баг требует датированного внешнего подтверждения. В таблице плато отдельно показаны участники до, в день и после WR. Разбор видео показывает крупнейший скачок выбранной категории. Активность измеряется относительно даты среза.",
     "countries": "Медали: источник подтверждает места 1–3, один run × страна; международная команда даёт вклад каждой стране. Итог упорядочен по золоту, серебру, бронзе. Баллы G×B²+S×B+Br, B=1+max(S,Br) в выбранном поле. Фильтры игры и категории пересчитывают зачёт, фильтр страны только выбирает строку после расчёта. Неизвестная страна вынесена отдельно.",
 }

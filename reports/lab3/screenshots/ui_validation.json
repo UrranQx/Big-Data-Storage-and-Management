@@ -1,0 +1,108 @@
+{
+  "runner": {
+    "charts": 14,
+    "chart_requests": [
+      {
+        "status": 200,
+        "rows": [
+          1
+        ]
+      },
+      {
+        "status": 200,
+        "rows": [
+          4
+        ]
+      },
+      {
+        "status": 200,
+        "rows": [
+          857
+        ]
+      },
+      {
+        "status": 200,
+        "rows": [
+          30
+        ]
+      },
+      {
+        "status": 200,
+        "rows": [
+          57
+        ]
+      },
+      {
+        "status": 200,
+        "rows": [
+          100
+        ]
+      },
+      {
+        "status": 200,
+        "rows": [
+          20
+        ]
+      },
+      {
+        "status": 200,
+        "rows": [
+          1
+        ]
+      },
+      {
+        "status": 200,
+        "rows": [
+          0
+        ]
+      },
+      {
+        "status": 200,
+        "rows": [
+          1
+        ]
+      },
+      {
+        "status": 200,
+        "rows": [
+          2
+        ]
+      },
+      {
+        "status": 200,
+        "rows": [
+          1
+        ]
+      },
+      {
+        "status": 200,
+        "rows": [
+          6
+        ]
+      },
+      {
+        "status": 200,
+        "rows": [
+          1000
+        ]
+      },
+      {
+        "status": 200,
+        "rows": [
+          3
+        ]
+      },
+      {
+        "status": 200,
+        "rows": [
+          8
+        ]
+      }
+    ],
+    "failures": [],
+    "alerts": [
+      "Timeout errorWe’re having trouble loading this visualization. Queries are set to timeout after 120 seconds.See more"
+    ],
+    "client_errors": []
+  }
+}

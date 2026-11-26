@@ -60,6 +60,25 @@ class Lab3IntegrationTests(unittest.TestCase):
                 0,
             )
 
+    def test_full_game_fields_exclude_level_only_variables(self):
+        with pg_connect() as conn:
+            # Use source IDs of level-only variables, not their non-unique names.
+            level_only = conn.execute("""
+                SELECT DISTINCT vl.variable_id FROM speedrun_3nf.dim_variable_level vl
+                WHERE NOT EXISTS (SELECT 1 FROM speedrun_3nf.dim_variable_category vc
+                    WHERE vc.game_version_id=vl.game_version_id AND vc.variable_id=vl.variable_id)
+            """).fetchall()
+            self.assertGreater(len(level_only), 0)
+            bad = conn.execute(
+                """
+                SELECT count(*) FROM speedrun_marts.scope s
+                CROSS JOIN LATERAL unnest(string_to_array(s.values_key,',')) v(value)
+                WHERE split_part(v.value,'=',1)=ANY(%s)
+            """,
+                ([row[0] for row in level_only],),
+            ).fetchone()[0]
+            self.assertEqual(0, bad)
+
     def test_failed_publication_rolls_back_all_view_changes(self):
         class PublicationFailure(Exception):
             pass

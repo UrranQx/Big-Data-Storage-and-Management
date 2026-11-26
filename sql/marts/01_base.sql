@@ -83,6 +83,10 @@ LEFT JOIN LATERAL (
     LEFT JOIN speedrun_3nf.dim_value_definition val
       ON val.game_version_id=g.game_version_id AND val.value_id=coalesce(rv.value_id,vd.default_value_id)
     WHERE vd.game_version_id=g.game_version_id AND vd.is_subcategory
+      -- These marts contain full-game runs; level-only variables are unrelated
+      -- even when they have no category binding and a default value.
+      AND NOT EXISTS (SELECT 1 FROM speedrun_3nf.dim_variable_level vl
+                      WHERE vl.game_version_id=g.game_version_id AND vl.variable_id=vd.variable_id)
       AND (NOT EXISTS (SELECT 1 FROM speedrun_3nf.dim_variable_category vc WHERE vc.game_version_id=g.game_version_id AND vc.variable_id=vd.variable_id)
            OR EXISTS (SELECT 1 FROM speedrun_3nf.dim_variable_category vc WHERE vc.game_version_id=g.game_version_id AND vc.variable_id=vd.variable_id AND vc.category_id=r.category_id))
 ) v ON true

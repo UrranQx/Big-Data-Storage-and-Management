@@ -68,6 +68,8 @@ def main():
                     )
                 )
         conn.execute("GRANT CONNECT ON DATABASE speedrun_ods TO analytics_reader")
+        # Stop abandoned dashboard queries before the web worker's 120s timeout.
+        conn.execute("ALTER ROLE analytics_reader SET statement_timeout='110s'")
     print("Lab 3 databases and roles ready")
 
 

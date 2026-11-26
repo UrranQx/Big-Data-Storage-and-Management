@@ -3,7 +3,8 @@ COPY --chown=airflow:root infra/airflow-constraints-3.11.txt /opt/airflow/constr
 COPY --chown=airflow:root pyproject.toml /opt/project/pyproject.toml
 COPY --chown=airflow:root src /opt/project/src
 ARG ETL_EXTRAS=""
-RUN pip install --no-cache-dir "apache-airflow==3.3.2" "apache-airflow-providers-standard==1.19.0" "/opt/project${ETL_EXTRAS}" --constraint /opt/airflow/constraints.txt && pip check
+# Use setuptools from the digest-pinned base instead of fetching a moving build dependency.
+RUN pip install --no-cache-dir --no-build-isolation "apache-airflow==3.3.2" "apache-airflow-providers-standard==1.19.0" "/opt/project${ETL_EXTRAS}" --constraint /opt/airflow/constraints.txt && pip check
 COPY --chown=airflow:root sql /opt/project/sql
 COPY --chown=airflow:root tests /opt/project/tests
 COPY --chown=airflow:root infra/*.py /opt/project/infra/

@@ -190,6 +190,16 @@ def build_marts(collection=DEFAULT_COLLECTION, as_of=None):
                 LOG.info("Reconstructing record events")
                 build_history(conn)
         build_survival(conn)
+        # Planner statistics must be available before readers see the new build.
+        # In particular, context is one row, not the default estimate of 610.
+        for (table,) in conn.execute(
+            "SELECT tablename FROM pg_tables WHERE schemaname=%s", (schema,)
+        ).fetchall():
+            conn.execute(
+                sql.SQL("ANALYZE {}.{}").format(
+                    sql.Identifier(schema), sql.Identifier(table)
+                )
+            )
         validate_build(conn)
         publish_build(conn, schema, build_id, cutoff, collection, method, snapshots)
         return {"build_id": build_id, "as_of": cutoff.isoformat(), "schema": schema}

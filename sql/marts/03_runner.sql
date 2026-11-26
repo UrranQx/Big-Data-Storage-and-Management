@@ -96,6 +96,7 @@ WITH counts AS (
 )
 SELECT *,CASE WHEN observed_people>=30 THEN 100.0*reached_people/observed_people END AS reached_pct
 FROM counts;
+CREATE INDEX ON cohort_summary (scope_id,target_code,start_gap_bin);
 
 COMMENT ON TABLE cohort_member IS 'Calendar time from the first visible verified submission to the fixed target in the archive snapshot. Current verification status is retrospective.';
 COMMENT ON TABLE runner_profile IS 'Mean of the best per-game midrank percentiles, over fields with at least ten holders. Tags can overlap.';
