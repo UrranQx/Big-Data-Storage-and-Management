@@ -7,6 +7,7 @@ from pathlib import Path
 
 from playwright.sync_api import Error as PlaywrightError
 from playwright.sync_api import sync_playwright
+from superset_assets import DASHBOARDS
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -22,11 +23,9 @@ def local_environment():
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--output", default="reports/lab3/acceptance_20261126/screenshots"
+        "--output", default="reports/lab3/runner_ranking10_20261127/screenshots"
     )
-    parser.add_argument(
-        "--dashboard", choices=["runner", "records", "countries", "all"], default="all"
-    )
+    parser.add_argument("--dashboard", choices=[*DASHBOARDS, "all"], default="all")
     args = parser.parse_args()
     destination = ROOT / args.output
     destination.mkdir(parents=True, exist_ok=True)
@@ -74,11 +73,7 @@ def main():
         page.locator("#password").fill(env["SUPERSET_ADMIN_PASSWORD"])
         page.locator("input[type=submit],button[type=submit]").click()
         page.wait_for_url("**/superset/**", timeout=60000)
-        dashboards = (
-            ["runner", "records", "countries"]
-            if args.dashboard == "all"
-            else [args.dashboard]
-        )
+        dashboards = list(DASHBOARDS) if args.dashboard == "all" else [args.dashboard]
         for key in dashboards:
             failures.clear()
             requests.clear()
@@ -87,7 +82,27 @@ def main():
                 "http://localhost:8088/superset/dashboard/lab3-" + key + "/",
                 wait_until="domcontentloaded",
             )
-            page.wait_for_selector(".dashboard-component-chart-holder", timeout=60000)
+            try:
+                page.wait_for_selector(
+                    ".dashboard-component-chart-holder", timeout=60000
+                )
+            except PlaywrightError:
+                page.screenshot(
+                    path=str(destination / (key + "_load_failure.png")), full_page=True
+                )
+                print(
+                    json.dumps(
+                        {
+                            "dashboard": key,
+                            "url": page.url,
+                            "body": page.locator("body").inner_text()[:1500],
+                            "client_errors": client_errors,
+                        },
+                        ensure_ascii=False,
+                    ),
+                    flush=True,
+                )
+                raise
             # Scroll through the page to trigger charts outside the first viewport.
             height = page.evaluate("document.body.scrollHeight")
             for position in range(0, height, 700):
@@ -101,7 +116,7 @@ def main():
             page.screenshot(path=str(destination / (key + ".png")), full_page=True)
             alerts = page.locator('[role="alert"]').all_text_contents()
             actual_chart_ids = {r["chart_id"] for r in requests if r["chart_id"]}
-            expected_charts = {"runner": 14, "records": 7, "countries": 3}[key]
+            expected_charts = len(DASHBOARDS[key][1])
             if len(actual_chart_ids) != expected_charts:
                 failures.append(
                     {

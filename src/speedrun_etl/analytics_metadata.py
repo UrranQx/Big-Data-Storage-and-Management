@@ -67,7 +67,7 @@ def refresh_superset_notes(assets, build):
         updated += 1
     if updated != len(assets.DASHBOARDS):
         raise ValueError(
-            "Provision all three Superset dashboards before metadata synchronization"
+            "Provision all configured Superset dashboards before metadata synchronization"
         )
     return updated
 

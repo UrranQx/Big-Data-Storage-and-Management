@@ -1,4 +1,4 @@
-"""Idempotently provision the three laboratory dashboards by stable UUID."""
+"""Idempotently provision laboratory dashboards by stable UUID."""
 
 import json
 import os
@@ -14,6 +14,37 @@ def uid(kind, name):
 
 
 LABELS = {
+    "runner": "Раннер",
+    "best_rank": "Место по лучшему результату",
+    "result_points": "Баллы результата (0–100)",
+    "portfolio_rank": "Место по универсальности",
+    "portfolio_points": "Баллы до десяти игр (0–1000)",
+    "portfolio_games": "Игры и вклад в баллы",
+    "rank_k5": "Место при поправке 5",
+    "rank_k50": "Место при поправке 50",
+    "ranking_status": "Основание включения",
+    "calculated_medal_rank": "Место по медалям",
+    "calculated_gold": "Расчётных 1-х мест",
+    "calculated_silver": "Расчётных 2-х мест",
+    "calculated_bronze": "Расчётных 3-х мест",
+    "eligible_fields": "Зачётов выше порога",
+    "eligible_games": "Игр выше порога",
+    "solo_place": "Сольное место",
+    "solo_field_size": "Сольных соперников, включая себя",
+    "solo_tie_size": "Равных результатов, включая себя",
+    "percentile": "Обойдены с учётом ничьих, %",
+    "result_value": "Результат в шкале таймера",
+    "wr_value": "WR в шкале таймера",
+    "wr_gap_pct": "Отставание от WR, %",
+    "comparison_direction": "Направление сравнения",
+    "timer": "Таймер источника",
+    "near_wr_people": "В пределах 1% от WR",
+    "leader_top10_gap_pct": "Разрыв топ-10 и WR, %",
+    "completion_median_seconds": "Медиана завершений, с (меньше лучше)",
+    "archive_people": "Профилей в аналитическом срезе",
+    "ranked_people": "Раннеров с оценкой",
+    "people_without_solo_pb": "Без текущего сольного PB",
+    "people_below_minimum": "Только малые поля",
     "gold": "1-е места",
     "silver": "2-е места",
     "bronze": "3-и места",
@@ -158,9 +189,11 @@ def layout(title, chart_list, note):
             "meta": {"code": note, "height": 22, "width": 12},
         },
     }
-    for i in range(0, len(chart_list), 2):
+    groups = [chart_list[i : i + 2] for i in range(0, len(chart_list), 2)]
+    if title == "Рейтинг раннеров":
+        groups = [chart_list[:1], chart_list[1:3], chart_list[3:4], chart_list[4:]]
+    for i, group in enumerate(groups):
         row = "ROW-" + str(i)
-        group = chart_list[i : i + 2]
         pos["GRID_ID"]["children"].append(row)
         pos[row] = {
             "id": row,
@@ -417,6 +450,21 @@ def provision():
                     "parameters",
                     ["revival"],
                     1.0,
+                )
+            elif key == "ranking":
+                add(
+                    "minimum_field_size",
+                    "Минимум участников в сольном поле",
+                    "ranking_parameters",
+                    members,
+                    10,
+                )
+                add(
+                    "runner",
+                    "Раннер после расчёта общего места",
+                    "ranking_selector",
+                    [x for x in members if x != "ranking_coverage"],
+                    multi=True,
                 )
             else:
                 add("game_name", "Игры", "medal_selector", members, multi=True)

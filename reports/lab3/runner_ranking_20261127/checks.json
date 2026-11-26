@@ -1,0 +1,80 @@
+{
+  "checked_at": "2026-11-26T22:33:46.600320+00:00",
+  "saved_previous_stage": "92d55a4",
+  "tests": {
+    "run": 8,
+    "passed": 8,
+    "skipped": 0,
+    "failures": 0,
+    "seconds": 3.108,
+    "modules": [
+      "test_runner_ranking",
+      "test_lab3_integration"
+    ]
+  },
+  "charts": {
+    "runner": 14,
+    "records": 7,
+    "countries": 3,
+    "ranking": 5
+  },
+  "native_filters": [
+    "runner_preserves_global_rank",
+    "minimum_field_recalculates_population"
+  ],
+  "metadata_readback": {
+    "build_id": "cef0cb6d0c3ec3fa535d95228cd8f1960028ec5c0759e5f124fe4b0111306e0d",
+    "tables": 83,
+    "dashboards": 4,
+    "pipelines": 4,
+    "edges": 158,
+    "medal_upstream_edges": 11,
+    "medal_column_mappings": 4
+  },
+  "superset": {
+    "datasets": 32,
+    "charts": 29,
+    "dashboards": 4
+  },
+  "source_dags": [
+    {
+      "dag_id": "games_metadata",
+      "is_paused": true
+    },
+    {
+      "dag_id": "players",
+      "is_paused": true
+    },
+    {
+      "dag_id": "runs",
+      "is_paused": true
+    },
+    {
+      "dag_id": "wr_history",
+      "is_paused": true
+    }
+  ],
+  "active_source_runs": 0,
+  "ods_versions": {
+    "runs": 981599,
+    "players": 280600
+  },
+  "image_sql_sha256": "6b7d0038491de4bc0a426c16444d4f904010d5830f3cf896172cbf14f9b5d663",
+  "static_checks": {
+    "ruff": "passed",
+    "format": "passed",
+    "diff_check": "passed",
+    "secret_scan_values": 16,
+    "secret_matches": 0
+  },
+  "evidence_sha256": {
+    "filter_validation.json": "9333ccdbe27643af616393b9a14c2952b1318e29920cc875c38153b336131c41",
+    "selected_runner.png": "38a4b8acec2fce2c43cc99f0430fe121eaa2d7f4b0a478c58846ac8aadab99cb",
+    "ui_validation.json": "4050c0d53e5a23a6990dd8fbf4c1c71f323e7b28a2107801bda8b526f4a16410",
+    "validation.json": "2c33f055c31db6ab9c9c91b282333f82b5bead26b24d7a3859259a0fb190d53e",
+    "screenshots/countries.png": "b16a4fae66760636e2707c570213de2dda84efb950ac2b90571622abf14b7b7c",
+    "screenshots/ranking.png": "6c81a255b8651388f6fe378fbc279edcaaa9e0996b61247aeed11f5ae04d6a94",
+    "screenshots/records.png": "c113cd6044a8aaf3e9cc735e71c1f96cde039467304c020fbfaff9cc113c4137",
+    "screenshots/runner.png": "e5daf5eaf2ab747eed5cb4200a1cc4fe5d0ae7ac58bf9277a3b14297f05851e4"
+  }
+}

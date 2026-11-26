@@ -29,6 +29,13 @@ docker compose up -d api-server dag-processor scheduler
 
 ## Что показать
 
+Дополнение: [Рейтинг раннеров](http://localhost:8088/superset/dashboard/lab3-ranking/).
+Основной топ — сумма лучших результатов максимум в трёх играх. Выберите
+`Niftski [qjne76wj]`: общее 10-е место должно сохраниться после поиска.
+Поменяйте минимум участников с 10 на 100 и сравните охват. Подробная
+[методика](../../docs/analytics/RUNNER_RANKING.md) объясняет поправку малых полей,
+ничьи и отсутствие бонуса за длительность. Все три прежних дашборда доступны.
+
 1. [Airflow](http://localhost:8080): `normalize_entity_v3`, `check_data_quality`, `refresh_marts`, `sync_analytics_metadata`. Объяснить Assets, проверку качества и атомарную публикацию. Ручной повтор `refresh_marts` использует те же входы и не запускает источник.
 2. [Раннер](http://localhost:8088/superset/dashboard/lab3-runner/): выбрать профиль и сопоставимое поле, сравнить цель и распределение мест, посмотреть новые игры и основания рекомендаций. Затем показать когорты, форму и паутинку.
 3. [Борьба за рекорды](http://localhost:8088/superset/dashboard/lab3-records/): изменить окно 7/30/90 дней, найти плато, открыть выбранную категорию в истории и разборе видео. Показать исходные события WR отдельно от реконструкции.
@@ -67,13 +74,15 @@ docker compose up -d api-server dag-processor scheduler
 python -m venv exports/lab3-tools/venv
 exports/lab3-tools/venv/Scripts/python.exe -m pip install -r infra/requirements-lab3-demo.txt
 exports/lab3-tools/venv/Scripts/python.exe infra/verify_lab3_ui.py
-exports/lab3-tools/venv/Scripts/python.exe infra/verify_lab3_filters.py
-exports/lab3-tools/venv/Scripts/python.exe infra/verify_lab3_services.py
+exports/lab3-tools/venv/Scripts/python.exe infra/verify_runner_ranking_ui.py
 ```
 
 Сценарий сохраняет снимки дашбордов и статусы запросов графиков. Токены, cookies и пароли в отчёт не сохраняются.
 
-Запускайте сценарии последовательно. Результаты приёмки лежат в
-`reports/lab3/acceptance_20261126/`. Для переноса на другой ПК сначала прочитайте
+Запускайте сценарии последовательно. Историческая приёмка трёх дашбордов лежит в
+`reports/lab3/acceptance_20261126/`, новая проверка четырёх дашбордов и рейтинга —
+в `reports/lab3/runner_ranking_20261127/`. Чтобы сохранить исторические снимки,
+не запускайте прежние filter/services сценарии с путями по умолчанию поверх
+приёмки 26 ноября. Для переноса на другой ПК сначала прочитайте
 [инструкцию по секретам и данным](../../docs/LAB3_TRANSFER.md): pull не переносит
 служебные базы, ключи и checkpoints.

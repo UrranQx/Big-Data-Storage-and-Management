@@ -1,5 +1,21 @@
 """Version-controlled SQL datasets and chart definitions for Superset 6.1."""
 
+from pathlib import Path
+
+
+def runner_ranking_query():
+    query = Path(__file__).with_name("runner_ranking.sql").read_text(encoding="utf-8")
+    query = query.replace(
+        "VALUES (10)", "VALUES ({{ minimums[0]|int if minimums else 10 }})"
+    )
+    return (
+        "{% set minimums = filter_values('minimum_field_size', remove_filter=True) %}\n"
+        "{% set people = filter_values('runner', remove_filter=True) %}\n"
+        "SELECT * FROM (" + query + ") ranked_people WHERE "
+        "{% if people %} runner IN {{ people|where_in|replace('%%', '%') }} {% else %} true {% endif %}"
+    )
+
+
 PROFILE_AXES = [
     ("any_pct", "Any%"),
     ("full_pct", "100%"),
@@ -295,6 +311,19 @@ def datasets():
         rendered[name] = (prefix + query).replace(
             "|where_in", "|where_in|replace('%%', '%')"
         )
+    rendered["runner_ranking"] = runner_ranking_query()
+    rendered["ranking_selector"] = (
+        "SELECT player_name || ' [' || player_id || ']' AS runner FROM speedrun_marts.player"
+    )
+    rendered["ranking_parameters"] = (
+        "SELECT * FROM (VALUES (2),(10),(30),(100)) v(minimum_field_size)"
+    )
+    rendered["ranking_coverage"] = (
+        "SELECT count(*) AS archive_people,count(*) FILTER(WHERE ranking_status='Ранжирован') AS ranked_people,"
+        "count(*) FILTER(WHERE solo_fields=0) AS people_without_solo_pb,"
+        "count(*) FILTER(WHERE ranking_status='Поле меньше порога') AS people_below_minimum "
+        "FROM (" + runner_ranking_query() + ") population"
+    )
     return rendered
 
 
@@ -354,7 +383,7 @@ def charts():
             },
         )
 
-    return [
+    result = [
         table(
             "goals",
             "01 · Следующая цель",
@@ -654,6 +683,104 @@ def charts():
             },
         ),
     ]
+    for key, title, columns, order in (
+        (
+            "ranking_best",
+            "Сила лучшего результата · топ-100",
+            [
+                "best_rank",
+                "runner",
+                "result_points",
+                "game_name",
+                "solo_place",
+                "solo_field_size",
+                "rank_k5",
+                "rank_k50",
+                "ranking_status",
+            ],
+            "best_rank",
+        ),
+        (
+            "ranking_portfolio",
+            "Универсальность · до десяти разных игр · топ-100",
+            [
+                "portfolio_rank",
+                "runner",
+                "portfolio_points",
+                "eligible_games",
+                "portfolio_games",
+                "ranking_status",
+            ],
+            "portfolio_rank",
+        ),
+        (
+            "ranking_medals",
+            "Расчётные призовые места · топ-100",
+            [
+                "calculated_medal_rank",
+                "runner",
+                "calculated_gold",
+                "calculated_silver",
+                "calculated_bronze",
+                "eligible_fields",
+            ],
+            "calculated_medal_rank",
+        ),
+        (
+            "ranking_evidence",
+            "Основания лучшего результата · первые 100 раннеров",
+            [
+                "best_rank",
+                "runner",
+                "scope_name",
+                "solo_place",
+                "solo_field_size",
+                "solo_tie_size",
+                "percentile",
+                "result_value",
+                "wr_value",
+                "comparison_direction",
+                "timer",
+                "wr_gap_pct",
+                "near_wr_people",
+                "leader_top10_gap_pct",
+                "completion_median_seconds",
+                "run_url",
+            ],
+            "best_rank",
+        ),
+    ):
+        item = list(table(key, title, columns, (order, True)))
+        item[2] = "runner_ranking"
+        item[4]["row_limit"] = 100
+        item[4]["column_config"].update(
+            {
+                c: {"d3NumberFormat": ",.3f"}
+                for c in columns
+                if c
+                in {
+                    "result_points",
+                    "portfolio_points",
+                    "percentile",
+                    "result_value",
+                    "wr_value",
+                }
+            }
+        )
+        result.append(tuple(item))
+    result.append(
+        table(
+            "ranking_coverage",
+            "Охват аналитического среза",
+            [
+                "archive_people",
+                "ranked_people",
+                "people_without_solo_pb",
+                "people_below_minimum",
+            ],
+        )
+    )
+    return result
 
 
 DASHBOARDS = {
@@ -689,9 +816,20 @@ DASHBOARDS = {
         ],
     ),
     "countries": ("Страны", ["medals", "medal_bars", "unknown_medals"]),
+    "ranking": (
+        "Рейтинг раннеров",
+        [
+            "ranking_portfolio",
+            "ranking_best",
+            "ranking_medals",
+            "ranking_evidence",
+            "ranking_coverage",
+        ],
+    ),
 }
 
 NOTES = {
+    "ranking": "Исследовательский рейтинг текущих сольных PB в архиве. Баллы = 100 × (обойдённые + половина соперников с равным результатом) / (N − 1 + 20); поправка 20 — выбранная политика, рядом места при 5 и 50. Универсальность: сумма лучших результатов максимум в десяти разных играх (0–1000). Расчётные медали используют RANK с ничьими внутри сольного поля; больше подкатегорий может давать больше медалей. Платформенные копии исключены. Размер поля, длительность и плотность не доказывают трудность игры; длительность и плотность не дают скрытых бонусов. В категориях «больше лучше» таймер может кодировать очки. Поиск раннера сохраняет глобальные места; смена минимального поля пересчитывает их. На таблицу выводятся первые 100 строк; остальные доступны через фильтр раннера. Охват относится к завершённым цепочкам текущей витрины, а не ко всем профилям ODS или всему сайту.",
     "runner": "Архивный срез, не текущий сайт. Время в секундах. Цели рассчитаны по всему сопоставимому полю до выбора раннера. Линия PB относится к опубликованным успешным ранам. Когорты: календарные дни, минимум 30 наблюдений; пустая оценка означает недостаточно данных. Рекомендации — наблюдаемые переходы, не доказательство переноса навыка. Профиль: средний лучший перцентиль по игре. Паутинка строится только при наличии всех 6 осей; иначе смотрите таблицу оценок рядом — неизвестные значения не равны нулю. Соперники: минимум 5 публикаций за выбранное окно, максимум 10 на человека.",
     "records": "История реконструирована по ранам, верифицированным в архивном срезе. Одновременные результаты обработаны вместе. Предполагаемый скип или баг требует датированного внешнего подтверждения. В таблице плато отдельно показаны участники до, в день и после WR. Разбор видео показывает крупнейший скачок выбранной категории. Активность измеряется относительно даты среза.",
     "countries": "Медали: источник подтверждает места 1–3, один run × страна; международная команда даёт вклад каждой стране. Итог упорядочен по золоту, серебру, бронзе. Баллы G×B²+S×B+Br, B=1+max(S,Br) в выбранном поле. Фильтры игры и категории пересчитывают зачёт, фильтр страны только выбирает строку после расчёта. Неизвестная страна вынесена отдельно.",

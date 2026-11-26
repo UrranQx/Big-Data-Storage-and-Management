@@ -1,0 +1,341 @@
+{
+  "checked_at": "2026-11-26T22:41:01.197236+00:00",
+  "policy": {
+    "minimum_field_size": 10,
+    "shrinkage": 20,
+    "max_games": 10
+  },
+  "summary": [
+    {
+      "build_id": "cef0cb6d0c3ec3fa535d95228cd8f1960028ec5c0759e5f124fe4b0111306e0d",
+      "as_of": "2026-10-30 21:28:36.387757+00:00",
+      "archive_people": 226943,
+      "ranked_people": 135022,
+      "without_solo": 89763,
+      "below_minimum": 2158
+    }
+  ],
+  "top_universal": [
+    {
+      "portfolio_rank": 1,
+      "player_name": "Zennan",
+      "holder_id": "qj2lgw7x",
+      "portfolio_points": "888.590918552880442232022",
+      "eligible_games": 17,
+      "portfolio_games": "There Is No Game [97.04]; Red Ball [93.07]; Refunct [92.49]; Wii Sports Resort [91.96]; Super Mario Odyssey [90.87]; Super Mario 3D World + Bowser's Fury [89.20]; Pizza Tower [85.77]; CELESTE Classic [83.82]; Super Mario World [82.88]; Super Mario 64 [81.50]",
+      "best_rank": 1555,
+      "result_points": "97.035692679975801572898"
+    },
+    {
+      "portfolio_rank": 2,
+      "player_name": "FireGoesFast",
+      "holder_id": "qjo1ovnx",
+      "portfolio_points": "834.450792946816508632540",
+      "eligible_games": 11,
+      "portfolio_games": "Refunct [98.03]; Super Mario 64 [95.67]; SpongeBob SquarePants: Battle for Bikini Bottom [90.92]; Portal [90.02]; Super Mario Galaxy 2 [87.33]; Super Mario Sunshine [81.35]; Super Mario Galaxy [80.56]; Portal 2 [80.33]; Super Mario Odyssey [73.67]; Spyro the Dragon [56.56]",
+      "best_rank": 758,
+      "result_points": "98.032200357781753130590"
+    },
+    {
+      "portfolio_rank": 3,
+      "player_name": "Zangoose",
+      "holder_id": "j921k2w8",
+      "portfolio_points": "816.500400380970858828173",
+      "eligible_games": 16,
+      "portfolio_games": "Minecraft (Classic) [97.31]; ROBLOX: Speed Run 4 [94.72]; Google Minesweeper [94.43]; Roblox: DOORS [94.01]; Bhop pro [90.36]; Crossy Road [89.80]; Find the Markers [69.00]; Karlson (Itch.io) [64.18]; Roblox: Grace [63.53]; Hypixel BedWars [59.16]",
+      "best_rank": 1321,
+      "result_points": "97.314890154597233523190"
+    },
+    {
+      "portfolio_rank": 4,
+      "player_name": "Odme",
+      "holder_id": "qjor2nj6",
+      "portfolio_points": "816.021205785909204167700",
+      "eligible_games": 15,
+      "portfolio_games": "Super Mario Odyssey [97.77]; Super Mario 64 [95.89]; Super Mario Sunshine [93.92]; Super Mario Galaxy [93.20]; Super Mario Galaxy 2 [91.71]; Super Mario 3D World + Bowser's Fury [88.99]; Sonic Adventure DX: Director's Cut [71.43]; Super Mario World [64.35]; Mario Kart 8 Deluxe [59.43]; Celeste [59.33]",
+      "best_rank": 937,
+      "result_points": "97.774687065368567454798"
+    },
+    {
+      "portfolio_rank": 5,
+      "player_name": "smythe",
+      "holder_id": "qxknn77x",
+      "portfolio_points": "808.959563906532037498762",
+      "eligible_games": 10,
+      "portfolio_games": "Refunct [98.81]; There Is No Game [96.85]; Super Mario Bros. [95.88]; Portal [88.44]; Super Mario Bros. 3 [87.85]; The Legend of Zelda: A Link to the Past [85.68]; Cuphead [72.12]; Getting Over It With Bennett Foddy [69.84]; Super Mario 64 [62.56]; Terraria [50.94]",
+      "best_rank": 299,
+      "result_points": "98.807394156231365533691"
+    },
+    {
+      "portfolio_rank": 6,
+      "player_name": "KingJO444",
+      "holder_id": "dx3w7r7j",
+      "portfolio_points": "806.052732411844967170483",
+      "eligible_games": 18,
+      "portfolio_games": "Celeste [89.75]; Super Mario Odyssey [86.34]; Super Mario 64 [84.97]; Super Mario 3D World + Bowser's Fury [83.93]; Mario Kart 8 Deluxe [82.58]; Super Mario Galaxy [81.65]; Super Mario Galaxy 2 [77.55]; Refunct [75.76]; There Is No Game [73.44]; Super Mario Sunshine [70.09]",
+      "best_rank": 8969,
+      "result_points": "89.745042492917847025496"
+    },
+    {
+      "portfolio_rank": 7,
+      "player_name": "Tymondo",
+      "holder_id": "8qzy5ld8",
+      "portfolio_points": "802.723036987083781717796",
+      "eligible_games": 11,
+      "portfolio_games": "Super Mario Odyssey [96.35]; Super Mario World [93.20]; Super Mario 64 [89.56]; Super Mario Sunshine [82.30]; Super Mario Galaxy [82.02]; Super Mario Galaxy 2 [81.57]; Super Mario 3D World + Bowser's Fury [75.00]; Mario Kart 8 Deluxe [74.82]; The Legend of Zelda: A Link to the Past [65.68]; Super Mario Bros. [62.22]",
+      "best_rank": 2140,
+      "result_points": "96.35406318299225114"
+    },
+    {
+      "portfolio_rank": 8,
+      "player_name": "ThinkLater",
+      "holder_id": "8e9pwlpj",
+      "portfolio_points": "778.814910078837175163954",
+      "eligible_games": 11,
+      "portfolio_games": "Minecraft (Classic) [98.13]; Crossy Road [96.33]; ROBLOX: Speed Run 4 [90.97]; Minecraft: Java Edition [90.18]; Pou [83.01]; Geometry Dash [77.04]; Jump King [75.69]; Refunct [59.48]; Cuphead [58.08]; Getting Over It With Bennett Foddy [49.90]",
+      "best_rank": 694,
+      "result_points": "98.128559804719283970708"
+    },
+    {
+      "portfolio_rank": 9,
+      "player_name": "Mario104",
+      "holder_id": "j52myw6j",
+      "portfolio_points": "749.507392593136504559724",
+      "eligible_games": 12,
+      "portfolio_games": "Super Mario 64 [96.52]; Super Mario Bros. [93.88]; Super Mario Odyssey [93.67]; Super Mario Bros. 3 [82.25]; Super Mario Galaxy [79.26]; Super Mario World [69.91]; New Super Mario Bros. [69.72]; Super Mario Galaxy 2 [68.66]; New Super Mario Bros. U Deluxe [53.39]; Super Mario 64 DS [42.24]",
+      "best_rank": 2006,
+      "result_points": "96.51602627911606610"
+    },
+    {
+      "portfolio_rank": 10,
+      "player_name": "mrlink2k",
+      "holder_id": "qj2ol5px",
+      "portfolio_points": "746.485141066356103357368",
+      "eligible_games": 9,
+      "portfolio_games": "Celeste [98.30]; Refunct [96.00]; Undertale [95.96]; Super Mario 64 [95.34]; CELESTE Classic [90.41]; Super Mario Odyssey [87.19]; Super Mario Bros. [80.58]; Super Meat Boy [78.42]; Portal [24.27]",
+      "best_rank": 583,
+      "result_points": "98.300283286118980169972"
+    },
+    {
+      "portfolio_rank": 11,
+      "player_name": "dusk",
+      "holder_id": "98rv0dqj",
+      "portfolio_points": "739.930147804594978924501",
+      "eligible_games": 11,
+      "portfolio_games": "ROBLOX: Speed Run 4 [98.63]; Seterra (Old Version) [94.28]; Crossy Road [83.18]; Roblox: DOORS [79.94]; Mario Kart 8 Deluxe [77.59]; There Is No Game [72.00]; Minecraft (Classic) [65.87]; White Tiles 4: Piano Master 2 [61.40]; Roblox: Grace [57.87]; Dadish [49.18]",
+      "best_rank": 395,
+      "result_points": "98.625858838226108682074"
+    },
+    {
+      "portfolio_rank": 12,
+      "player_name": "MELLSTROY_GAME",
+      "holder_id": "j26g4pnx",
+      "portfolio_points": "738.267042724057440211105",
+      "eligible_games": 14,
+      "portfolio_games": "Seterra (Old Version) [98.13]; Poppy Playtime: Chapter 1 [97.11]; Outlast [94.40]; Seterra (Geoguessr Version) [92.68]; ROBLOX: Speed Run 4 [88.84]; Roblox: DOORS [85.83]; Minecraft (Classic) [77.79]; Crossy Road [65.08]; Brawl Stars [22.37]; Hypixel BedWars [16.04]",
+      "best_rank": 686,
+      "result_points": "98.13084112149532710"
+    },
+    {
+      "portfolio_rank": 13,
+      "player_name": "Sailo",
+      "holder_id": "18v3pdyx",
+      "portfolio_points": "731.474612907475405544642",
+      "eligible_games": 10,
+      "portfolio_games": "Super Mario Odyssey [96.69]; Super Mario Galaxy [81.82]; Super Mario Galaxy 2 [78.80]; Super Mario Sunshine [77.17]; Mario Kart 8 Deluxe [75.33]; Super Mario 64 [74.83]; Super Mario 3D World + Bowser's Fury [72.92]; Celeste [64.28]; Minecraft: Java Edition [55.10]; The Legend of Zelda: Breath of the Wild [54.53]",
+      "best_rank": 1856,
+      "result_points": "96.691833896284522153785"
+    },
+    {
+      "portfolio_rank": 14,
+      "player_name": "Samura1man",
+      "holder_id": "dkjplk8q",
+      "portfolio_points": "725.675606406535622986297",
+      "eligible_games": 13,
+      "portfolio_games": "Super Mario Sunshine [96.94]; Metroid Dread [90.96]; Super Mario Odyssey [89.09]; Super Mario 3D World + Bowser's Fury [81.75]; Super Mario 64 [76.39]; Super Mario Galaxy [74.45]; A Hat in Time [73.10]; The Legend of Zelda: Ocarina of Time [58.27]; Super Metroid [42.46]; Nintendo World Championships: NES Edition [42.25]",
+      "best_rank": 1628,
+      "result_points": "96.944621260343730108211"
+    },
+    {
+      "portfolio_rank": 15,
+      "player_name": "Nanase",
+      "holder_id": "qj275v68",
+      "portfolio_points": "725.214252965109220119321",
+      "eligible_games": 9,
+      "portfolio_games": "Super Mario Galaxy [96.97]; Super Mario World [95.39]; Super Mario 64 [88.33]; Super Mario Bros. 3 [87.01]; New Super Mario Bros. [83.18]; Super Mario 3D World + Bowser's Fury [77.38]; New Super Mario Bros. U Deluxe [72.34]; Super Mario Bros. [63.13]; Super Mario 64 DS [61.49]",
+      "best_rank": 1610,
+      "result_points": "96.965317919075144508671"
+    },
+    {
+      "portfolio_rank": 16,
+      "player_name": "Pacasa02",
+      "holder_id": "8d3324gx",
+      "portfolio_points": "724.191725510371797454287",
+      "eligible_games": 12,
+      "portfolio_games": "Super Mario Odyssey [93.39]; Super Mario Galaxy [86.42]; Super Mario 3D World + Bowser's Fury [85.86]; New Super Mario Bros. [80.12]; Super Mario 64 [75.36]; Super Mario Sunshine [70.55]; Mario Kart 8 Deluxe [63.26]; Super Mario Bros. 3 [61.86]; Super Mario Bros. [54.38]; Super Mario Galaxy 2 [52.99]",
+      "best_rank": 5053,
+      "result_points": "93.393602225312934631433"
+    },
+    {
+      "portfolio_rank": 17,
+      "player_name": "Vallu",
+      "holder_id": "qjo2r086",
+      "portfolio_points": "721.598283941226516915897",
+      "eligible_games": 9,
+      "portfolio_games": "Super Mario Galaxy [95.23]; Super Mario 3D World + Bowser's Fury [93.83]; Super Mario Sunshine [93.67]; Super Mario Galaxy 2 [93.32]; Celeste [91.78]; Super Mario Odyssey [90.78]; Splatoon 2 [78.68]; Super Mario 64 [73.11]; The Legend of Zelda: Breath of the Wild [11.20]",
+      "best_rank": 3174,
+      "result_points": "95.231213872832369942197"
+    },
+    {
+      "portfolio_rank": 18,
+      "player_name": "nerdgaming68",
+      "holder_id": "u-6487e1fc-ac9a-546c-8459-33fb63c9129f",
+      "portfolio_points": "718.116971618304803633578",
+      "eligible_games": 13,
+      "portfolio_games": "ROBLOX: Speed Run 4 [99.14]; There Is No Game [97.58]; Minecraft (Classic) [95.73]; Portal [91.66]; Celeste [91.01]; Super Meat Boy [73.18]; Seterra (Geoguessr Version) [53.08]; Red Ball [49.45]; OvO [33.96]; White Tiles 4: Piano Master 2 [33.33]",
+      "best_rank": 169,
+      "result_points": "99.135956693733083489486"
+    },
+    {
+      "portfolio_rank": 19,
+      "player_name": "Source",
+      "holder_id": "98r5noqx",
+      "portfolio_points": "709.214747882466060746491",
+      "eligible_games": 12,
+      "portfolio_games": "Super Mario Odyssey [95.57]; Metroid Dread [85.74]; Celeste [79.09]; Super Mario Galaxy 2 [74.42]; Super Mario Sunshine [71.67]; Super Mario 3D World + Bowser's Fury [68.15]; Portal 2 [60.96]; Neon White [58.10]; Minecraft: Java Edition [57.82]; Super Mario Galaxy [57.68]",
+      "best_rank": 2870,
+      "result_points": "95.569242996224915557322"
+    },
+    {
+      "portfolio_rank": 20,
+      "player_name": "PlayerGameSK",
+      "holder_id": "qj2m9kn8",
+      "portfolio_points": "708.832604287478885295967",
+      "eligible_games": 12,
+      "portfolio_games": "SpongeBob SquarePants: Battle for Bikini Bottom [91.75]; Super Mario 64 [85.17]; Super Mario Galaxy 2 [83.18]; Super Mario Galaxy [80.35]; The Simpsons: Hit & Run [73.30]; Super Mario Odyssey [67.68]; Super Meat Boy [59.90]; Spyro the Dragon [58.23]; Super Mario Sunshine [57.92]; Crash Bandicoot: N. Sane Trilogy [51.35]",
+      "best_rank": 6749,
+      "result_points": "91.749174917491749174917"
+    }
+  ],
+  "top_specialists": [
+    {
+      "best_rank": 1,
+      "player_name": "secureaccount",
+      "result_points": "99.716713881019830028329",
+      "game_name": "Celeste",
+      "solo_place": 1,
+      "solo_field_size": 7041,
+      "wr_gap_pct": "0E-20",
+      "rank_k5": 1,
+      "rank_k50": 1
+    },
+    {
+      "best_rank": 2,
+      "player_name": "skycrab1",
+      "result_points": "99.704622655442327573475",
+      "game_name": "Minecraft: Java Edition",
+      "solo_place": 1,
+      "solo_field_size": 6752,
+      "wr_gap_pct": "0E-20",
+      "rank_k5": 2,
+      "rank_k50": 4
+    },
+    {
+      "best_rank": 3,
+      "player_name": "Lyreins",
+      "result_points": "99.702549575070821529745",
+      "game_name": "Celeste",
+      "solo_place": 2,
+      "solo_field_size": 7041,
+      "wr_gap_pct": "1.32991214103254333",
+      "rank_k5": 3,
+      "rank_k50": 2
+    },
+    {
+      "best_rank": 4,
+      "player_name": "lowkey",
+      "result_points": "99.689853788214443952149",
+      "game_name": "Minecraft: Java Edition",
+      "solo_place": 2,
+      "solo_field_size": 6752,
+      "wr_gap_pct": "2.63773314024306363",
+      "rank_k5": 4,
+      "rank_k50": 6
+    },
+    {
+      "best_rank": 5,
+      "player_name": "Isaactayy",
+      "result_points": "99.688385269121813031161",
+      "game_name": "Celeste",
+      "solo_place": 3,
+      "solo_field_size": 7041,
+      "wr_gap_pct": "3.40782826836504427",
+      "rank_k5": 5,
+      "rank_k50": 3
+    },
+    {
+      "best_rank": 6,
+      "player_name": "Jay12310",
+      "result_points": "99.675084920986560330823",
+      "game_name": "Minecraft: Java Edition",
+      "solo_place": 3,
+      "solo_field_size": 6752,
+      "wr_gap_pct": "4.23147821606601086",
+      "rank_k5": 8,
+      "rank_k50": 8
+    },
+    {
+      "best_rank": 7,
+      "player_name": "Verdal",
+      "result_points": "99.674220963172804532578",
+      "game_name": "Celeste",
+      "solo_place": 4,
+      "solo_field_size": 7041,
+      "wr_gap_pct": "3.65983573695002234",
+      "rank_k5": 10,
+      "rank_k50": 5
+    },
+    {
+      "best_rank": 8,
+      "player_name": "drip120",
+      "result_points": "99.660316053758676709496",
+      "game_name": "Minecraft: Java Edition",
+      "solo_place": 4,
+      "solo_field_size": 6752,
+      "wr_gap_pct": "5.42278515205858739",
+      "rank_k5": 12,
+      "rank_k50": 10
+    },
+    {
+      "best_rank": 9,
+      "player_name": "Kezaron",
+      "result_points": "99.660056657223796033994",
+      "game_name": "Celeste",
+      "solo_place": 5,
+      "solo_field_size": 7041,
+      "wr_gap_pct": "3.81791314906241767",
+      "rank_k5": 16,
+      "rank_k50": 7
+    },
+    {
+      "best_rank": 10,
+      "player_name": "zVypurr",
+      "result_points": "99.645892351274787535411",
+      "game_name": "Celeste",
+      "solo_place": 6,
+      "solo_field_size": 7041,
+      "wr_gap_pct": "3.91184320553500040",
+      "rank_k5": 21,
+      "rank_k50": 9
+    }
+  ],
+  "validation": [
+    {
+      "invalid_scores": 0,
+      "invalid_places": 0,
+      "invalid_coverage": 0,
+      "duplicate_people": 0
+    }
+  ],
+  "query_seconds": 7.895
+}

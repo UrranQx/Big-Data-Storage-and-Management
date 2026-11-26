@@ -8,6 +8,7 @@ RUN pip install --no-cache-dir --no-build-isolation "apache-airflow==3.3.2" "apa
 COPY --chown=airflow:root sql /opt/project/sql
 COPY --chown=airflow:root tests /opt/project/tests
 COPY --chown=airflow:root infra/*.py /opt/project/infra/
+COPY --chown=airflow:root infra/runner_ranking.sql /opt/project/infra/runner_ranking.sql
 COPY --chown=airflow:root infra/init.py /opt/project/init.py
 COPY --chown=airflow:root infra/maintenance.py infra/scheduler.sh /opt/project/
 COPY --chown=airflow:root dags /opt/airflow/dags

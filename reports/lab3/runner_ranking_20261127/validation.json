@@ -1,0 +1,341 @@
+{
+  "checked_at": "2026-11-26T22:24:10.353134+00:00",
+  "policy": {
+    "minimum_field_size": 10,
+    "shrinkage": 20,
+    "max_games": 3
+  },
+  "summary": [
+    {
+      "build_id": "cef0cb6d0c3ec3fa535d95228cd8f1960028ec5c0759e5f124fe4b0111306e0d",
+      "as_of": "2026-10-30 21:28:36.387757+00:00",
+      "archive_people": 226943,
+      "ranked_people": 135022,
+      "without_solo": 89763,
+      "below_minimum": 2158
+    }
+  ],
+  "top_universal": [
+    {
+      "portfolio_rank": 1,
+      "player_name": "helyon",
+      "holder_id": "8gr50p7x",
+      "portfolio_points": "295.601295701814273056085",
+      "eligible_games": 4,
+      "portfolio_games": "ROBLOX: Speed Run 4 [99.17]; Portal [98.46]; Refunct [97.97]",
+      "best_rank": 158,
+      "result_points": "99.167187174682490110348"
+    },
+    {
+      "portfolio_rank": 2,
+      "player_name": "Msushi",
+      "holder_id": "68wl4ovj",
+      "portfolio_points": "295.416662300902937201838",
+      "eligible_games": 9,
+      "portfolio_games": "Celeste [98.80]; Portal [98.36]; Portal 2 [98.26]",
+      "best_rank": 307,
+      "result_points": "98.796033994334277620397"
+    },
+    {
+      "portfolio_rank": 3,
+      "player_name": "undeadgirl",
+      "holder_id": "8v5m1wvj",
+      "portfolio_points": "294.767815605403200018198",
+      "eligible_games": 6,
+      "portfolio_games": "ROBLOX: Speed Run 4 [99.21]; Roblox: DOORS [97.86]; There Is No Game [97.70]",
+      "best_rank": 144,
+      "result_points": "99.208827815948365604830"
+    },
+    {
+      "portfolio_rank": 4,
+      "player_name": "TheFirstOreo",
+      "holder_id": "98rk9z6x",
+      "portfolio_points": "293.805803960950305986442",
+      "eligible_games": 3,
+      "portfolio_games": "There Is No Game [98.31]; Getting Over It With Bennett Foddy [98.18]; Refunct [97.32]",
+      "best_rank": 578,
+      "result_points": "98.306110102843315184513"
+    },
+    {
+      "portfolio_rank": 5,
+      "player_name": "sladke",
+      "holder_id": "zx7m40qx",
+      "portfolio_points": "293.719899934070910358273",
+      "eligible_games": 4,
+      "portfolio_games": "There Is No Game [98.73]; Refunct [98.42]; Getting Over It With Bennett Foddy [96.57]",
+      "best_rank": 337,
+      "result_points": "98.729582577132486388385"
+    },
+    {
+      "portfolio_rank": 6,
+      "player_name": "Lathil",
+      "holder_id": "o86rz3p8",
+      "portfolio_points": "292.911970627246956381823",
+      "eligible_games": 4,
+      "portfolio_games": "Minecraft: Java Edition [98.61]; Refunct [98.51]; Portal 2 [95.79]",
+      "best_rank": 400,
+      "result_points": "98.611726480578939595333"
+    },
+    {
+      "portfolio_rank": 7,
+      "player_name": "Majoog",
+      "holder_id": "18qowewj",
+      "portfolio_points": "292.613092760878950074374",
+      "eligible_games": 8,
+      "portfolio_games": "Celeste [99.19]; Super Mario 64 [98.23]; Undertale [95.19]",
+      "best_rank": 150,
+      "result_points": "99.192634560906515580737"
+    },
+    {
+      "portfolio_rank": 8,
+      "player_name": "nerdgaming68",
+      "holder_id": "u-6487e1fc-ac9a-546c-8459-33fb63c9129f",
+      "portfolio_points": "292.444348320368483188790",
+      "eligible_games": 13,
+      "portfolio_games": "ROBLOX: Speed Run 4 [99.14]; There Is No Game [97.58]; Minecraft (Classic) [95.73]",
+      "best_rank": 169,
+      "result_points": "99.135956693733083489486"
+    },
+    {
+      "portfolio_rank": 9,
+      "player_name": "896roblox",
+      "holder_id": "8q3myzdj",
+      "portfolio_points": "292.392771215995111237504",
+      "eligible_games": 7,
+      "portfolio_games": "ROBLOX: Speed Run 4 [99.04]; Roblox: DOORS [98.20]; Seterra (Old Version) [95.15]",
+      "best_rank": 203,
+      "result_points": "99.042265250884863626900"
+    },
+    {
+      "portfolio_rank": 10,
+      "player_name": "Niftski",
+      "holder_id": "qjne76wj",
+      "portfolio_points": "292.137236088618391764394",
+      "eligible_games": 3,
+      "portfolio_games": "Super Mario Bros. [98.98]; Red Ball [98.06]; Super Mario Bros. 3 [95.11]",
+      "best_rank": 229,
+      "result_points": "98.975409836065573770492"
+    },
+    {
+      "portfolio_rank": 11,
+      "player_name": "Weegee",
+      "holder_id": "kjprmwk8",
+      "portfolio_points": "291.932684810565981297961",
+      "eligible_games": 8,
+      "portfolio_games": "Super Mario 64 [99.06]; Super Mario Sunshine [97.64]; Refunct [95.23]",
+      "best_rank": 197,
+      "result_points": "99.058295964125560538117"
+    },
+    {
+      "portfolio_rank": 12,
+      "player_name": "smythe",
+      "holder_id": "qxknn77x",
+      "portfolio_points": "291.537623223104313874017",
+      "eligible_games": 10,
+      "portfolio_games": "Refunct [98.81]; There Is No Game [96.85]; Super Mario Bros. [95.88]",
+      "best_rank": 299,
+      "result_points": "98.807394156231365533691"
+    },
+    {
+      "portfolio_rank": 13,
+      "player_name": "Maximum",
+      "holder_id": "qjo9k3j6",
+      "portfolio_points": "291.044808347495381212908",
+      "eligible_games": 5,
+      "portfolio_games": "Minecraft (Classic) [98.29]; Red Ball [97.21]; Super Mario Bros. [95.54]",
+      "best_rank": 587,
+      "result_points": "98.291293734743694060212"
+    },
+    {
+      "portfolio_rank": 14,
+      "player_name": "orzy",
+      "holder_id": "8g5ronrj",
+      "portfolio_points": "290.748836333209018973842",
+      "eligible_games": 3,
+      "portfolio_games": "Getting Over It With Bennett Foddy [99.43]; Roblox: Grace [95.86]; Minecraft: Java Edition [95.46]",
+      "best_rank": 72,
+      "result_points": "99.432205314558255734726"
+    },
+    {
+      "portfolio_rank": 15,
+      "player_name": "Mackan",
+      "holder_id": "18vvw4y8",
+      "portfolio_points": "290.652935404490216472079",
+      "eligible_games": 5,
+      "portfolio_games": "Seterra (Old Version) [98.60]; Getting Over It With Bennett Foddy [96.05]; Seterra (Geoguessr Version) [96.01]",
+      "best_rank": 410,
+      "result_points": "98.598130841121495327103"
+    },
+    {
+      "portfolio_rank": 16,
+      "player_name": "eddiecatgaming",
+      "holder_id": "o863w4w8",
+      "portfolio_points": "290.282515892138181550946",
+      "eligible_games": 6,
+      "portfolio_games": "Super Mario Bros. [98.51]; Super Mario World [96.66]; Super Mario 64 [95.11]",
+      "best_rank": 457,
+      "result_points": "98.514344262295081967213"
+    },
+    {
+      "portfolio_rank": 17,
+      "player_name": "mrlink2k",
+      "holder_id": "qj2ol5px",
+      "portfolio_points": "290.269965990195809093802",
+      "eligible_games": 9,
+      "portfolio_games": "Celeste [98.30]; Refunct [96.00]; Undertale [95.96]",
+      "best_rank": 583,
+      "result_points": "98.300283286118980169972"
+    },
+    {
+      "portfolio_rank": 18,
+      "player_name": "Lui",
+      "holder_id": "7j4q22dx",
+      "portfolio_points": "290.184881266248778344303",
+      "eligible_games": 4,
+      "portfolio_games": "Super Mario World [98.21]; The Legend of Zelda: A Link to the Past [96.20]; Super Mario Bros. 3 [95.77]",
+      "best_rank": 634,
+      "result_points": "98.213256484149855907781"
+    },
+    {
+      "portfolio_rank": 19,
+      "player_name": "MELLSTROY_GAME",
+      "holder_id": "j26g4pnx",
+      "portfolio_points": "289.638665168058688925966",
+      "eligible_games": 14,
+      "portfolio_games": "Seterra (Old Version) [98.13]; Poppy Playtime: Chapter 1 [97.11]; Outlast [94.40]",
+      "best_rank": 686,
+      "result_points": "98.13084112149532710"
+    },
+    {
+      "portfolio_rank": 20,
+      "player_name": "Miniland",
+      "holder_id": "0jm4z3nj",
+      "portfolio_points": "289.325857356439232109093",
+      "eligible_games": 5,
+      "portfolio_games": "Super Mario Bros. [98.72]; Red Ball [97.30]; Super Mario Bros. 3 [93.31]",
+      "best_rank": 345,
+      "result_points": "98.719262295081967213115"
+    }
+  ],
+  "top_specialists": [
+    {
+      "best_rank": 1,
+      "player_name": "secureaccount",
+      "result_points": "99.716713881019830028329",
+      "game_name": "Celeste",
+      "solo_place": 1,
+      "solo_field_size": 7041,
+      "wr_gap_pct": "0E-20",
+      "rank_k5": 1,
+      "rank_k50": 1
+    },
+    {
+      "best_rank": 2,
+      "player_name": "skycrab1",
+      "result_points": "99.704622655442327573475",
+      "game_name": "Minecraft: Java Edition",
+      "solo_place": 1,
+      "solo_field_size": 6752,
+      "wr_gap_pct": "0E-20",
+      "rank_k5": 2,
+      "rank_k50": 4
+    },
+    {
+      "best_rank": 3,
+      "player_name": "Lyreins",
+      "result_points": "99.702549575070821529745",
+      "game_name": "Celeste",
+      "solo_place": 2,
+      "solo_field_size": 7041,
+      "wr_gap_pct": "1.32991214103254333",
+      "rank_k5": 3,
+      "rank_k50": 2
+    },
+    {
+      "best_rank": 4,
+      "player_name": "lowkey",
+      "result_points": "99.689853788214443952149",
+      "game_name": "Minecraft: Java Edition",
+      "solo_place": 2,
+      "solo_field_size": 6752,
+      "wr_gap_pct": "2.63773314024306363",
+      "rank_k5": 4,
+      "rank_k50": 6
+    },
+    {
+      "best_rank": 5,
+      "player_name": "Isaactayy",
+      "result_points": "99.688385269121813031161",
+      "game_name": "Celeste",
+      "solo_place": 3,
+      "solo_field_size": 7041,
+      "wr_gap_pct": "3.40782826836504427",
+      "rank_k5": 5,
+      "rank_k50": 3
+    },
+    {
+      "best_rank": 6,
+      "player_name": "Jay12310",
+      "result_points": "99.675084920986560330823",
+      "game_name": "Minecraft: Java Edition",
+      "solo_place": 3,
+      "solo_field_size": 6752,
+      "wr_gap_pct": "4.23147821606601086",
+      "rank_k5": 8,
+      "rank_k50": 8
+    },
+    {
+      "best_rank": 7,
+      "player_name": "Verdal",
+      "result_points": "99.674220963172804532578",
+      "game_name": "Celeste",
+      "solo_place": 4,
+      "solo_field_size": 7041,
+      "wr_gap_pct": "3.65983573695002234",
+      "rank_k5": 10,
+      "rank_k50": 5
+    },
+    {
+      "best_rank": 8,
+      "player_name": "drip120",
+      "result_points": "99.660316053758676709496",
+      "game_name": "Minecraft: Java Edition",
+      "solo_place": 4,
+      "solo_field_size": 6752,
+      "wr_gap_pct": "5.42278515205858739",
+      "rank_k5": 12,
+      "rank_k50": 10
+    },
+    {
+      "best_rank": 9,
+      "player_name": "Kezaron",
+      "result_points": "99.660056657223796033994",
+      "game_name": "Celeste",
+      "solo_place": 5,
+      "solo_field_size": 7041,
+      "wr_gap_pct": "3.81791314906241767",
+      "rank_k5": 16,
+      "rank_k50": 7
+    },
+    {
+      "best_rank": 10,
+      "player_name": "zVypurr",
+      "result_points": "99.645892351274787535411",
+      "game_name": "Celeste",
+      "solo_place": 6,
+      "solo_field_size": 7041,
+      "wr_gap_pct": "3.91184320553500040",
+      "rank_k5": 21,
+      "rank_k50": 9
+    }
+  ],
+  "validation": [
+    {
+      "invalid_scores": 0,
+      "invalid_places": 0,
+      "invalid_coverage": 0,
+      "duplicate_people": 0
+    }
+  ],
+  "query_seconds": 7.487
+}

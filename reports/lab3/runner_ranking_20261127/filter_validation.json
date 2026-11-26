@@ -1,0 +1,30 @@
+{
+  "runner_preserves_global_rank": [
+    {
+      "portfolio_rank": 10,
+      "runner": "Niftski [qjne76wj]",
+      "portfolio_points": 292.1372360886184,
+      "eligible_games": 3,
+      "portfolio_games": "Super Mario Bros. [98.98]; Red Ball [98.06]; Super Mario Bros. 3 [95.11]",
+      "ranking_status": "Ранжирован"
+    }
+  ],
+  "minimum_field_recalculates_population": {
+    "default": [
+      {
+        "archive_people": 226943,
+        "ranked_people": 135022,
+        "people_without_solo_pb": 89763,
+        "people_below_minimum": 2158
+      }
+    ],
+    "minimum_100": [
+      {
+        "archive_people": 226943,
+        "ranked_people": 117589,
+        "people_without_solo_pb": 89763,
+        "people_below_minimum": 19591
+      }
+    ]
+  }
+}
