@@ -1,0 +1,30 @@
+{
+  "runner_preserves_global_rank": [
+    {
+      "portfolio_rank": 10,
+      "runner": "mrlink2k [qj2ol5px]",
+      "portfolio_points": 746.485141066356,
+      "eligible_games": 9,
+      "portfolio_games": "Celeste [98.30]; Refunct [96.00]; Undertale [95.96]; Super Mario 64 [95.34]; CELESTE Classic [90.41]; Super Mario Odyssey [87.19]; Super Mario Bros. [80.58]; Super Meat Boy [78.42]; Portal [24.27]",
+      "ranking_status": "Ранжирован"
+    }
+  ],
+  "minimum_field_recalculates_population": {
+    "default": [
+      {
+        "archive_people": 226943,
+        "ranked_people": 135022,
+        "people_without_solo_pb": 89763,
+        "people_below_minimum": 2158
+      }
+    ],
+    "minimum_100": [
+      {
+        "archive_people": 226943,
+        "ranked_people": 117589,
+        "people_without_solo_pb": 89763,
+        "people_below_minimum": 19591
+      }
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "full_database_restore_performed": false,
+  "production_services_stopped": false,
+  "tar_probe": {
+    "content_matches": true,
+    "uid": 50000,
+    "gid": 0,
+    "mode": "0640",
+    "temporary_probe_volumes_removed": true
+  },
+  "powershell_blocks_parsed": 8,
+  "powershell_syntax_errors": 0,
+  "compose_override_services": 11,
+  "compose_destination_project": "speedrun-lab3-colleague",
+  "compose_volume_names_isolated": true,
+  "source_architecture": "linux/x86_64",
+  "source_volume_sizes_du": [
+    "postgres:24G",
+    "state:5.0G",
+    "logs:61M",
+    "search:14M"
+  ]
+}
