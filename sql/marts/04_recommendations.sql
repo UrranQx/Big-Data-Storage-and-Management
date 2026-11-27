@@ -9,18 +9,6 @@ GROUP BY f.holder_id,s.game_id;
 CREATE UNIQUE INDEX ON game_portfolio (holder_id,game_id);
 CREATE INDEX ON game_portfolio (game_id,first_at);
 
-CREATE TABLE game_similarity AS
-WITH sizes AS (
-    SELECT game_id,count(*) AS people FROM game_portfolio GROUP BY game_id
-), shared AS (
-    SELECT a.game_id AS source_game,b.game_id AS destination_game,count(*) AS shared_people
-    FROM game_portfolio a JOIN game_portfolio b ON b.holder_id=a.holder_id AND a.game_id<b.game_id
-    GROUP BY a.game_id,b.game_id
-)
-SELECT x.*,a.people AS source_people,b.people AS destination_people,
-       x.shared_people::double precision/(a.people+b.people-x.shared_people) AS jaccard
-FROM shared x JOIN sizes a ON a.game_id=x.source_game JOIN sizes b ON b.game_id=x.destination_game;
-
 CREATE TEMP TABLE _first_game ON COMMIT DROP AS
 SELECT holder_id,min(first_at) AS first_at FROM game_portfolio GROUP BY holder_id;
 CREATE UNIQUE INDEX ON _first_game (holder_id);

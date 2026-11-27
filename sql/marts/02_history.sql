@@ -55,12 +55,5 @@ LEFT JOIN LATERAL (
 WHERE e.event_kind='wr' AND e.time_basis='performed_at' AND e.previous_record_at IS NOT NULL;
 CREATE UNIQUE INDEX ON revival (event_id);
 
-CREATE TABLE calendar_activity AS
-SELECT scope_id,event_at::date AS event_date,
-       count(*) FILTER (WHERE event_kind='wr' AND previous_seconds IS NOT NULL) AS wr_improvements,
-       count(DISTINCT holder_ids[1]) FILTER (WHERE event_kind='top10_pb') AS top10_authors,
-       count(*) FILTER (WHERE event_kind='place_change') AS position_changes
-FROM record_event WHERE time_basis='performed_at' GROUP BY scope_id,event_at::date;
-
 COMMENT ON TABLE record_event IS 'Retrospective reconstruction from runs verified in the selected archive. Simultaneous results are applied together.';
 COMMENT ON TABLE revival IS 'Candidate episodes around a WR improvement. Thresholds describe evidence for inspection; strategy attribution requires a dated source.';

@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import os
 import time
 from pathlib import Path
 
@@ -32,7 +33,9 @@ def main():
     env = local_environment()
     results = {}
     with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(channel="msedge", headless=True)
+        browser = playwright.chromium.launch(
+            channel=os.environ.get("LAB3_BROWSER_CHANNEL", "msedge"), headless=True
+        )
         context = browser.new_context(
             viewport={"width": 1700, "height": 1100}, locale="ru-RU"
         )

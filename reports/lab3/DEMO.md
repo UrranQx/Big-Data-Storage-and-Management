@@ -38,16 +38,23 @@ docker compose up -d api-server dag-processor scheduler
 ничьи и отсутствие бонуса за длительность. Все три прежних дашборда доступны.
 
 1. [Airflow](http://localhost:8080): `normalize_entity_v3`, `check_data_quality`, `refresh_marts`, `sync_analytics_metadata`. Объяснить Assets, проверку качества и атомарную публикацию. Ручной повтор `refresh_marts` использует те же входы и не запускает источник.
-2. [Раннер](http://localhost:8088/superset/dashboard/lab3-runner/): выбрать профиль и сопоставимое поле, сравнить цель и распределение мест, посмотреть новые игры и основания рекомендаций. Затем показать когорты, форму и паутинку.
-3. [Борьба за рекорды](http://localhost:8088/superset/dashboard/lab3-records/): изменить окно 7/30/90 дней, найти плато, открыть выбранную категорию в истории и разборе видео. Показать исходные события WR отдельно от реконструкции.
+2. [Раннер](http://localhost:8088/superset/dashboard/lab3-runner/): выбрать профиль и сопоставимое поле, сравнить место, порог и необходимое улучшение, посмотреть новые игры и основания рекомендаций. Затем показать когорты, форму и паутинку.
+3. [Борьба за рекорды](http://localhost:8088/superset/dashboard/lab3-records/): изменить окно 7/30/90 дней, найти плато, открыть выбранную категорию в истории и разборе видео. Для сверки открыть исходные события WR запросом в PostgreSQL.
 4. [Страны](http://localhost:8088/superset/dashboard/lab3-countries/): объяснить медальный порядок и числовые баллы. Изменить игру, затем выбрать страну и проверить сохранение её глобального места в выбранном поле.
 5. [OpenMetadata](http://localhost:8585): найти `speedrun_postgres.speedrun_ods.speedrun_marts.country_medals`, открыть Lineage и пройти к DDS и ODS. Повторить для `pb` и `goal` с lineage колонок.
 
 Ключевые проверки: массовые ничьи Break Dirt; один PB вместо нескольких публикаций игрока; смена платформенного поля в Super Mario 64; неизвестные страны и малые когорты; отсутствие удвоения после повторной сборки.
 
-Таблица исходной истории WR показывает максимум 10000 строк запроса; для
-детального разбора выберите игру. Этот предел интерфейса не ограничивает
-сохранённую историю и расчёты витрин.
+Для демонстрации опубликованных данных и сверки исходной истории WR выполнить в PostgreSQL:
+
+```sql
+SELECT build_id, as_of, collection_id FROM speedrun_marts.context;
+SELECT * FROM speedrun_marts.country_medals ORDER BY overall_rank LIMIT 5;
+SELECT game_name, category_name, performed_at, run_ids
+FROM speedrun_marts.source_wr
+WHERE game_name = 'Celeste'
+ORDER BY performed_at DESC LIMIT 20;
+```
 
 Проверенные примеры для демонстрации:
 

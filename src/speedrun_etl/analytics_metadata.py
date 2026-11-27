@@ -79,7 +79,7 @@ class Catalog:
         ).rstrip("/")
         self.token = None
 
-    def request(self, method, path, body=None):
+    def request(self, method, path, body=None, *, missing_ok=False):
         headers = {"Content-Type": "application/json"}
         if self.token:
             headers["Authorization"] = "Bearer " + self.token
@@ -97,6 +97,8 @@ class Catalog:
                 except json.JSONDecodeError:
                     return {"status": response.status}
         except HTTPError as error:
+            if missing_ok and error.code == 404:
+                return None
             message = error.read().decode()[:1500]
             for name, value in os.environ.items():
                 if value and any(
@@ -361,7 +363,6 @@ def synchronize():
         "activity": ["field", "record_event", "pb", "run"],
         "wr_opportunity": ["pb", "activity"],
         "revival": ["record_event"],
-        "calendar_activity": ["record_event"],
         "runner_form": ["run", "scope"],
         "runner_window": ["run"],
         "scope_tag": ["scope"],
@@ -371,7 +372,6 @@ def synchronize():
         "cohort_summary": ["cohort_member"],
         "cohort_survival": ["cohort_member"],
         "game_portfolio": ["first_publication", "scope", "player", "pb"],
-        "game_similarity": ["game_portfolio"],
         "game_transition": ["game_portfolio"],
         "destination_category": ["game_portfolio", "scope", "pb"],
         "demo_selection": ["run", "scope", "field", "runner_profile", "runner_window"],
@@ -533,6 +533,18 @@ def synchronize():
                 },
             )
             edges += 1
+    catalog.request(
+        "DELETE",
+        f"lineage/table/{tables['speedrun_marts.source_wr']['id']}/dashboard/{dashboards['records']['id']}",
+        missing_ok=True,
+    )
+    for name in ("calendar_activity", "game_similarity"):
+        retired = catalog.request(
+            "GET", f"tables/name/{DATABASE}.speedrun_marts.{name}", missing_ok=True
+        )
+        if retired:
+            catalog.request("DELETE", f"tables/{retired['id']}", missing_ok=True)
+
     proof = catalog.request(
         "GET",
         "lineage/table/"

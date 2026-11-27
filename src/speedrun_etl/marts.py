@@ -235,7 +235,12 @@ def publish_build(conn, schema, build_id, cutoff, collection, method, snapshots)
             (schema,),
         )
     ]
+    conn.execute(
+        "DROP VIEW IF EXISTS speedrun_marts.calendar_activity, speedrun_marts.game_similarity RESTRICT"
+    )
     for table in tables:
+        if table in ("calendar_activity", "game_similarity"):
+            continue
         if table == "context":
             query = sql.SQL(
                 "CREATE OR REPLACE VIEW speedrun_marts.context AS SELECT * FROM {}.context"

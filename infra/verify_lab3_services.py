@@ -1,5 +1,6 @@
 """Capture authenticated Airflow and OpenMetadata views in a disposable browser."""
 
+import os
 from pathlib import Path
 
 from playwright.sync_api import Error as PlaywrightError
@@ -9,13 +10,14 @@ from verify_lab3_ui import local_environment
 
 def main():
     env = local_environment()
-    output = (
-        Path(__file__).resolve().parents[1]
-        / "reports/lab3/acceptance_20261126/screenshots"
+    output = Path(__file__).resolve().parents[1] / os.environ.get(
+        "LAB3_SERVICE_OUTPUT", "reports/lab3/acceptance_20261126/screenshots"
     )
     output.mkdir(parents=True, exist_ok=True)
     with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(channel="msedge", headless=True)
+        browser = playwright.chromium.launch(
+            channel=os.environ.get("LAB3_BROWSER_CHANNEL", "msedge"), headless=True
+        )
         page = browser.new_page(viewport={"width": 1700, "height": 1100})
         try:
             page.goto("http://localhost:8080", wait_until="domcontentloaded")

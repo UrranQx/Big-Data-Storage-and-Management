@@ -113,12 +113,6 @@ def datasets():
         + field()
         + " AND p.target_code IN "
         + TARGET,
-        "rank_curve": "SELECT p.place,p.seconds,p.field_size,s.scope_name,s.game_name,"
-        + RUNNER
-        + ",CASE WHEN "
-        + person()
-        + " THEN 'Выбранный раннер' ELSE 'Поле' END AS series FROM speedrun_marts.pb p JOIN speedrun_marts.scope s USING(scope_id) WHERE "
-        + field(),
         "wr_opportunities": "SELECT p.*,s.scope_name,s.game_name,"
         + RUNNER
         + " FROM speedrun_marts.wr_opportunity p JOIN speedrun_marts.scope s USING(scope_id) WHERE "
@@ -151,17 +145,6 @@ def datasets():
         + " FROM speedrun_marts.game_transition t WHERE t.supported AND t.source_game IN (SELECT p.game_id FROM speedrun_marts.game_portfolio p WHERE "
         + person()
         + ") ORDER BY t.lift DESC LIMIT 30",
-        "similarity": """WITH names AS (SELECT DISTINCT game_id,game_name FROM speedrun_marts.scope), pairs AS (
-              SELECT source_game,destination_game,jaccard FROM speedrun_marts.game_similarity
-              UNION ALL SELECT destination_game,source_game,jaccard FROM speedrun_marts.game_similarity
-            ) SELECT a.game_name AS source_name,b.game_name AS destination_name,x.jaccard,"""
-        + RUNNER
-        + """
-            FROM pairs x JOIN names a ON a.game_id=x.source_game JOIN names b ON b.game_id=x.destination_game
-            WHERE x.source_game IN (SELECT p.game_id FROM speedrun_marts.game_portfolio p WHERE """
-        + person()
-        + """ )
-            ORDER BY x.jaccard DESC LIMIT 100""",
         "form": "SELECT p.*,s.scope_name,s.game_name,"
         + RUNNER
         + " FROM speedrun_marts.runner_form p JOIN speedrun_marts.scope s USING(scope_id) WHERE "
@@ -219,13 +202,6 @@ def datasets():
         + WINDOW
         + " AND s.field_platform='all' AND (a.wr_improvements>0 OR a.top10_pbs>0 OR a.top10_entries>0) AND "
         + game(),
-        "calendar": "SELECT c.*,s.scope_name,s.game_name,"
-        + WINDOW
-        + " AS window_days,extract(isodow FROM event_date)::text AS weekday,to_char(event_date,'IYYY-IW') AS week FROM speedrun_marts.calendar_activity c JOIN speedrun_marts.scope s USING(scope_id) WHERE "
-        + field()
-        + " AND event_date>(SELECT as_of FROM speedrun_marts.context)-"
-        + WINDOW
-        + "*interval '1 day'",
         "records": "SELECT r.*,s.scope_name,s.game_name FROM speedrun_marts.record_event r JOIN speedrun_marts.scope s USING(scope_id) WHERE r.event_kind IN ('wr','wr_tie') AND "
         + field()
         + " AND time_basis IN "
@@ -289,7 +265,6 @@ def datasets():
           {% if misc %} AND c.is_misc::text IN {{ misc|where_in }} {% endif %}""",
         "medal_selector": "SELECT DISTINCT game_name,category_name,is_misc::text AS is_misc FROM speedrun_marts.country_contribution",
         "coverage": "SELECT * FROM speedrun_marts.quality_summary CROSS JOIN (SELECT collection_id FROM speedrun_marts.context) c",
-        "source_history": "SELECT * FROM speedrun_marts.source_wr s WHERE " + game(),
         "recommendation_evaluation": "SELECT * FROM speedrun_marts.recommendation_evaluation",
     }
     # PostgreSQL WhereInMacro compiles literals for psycopg2 (%%), but the
@@ -386,7 +361,7 @@ def charts():
     result = [
         table(
             "goals",
-            "01 · Следующая цель",
+            "Следующая цель",
             [
                 "target_code",
                 "place",
@@ -398,18 +373,9 @@ def charts():
                 "sufficient_field",
             ],
         ),
-        line(
-            "rank_curve",
-            "Поле соперников: место и время",
-            "place",
-            ["seconds"],
-            groupby=["series"],
-            x_axis_title="Место в поле",
-            y_axis_title="Время, с",
-        ),
         table(
             "wr_opportunities",
-            "02 · Где приблизиться к WR",
+            "Где приблизиться к WR",
             [
                 "game_name",
                 "scope_name",
@@ -424,7 +390,7 @@ def charts():
         ),
         table(
             "recommendations",
-            "03 · Новые игры по переходам похожих раннеров",
+            "Новые игры по переходам похожих раннеров",
             [
                 "destination_name",
                 "recommendation_score",
@@ -448,23 +414,9 @@ def charts():
                 "metric": metric("transitioned_people"),
             },
         ),
-        (
-            "similarity",
-            "Пересечение сообществ · Jaccard",
-            "similarity",
-            "heatmap_v2",
-            {
-                "x_axis": "destination_name",
-                "groupby": "source_name",
-                "metric": metric("jaccard"),
-                "normalize_across": "heatmap_v2",
-                "show_legend": True,
-                "value_bounds": [0, 1],
-            },
-        ),
         table(
             "cohorts",
-            "04 · Достижение фиксированного порога",
+            "Достижение фиксированного порога",
             [
                 "entry_year",
                 "start_gap_bin",
@@ -487,7 +439,7 @@ def charts():
         ),
         line(
             "form",
-            "05 · Публикации, PB и форма за 10 ранов",
+            "Публикации, PB и форма за 10 ранов",
             "submitted_at",
             ["seconds", "pb_seconds", "median_seconds", "q1_seconds", "q3_seconds"],
             x_axis_title="Дата подачи",
@@ -507,7 +459,7 @@ def charts():
         ),
         (
             "profile",
-            "08 · Паутинка · при наличии всех 6 осей",
+            "Паутинка · при наличии всех 6 осей",
             "profile",
             "radar",
             {
@@ -527,7 +479,7 @@ def charts():
         ),
         table(
             "rivals",
-            "09 · Ближайшие соперники по последним публикациям",
+            "Ближайшие соперники по последним публикациям",
             [
                 "holder_name",
                 "sample_size",
@@ -542,7 +494,7 @@ def charts():
         ),
         table(
             "activity",
-            "10 · Где идёт борьба за WR и топ-10",
+            "Где идёт борьба за WR и топ-10",
             [
                 "game_name",
                 "scope_name",
@@ -557,18 +509,6 @@ def charts():
             ],
             ("wr_race_rank", True),
         ),
-        (
-            "calendar",
-            "Календарь движения в топ-10",
-            "calendar",
-            "heatmap_v2",
-            {
-                "x_axis": "week",
-                "groupby": "weekday",
-                "metric": metric("top10_authors", "SUM"),
-                "show_legend": True,
-            },
-        ),
         line(
             "records",
             "Реконструкция истории WR",
@@ -580,7 +520,7 @@ def charts():
         ),
         table(
             "revival",
-            "06 · Возвращение игры после плато WR",
+            "Возвращение игры после плато WR",
             [
                 "game_name",
                 "scope_name",
@@ -597,7 +537,7 @@ def charts():
         ),
         table(
             "comparison",
-            "07 · До и после скачка: раны для разбора",
+            "До и после скачка: раны для разбора",
             [
                 "role",
                 "holder_name",
@@ -608,19 +548,6 @@ def charts():
                 "interpretation",
             ],
             ("performed_at", True),
-        ),
-        table(
-            "source_history",
-            "Исходная история WR · отдельные наблюдения",
-            [
-                "game_name",
-                "category_name",
-                "performed_at",
-                "run_ids",
-                "scope_key",
-                "observed_at",
-            ],
-            ("performed_at", False),
         ),
         table(
             "coverage",
@@ -788,11 +715,9 @@ DASHBOARDS = {
         "Раннер",
         [
             "goals",
-            "rank_curve",
             "wr_opportunities",
             "recommendations",
             "transitions",
-            "similarity",
             "cohorts",
             "survival",
             "form",
@@ -809,9 +734,7 @@ DASHBOARDS = {
             "activity",
             "revival",
             "records",
-            "calendar",
             "comparison",
-            "source_history",
             "coverage",
         ],
     ),

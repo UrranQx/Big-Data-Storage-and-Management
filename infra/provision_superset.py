@@ -279,11 +279,21 @@ def provision():
             if table is None:
                 table = SqlaTable(
                     uuid=uid("dataset", key),
-                    table_name="lab3_" + key,
+                    table_name=key,
                     database=database,
                     schema="speedrun_marts",
                 )
                 db.session.add(table)
+            collision = (
+                db.session.query(SqlaTable)
+                .filter_by(
+                    database_id=database.id, schema="speedrun_marts", table_name=key
+                )
+                .one_or_none()
+            )
+            if collision is not None and collision is not table:
+                raise ValueError(f"Dataset name already in use: {key}")
+            table.table_name = key
             table.sql = query.strip()
             table.owners = [admin]
             table.filter_select_enabled = True
@@ -381,7 +391,6 @@ def provision():
                     "personal_scope_selector",
                     [
                         "goals",
-                        "rank_curve",
                         "cohorts",
                         "survival",
                         "form",
@@ -406,21 +415,21 @@ def provision():
                     "game_name",
                     "Игры",
                     "scope_selector",
-                    ["activity", "revival", "source_history"],
+                    ["activity", "revival"],
                     multi=True,
                 )
                 add(
                     "scope_name",
                     "Поле для истории и разбора",
                     "scope_selector",
-                    ["records", "calendar", "comparison"],
+                    ["records", "comparison"],
                     selection["scope_name"],
                 )
                 add(
                     "window_days",
                     "Окно активности, дней",
                     "parameters",
-                    ["activity", "calendar"],
+                    ["activity"],
                     30,
                 )
                 add(
@@ -494,6 +503,35 @@ def provision():
                 },
                 ensure_ascii=False,
             )
+        db.session.flush()
+        for key in ("calendar", "source_history", "rank_curve", "similarity"):
+            chart = (
+                db.session.query(Slice).filter_by(uuid=uid("chart", key)).one_or_none()
+            )
+            if chart is not None:
+                if (
+                    db.session.query(Dashboard)
+                    .filter(Dashboard.slices.any(id=chart.id))
+                    .first()
+                ):
+                    raise ValueError(
+                        f"Retired chart still belongs to a dashboard: {key}"
+                    )
+                db.session.delete(chart)
+                db.session.flush()
+            table = (
+                db.session.query(SqlaTable)
+                .filter_by(uuid=uid("dataset", key))
+                .one_or_none()
+            )
+            if table is not None:
+                if (
+                    db.session.query(Slice)
+                    .filter_by(datasource_id=table.id, datasource_type="table")
+                    .first()
+                ):
+                    raise ValueError(f"Retired dataset still belongs to a chart: {key}")
+                db.session.delete(table)
         db.session.commit()
         return {
             "datasets": len(tables),

@@ -1,6 +1,7 @@
 """Exercise native Superset filters and assert the returned analytical values."""
 
 import json
+import os
 import re
 import time
 from pathlib import Path
@@ -13,11 +14,15 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def main():
-    output = ROOT / "reports/lab3/acceptance_20261126"
+    output = ROOT / os.environ.get(
+        "LAB3_FILTER_OUTPUT", "reports/lab3/acceptance_20261126"
+    )
     output.mkdir(parents=True, exist_ok=True)
     evidence = {}
     with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(channel="msedge", headless=True)
+        browser = playwright.chromium.launch(
+            channel=os.environ.get("LAB3_BROWSER_CHANNEL", "msedge"), headless=True
+        )
         page = browser.new_page(viewport={"width": 1700, "height": 1100})
         responses = {}
         filter_responses = []
@@ -146,7 +151,7 @@ def main():
         }
 
         page.goto("http://localhost:8088/superset/dashboard/lab3-runner/")
-        goal = chart_id("01 · Следующая цель")
+        goal = chart_id("Следующая цель")
         initial_goal = rows(goal)
         assert len(initial_goal) == 1 and initial_goal[0]["target_code"] == "top10"
         select("runner-target_code", "top50")
@@ -160,7 +165,7 @@ def main():
         )
         evidence["target_filter"] = {"top10": initial_goal, "top50": changed_goal}
 
-        profile = chart_id("08 · Паутинка · при наличии всех 6 осей")
+        profile = chart_id("Паутинка · при наличии всех 6 осей")
         profile_values = chart_id("Профиль: оценки и наличие данных")
         select("runner-runner", "Chexhuman [5j5o2pzx]")
         apply()
@@ -170,7 +175,7 @@ def main():
         assert len(values) == 6 and all(r["strength"] is not None for r in values)
         evidence["complete_radar"] = values
         link = page.get_by_role(
-            "link", name="08 · Паутинка · при наличии всех 6 осей", exact=True
+            "link", name="Паутинка · при наличии всех 6 осей", exact=True
         )
         panel = page.locator(".dashboard-component-chart-holder").filter(has=link)
         panel.screenshot(path=str(output / "screenshots/radar_complete.png"))
