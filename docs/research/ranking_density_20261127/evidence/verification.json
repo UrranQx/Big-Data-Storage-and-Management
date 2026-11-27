@@ -1,0 +1,14 @@
+{
+  "data_checks_passed": true,
+  "local_links_valid": true,
+  "known_secret_matches": 0,
+  "sha256": {
+    "experiment.py": "73e6802e02fc1a82234d4902d17132ca19c5c80918861446b180e57a3877c5b5",
+    "README.md": "d353df5c3da7211dd3c874d5f0b079551b290dbeb3ddcec7ff1fa343ad7451a7",
+    "render.py": "65afda0ca821bf6c730f4ad5e81ccfc2221d0787151a5a0a96a94ca0a373bd4b",
+    "evidence\\density.png": "b0f62b311a43b09b7466a830cb1d13186f10c7379308b649126f0525868ecc20",
+    "evidence\\density.svg": "a9444335f3d2b7e44335e0005aa4bbfa45a695df3e217dd2b1c04d08f5f6e2cb",
+    "evidence\\results.json": "ae4a444bc76a74012b9b76ec2c9653ab6c920e5356b477f2df2334779169d503",
+    "evidence\\top20_comparison.csv": "e652e587d6c331f6ff50efa2da6cf367a0f4f66b36ae0b2c36a72fb62314070e"
+  }
+}

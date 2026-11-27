@@ -1,0 +1,4193 @@
+{
+  "metadata": {
+    "context": [
+      {
+        "build_id": "cef0cb6d0c3ec3fa535d95228cd8f1960028ec5c0759e5f124fe4b0111306e0d",
+        "as_of": "2026-10-30 21:28:36.387757+00:00",
+        "collection_id": "lab1-popular500-20261030",
+        "method_version": "c6401049c05e41c9c151d55d1e020874eb5259d55e82c8a0cc67ba2b452021b9"
+      }
+    ],
+    "transaction_read_only": "on",
+    "extracted_at": "2026-11-27T11:35:00.254951+00:00",
+    "extract_seconds": 4.657,
+    "input_sha256": "e79ac2fbaf83da5346205baa598968992f4f3df1bb033eaf503522cc921f473f",
+    "sql_sha256": "72d723fda1ebdbd437a480a771e5c417b6c6c9ad3034433a31d8d279427db6d2"
+  },
+  "people": 135022,
+  "fields": 3001,
+  "full25_fields": 1409,
+  "all_tied_top10": 13,
+  "checks": {
+    "complete_fields": true,
+    "sorted_input": true,
+    "within_bonus_bounds": true,
+    "within_field_monotone": true,
+    "equal_scores_for_ties": true,
+    "previous_top20_reproduced": true,
+    "same_population": true
+  },
+  "fixtures": {
+    "tight": {
+      "top10": {
+        "spread": 0.0008995952428362159,
+        "ratio_pct": 0.09000000000001229,
+        "unique_fraction": 1.0,
+        "distinct": 10,
+        "participants": 10,
+        "median_step": 9.995502032410155e-05
+      },
+      "top25": {
+        "spread": 0.0023971245997214514,
+        "ratio_pct": 0.23999999999999577,
+        "unique_fraction": 1.0,
+        "distinct": 25,
+        "participants": 25,
+        "median_step": 9.988014415942149e-05
+      },
+      "inner25": {
+        "spread": 0.002297129599388154,
+        "ratio_pct": 0.2299770022997669,
+        "unique_fraction": 1.0,
+        "distinct": 24,
+        "participants": 24,
+        "median_step": 9.98751561377203e-05
+      },
+      "density": 0.8614741368659202,
+      "bonus_top25_pct": 21.536853421648004,
+      "bonus_rank100_pct": 1.0722567937322538
+    },
+    "wide": {
+      "top10": {
+        "spread": 0.08617769624105241,
+        "ratio_pct": 9.000000000000007,
+        "unique_fraction": 1.0,
+        "distinct": 10,
+        "participants": 10,
+        "median_step": 0.009569451016150712
+      },
+      "top25": {
+        "spread": 0.2151113796169455,
+        "ratio_pct": 24.0,
+        "unique_fraction": 1.0,
+        "distinct": 25,
+        "participants": 25,
+        "median_step": 0.008928808700003128
+      },
+      "inner25": {
+        "spread": 0.2051610487637774,
+        "ratio_pct": 22.772277227722775,
+        "unique_fraction": 1.0,
+        "distinct": 24,
+        "participants": 24,
+        "median_step": 0.008888947417245843
+      },
+      "density": 0.07386140117749089,
+      "bonus_top25_pct": 1.8465350294372722,
+      "bonus_rank100_pct": 0.09193356575424913
+    },
+    "all_ties": {
+      "top10": {
+        "spread": 0.0,
+        "ratio_pct": 0.0,
+        "unique_fraction": 0.0,
+        "distinct": 1,
+        "participants": 10,
+        "median_step": 0.0
+      },
+      "top25": {
+        "spread": 0.0,
+        "ratio_pct": 0.0,
+        "unique_fraction": 0.0,
+        "distinct": 1,
+        "participants": 25,
+        "median_step": 0.0
+      },
+      "inner25": {
+        "spread": 0.0,
+        "ratio_pct": 0.0,
+        "unique_fraction": 0.0,
+        "distinct": 1,
+        "participants": 24,
+        "median_step": 0.0
+      },
+      "density": 0.0,
+      "bonus_top25_pct": 0.0,
+      "bonus_rank100_pct": 0.0
+    },
+    "isolated_WR": {
+      "top10": {
+        "spread": 0.22322354811438042,
+        "ratio_pct": 25.009999999999998,
+        "unique_fraction": 1.0,
+        "distinct": 10,
+        "participants": 10,
+        "median_step": 9.99965001247105e-06
+      },
+      "top25": {
+        "spread": 0.22337352486826473,
+        "ratio_pct": 25.028750000000006,
+        "unique_fraction": 1.0,
+        "distinct": 25,
+        "participants": 25,
+        "median_step": 9.998900121294119e-06
+      },
+      "inner25": {
+        "spread": 0.000229973554054963,
+        "ratio_pct": 0.02299999999999958,
+        "unique_fraction": 1.0,
+        "distinct": 24,
+        "participants": 24,
+        "median_step": 9.998850132475479e-06
+      },
+      "density": 0.042659722188188795,
+      "bonus_top25_pct": 1.0664930547047198,
+      "bonus_rank100_pct": 0.05309756262843594
+    }
+  },
+  "variants": [
+    {
+      "name": "previous",
+      "alpha": 0,
+      "scale": 0.01,
+      "mode": "both",
+      "lower_only": false,
+      "overlap_previous100": 100,
+      "overlap_candidate100": 93,
+      "top20": [
+        {
+          "id": "xk42q97j",
+          "name": "Nolyswag",
+          "rank": 1,
+          "previous_rank": 1,
+          "points": 201.65582199251153,
+          "previous_points": 201.65582199251153,
+          "games": 5
+        },
+        {
+          "id": "qjor2nj6",
+          "name": "Odme",
+          "rank": 2,
+          "previous_rank": 2,
+          "points": 187.52658100637544,
+          "previous_points": 187.52658100637544,
+          "games": 15
+        },
+        {
+          "id": "qjne76wj",
+          "name": "Niftski",
+          "rank": 3,
+          "previous_rank": 3,
+          "points": 183.70449599111495,
+          "previous_points": 183.70449599111495,
+          "games": 3
+        },
+        {
+          "id": "18qowewj",
+          "name": "Majoog",
+          "rank": 4,
+          "previous_rank": 4,
+          "points": 181.69302962733877,
+          "previous_points": 181.69302962733877,
+          "games": 8
+        },
+        {
+          "id": "xz7dqv9j",
+          "name": "SlothLord",
+          "rank": 5,
+          "previous_rank": 5,
+          "points": 176.98547462330677,
+          "previous_points": 176.98547462330677,
+          "games": 5
+        },
+        {
+          "id": "u-e4ca3e01-2ef7-55f0-a77b-b87bb1774a62",
+          "name": "mucktro",
+          "rank": 6,
+          "previous_rank": 6,
+          "points": 176.44382223367103,
+          "previous_points": 176.44382223367103,
+          "games": 3
+        },
+        {
+          "id": "8e9pwlpj",
+          "name": "ThinkLater",
+          "rank": 7,
+          "previous_rank": 7,
+          "points": 167.6904209032184,
+          "previous_points": 167.6904209032184,
+          "games": 11
+        },
+        {
+          "id": "j5pn0oq8",
+          "name": "JesseKola",
+          "rank": 8,
+          "previous_rank": 8,
+          "points": 166.2003102941043,
+          "previous_points": 166.2003102941043,
+          "games": 5
+        },
+        {
+          "id": "qxknn77x",
+          "name": "smythe",
+          "rank": 9,
+          "previous_rank": 9,
+          "points": 163.371217215168,
+          "previous_points": 163.371217215168,
+          "games": 10
+        },
+        {
+          "id": "98rky4qx",
+          "name": "BigCheese",
+          "rank": 10,
+          "previous_rank": 10,
+          "points": 163.07533047010622,
+          "previous_points": 163.07533047010622,
+          "games": 10
+        },
+        {
+          "id": "5j537vqx",
+          "name": "NorXor",
+          "rank": 11,
+          "previous_rank": 11,
+          "points": 160.33216359468534,
+          "previous_points": 160.33216359468534,
+          "games": 3
+        },
+        {
+          "id": "8wk9r2v8",
+          "name": "777haveoursinsbeenforgiven",
+          "rank": 12,
+          "previous_rank": 12,
+          "points": 160.26156844994236,
+          "previous_points": 160.26156844994236,
+          "games": 3
+        },
+        {
+          "id": "kj946vwx",
+          "name": "Cads",
+          "rank": 13,
+          "previous_rank": 13,
+          "points": 159.1921060452489,
+          "previous_points": 159.1921060452489,
+          "games": 7
+        },
+        {
+          "id": "qxkvvq2j",
+          "name": "relievedliberty",
+          "rank": 14,
+          "previous_rank": 14,
+          "points": 157.98729989774677,
+          "previous_points": 157.98729989774677,
+          "games": 4
+        },
+        {
+          "id": "j921k2w8",
+          "name": "Zangoose",
+          "rank": 15,
+          "previous_rank": 15,
+          "points": 157.60122787066555,
+          "previous_points": 157.60122787066555,
+          "games": 16
+        },
+        {
+          "id": "18qqd7q8",
+          "name": "maibaRTA",
+          "rank": 16,
+          "previous_rank": 16,
+          "points": 154.34645826769986,
+          "previous_points": 154.34645826769986,
+          "games": 3
+        },
+        {
+          "id": "8v0m22vx",
+          "name": "tetrisbit",
+          "rank": 17,
+          "previous_rank": 17,
+          "points": 153.5762585768155,
+          "previous_points": 153.5762585768155,
+          "games": 3
+        },
+        {
+          "id": "18qdq9qx",
+          "name": "M4xD",
+          "rank": 18,
+          "previous_rank": 18,
+          "points": 153.48150564038912,
+          "previous_points": 153.48150564038912,
+          "games": 3
+        },
+        {
+          "id": "x3w7wrqj",
+          "name": "zVypurr",
+          "rank": 19,
+          "previous_rank": 19,
+          "points": 153.42033159426543,
+          "previous_points": 153.42033159426543,
+          "games": 2
+        },
+        {
+          "id": "u-4f35e37c-0df0-50dc-bf47-420dedf83c86",
+          "name": "anonymous ",
+          "rank": 20,
+          "previous_rank": 20,
+          "points": 151.4525762615575,
+          "previous_points": 151.4525762615575,
+          "games": 2
+        }
+      ]
+    },
+    {
+      "name": "top10",
+      "alpha": 0.25,
+      "scale": 0.01,
+      "mode": "10",
+      "lower_only": false,
+      "overlap_previous100": 93,
+      "overlap_candidate100": 100,
+      "top20": [
+        {
+          "id": "xk42q97j",
+          "name": "Nolyswag",
+          "rank": 1,
+          "previous_rank": 1,
+          "points": 219.29916810824082,
+          "previous_points": 201.65582199251153,
+          "games": 5
+        },
+        {
+          "id": "qjne76wj",
+          "name": "Niftski",
+          "rank": 2,
+          "previous_rank": 3,
+          "points": 205.60046545476956,
+          "previous_points": 183.70449599111495,
+          "games": 3
+        },
+        {
+          "id": "qjor2nj6",
+          "name": "Odme",
+          "rank": 3,
+          "previous_rank": 2,
+          "points": 194.43749149706395,
+          "previous_points": 187.52658100637544,
+          "games": 15
+        },
+        {
+          "id": "18qowewj",
+          "name": "Majoog",
+          "rank": 4,
+          "previous_rank": 4,
+          "points": 188.36440623336077,
+          "previous_points": 181.69302962733877,
+          "games": 8
+        },
+        {
+          "id": "xz7dqv9j",
+          "name": "SlothLord",
+          "rank": 5,
+          "previous_rank": 5,
+          "points": 181.79612531208159,
+          "previous_points": 176.98547462330677,
+          "games": 5
+        },
+        {
+          "id": "u-e4ca3e01-2ef7-55f0-a77b-b87bb1774a62",
+          "name": "mucktro",
+          "rank": 6,
+          "previous_rank": 6,
+          "points": 177.78005472181695,
+          "previous_points": 176.44382223367103,
+          "games": 3
+        },
+        {
+          "id": "qxknn77x",
+          "name": "smythe",
+          "rank": 7,
+          "previous_rank": 9,
+          "points": 176.24227790792457,
+          "previous_points": 163.371217215168,
+          "games": 10
+        },
+        {
+          "id": "kj946vwx",
+          "name": "Cads",
+          "rank": 8,
+          "previous_rank": 13,
+          "points": 174.41285140489776,
+          "previous_points": 159.1921060452489,
+          "games": 7
+        },
+        {
+          "id": "98rky4qx",
+          "name": "BigCheese",
+          "rank": 9,
+          "previous_rank": 10,
+          "points": 173.1280241285466,
+          "previous_points": 163.07533047010622,
+          "games": 10
+        },
+        {
+          "id": "j5pn0oq8",
+          "name": "JesseKola",
+          "rank": 10,
+          "previous_rank": 8,
+          "points": 170.97515089169573,
+          "previous_points": 166.2003102941043,
+          "games": 5
+        },
+        {
+          "id": "qxkvvq2j",
+          "name": "relievedliberty",
+          "rank": 11,
+          "previous_rank": 14,
+          "points": 170.5983076119059,
+          "previous_points": 157.98729989774677,
+          "games": 4
+        },
+        {
+          "id": "5j537vqx",
+          "name": "NorXor",
+          "rank": 12,
+          "previous_rank": 11,
+          "points": 169.95747256115848,
+          "previous_points": 160.33216359468534,
+          "games": 3
+        },
+        {
+          "id": "8e9pwlpj",
+          "name": "ThinkLater",
+          "rank": 13,
+          "previous_rank": 7,
+          "points": 168.96912324565855,
+          "previous_points": 167.6904209032184,
+          "games": 11
+        },
+        {
+          "id": "18qqd7q8",
+          "name": "maibaRTA",
+          "rank": 14,
+          "previous_rank": 16,
+          "points": 168.0440079953019,
+          "previous_points": 154.34645826769986,
+          "games": 3
+        },
+        {
+          "id": "u-4f35e37c-0df0-50dc-bf47-420dedf83c86",
+          "name": "anonymous ",
+          "rank": 15,
+          "previous_rank": 20,
+          "points": 164.82761910760388,
+          "previous_points": 151.4525762615575,
+          "games": 2
+        },
+        {
+          "id": "xz2904rx",
+          "name": "Inforcer",
+          "rank": 16,
+          "previous_rank": 24,
+          "points": 163.12613734341937,
+          "previous_points": 149.4752088862079,
+          "games": 5
+        },
+        {
+          "id": "8v0m22vx",
+          "name": "tetrisbit",
+          "rank": 17,
+          "previous_rank": 17,
+          "points": 162.93857765306996,
+          "previous_points": 153.5762585768155,
+          "games": 3
+        },
+        {
+          "id": "kjpw6n5x",
+          "name": "Okashi",
+          "rank": 18,
+          "previous_rank": 28,
+          "points": 161.84365068366455,
+          "previous_points": 146.69014146422302,
+          "games": 5
+        },
+        {
+          "id": "8wk9r2v8",
+          "name": "777haveoursinsbeenforgiven",
+          "rank": 19,
+          "previous_rank": 12,
+          "points": 161.47047885579815,
+          "previous_points": 160.26156844994236,
+          "games": 3
+        },
+        {
+          "id": "x3w7wrqj",
+          "name": "zVypurr",
+          "rank": 20,
+          "previous_rank": 19,
+          "points": 160.81352396006915,
+          "previous_points": 153.42033159426543,
+          "games": 2
+        }
+      ]
+    },
+    {
+      "name": "top25",
+      "alpha": 0.25,
+      "scale": 0.01,
+      "mode": "25",
+      "lower_only": false,
+      "overlap_previous100": 94,
+      "overlap_candidate100": 99,
+      "top20": [
+        {
+          "id": "xk42q97j",
+          "name": "Nolyswag",
+          "rank": 1,
+          "previous_rank": 1,
+          "points": 214.17697894769577,
+          "previous_points": 201.65582199251153,
+          "games": 5
+        },
+        {
+          "id": "qjne76wj",
+          "name": "Niftski",
+          "rank": 2,
+          "previous_rank": 3,
+          "points": 201.1754653014229,
+          "previous_points": 183.70449599111495,
+          "games": 3
+        },
+        {
+          "id": "qjor2nj6",
+          "name": "Odme",
+          "rank": 3,
+          "previous_rank": 2,
+          "points": 191.2465049256964,
+          "previous_points": 187.52658100637544,
+          "games": 15
+        },
+        {
+          "id": "18qowewj",
+          "name": "Majoog",
+          "rank": 4,
+          "previous_rank": 4,
+          "points": 186.26799724462438,
+          "previous_points": 181.69302962733877,
+          "games": 8
+        },
+        {
+          "id": "xz7dqv9j",
+          "name": "SlothLord",
+          "rank": 5,
+          "previous_rank": 5,
+          "points": 179.23380738363343,
+          "previous_points": 176.98547462330677,
+          "games": 5
+        },
+        {
+          "id": "u-e4ca3e01-2ef7-55f0-a77b-b87bb1774a62",
+          "name": "mucktro",
+          "rank": 6,
+          "previous_rank": 6,
+          "points": 177.1223135614404,
+          "previous_points": 176.44382223367103,
+          "games": 3
+        },
+        {
+          "id": "qxknn77x",
+          "name": "smythe",
+          "rank": 7,
+          "previous_rank": 9,
+          "points": 173.89608244996376,
+          "previous_points": 163.371217215168,
+          "games": 10
+        },
+        {
+          "id": "98rky4qx",
+          "name": "BigCheese",
+          "rank": 8,
+          "previous_rank": 10,
+          "points": 169.85300993508466,
+          "previous_points": 163.07533047010622,
+          "games": 10
+        },
+        {
+          "id": "kj946vwx",
+          "name": "Cads",
+          "rank": 9,
+          "previous_rank": 13,
+          "points": 168.92336807095592,
+          "previous_points": 159.1921060452489,
+          "games": 7
+        },
+        {
+          "id": "j5pn0oq8",
+          "name": "JesseKola",
+          "rank": 10,
+          "previous_rank": 8,
+          "points": 168.84519761963367,
+          "previous_points": 166.2003102941043,
+          "games": 5
+        },
+        {
+          "id": "8e9pwlpj",
+          "name": "ThinkLater",
+          "rank": 11,
+          "previous_rank": 7,
+          "points": 168.38057491162817,
+          "previous_points": 167.6904209032184,
+          "games": 11
+        },
+        {
+          "id": "5j537vqx",
+          "name": "NorXor",
+          "rank": 12,
+          "previous_rank": 11,
+          "points": 165.63651674327372,
+          "previous_points": 160.33216359468534,
+          "games": 3
+        },
+        {
+          "id": "qxkvvq2j",
+          "name": "relievedliberty",
+          "rank": 13,
+          "previous_rank": 14,
+          "points": 165.17899637643364,
+          "previous_points": 157.98729989774677,
+          "games": 4
+        },
+        {
+          "id": "18qqd7q8",
+          "name": "maibaRTA",
+          "rank": 14,
+          "previous_rank": 16,
+          "points": 163.40786511553077,
+          "previous_points": 154.34645826769986,
+          "games": 3
+        },
+        {
+          "id": "u-4f35e37c-0df0-50dc-bf47-420dedf83c86",
+          "name": "anonymous ",
+          "rank": 15,
+          "previous_rank": 20,
+          "points": 162.27076304721749,
+          "previous_points": 151.4525762615575,
+          "games": 2
+        },
+        {
+          "id": "8wk9r2v8",
+          "name": "777haveoursinsbeenforgiven",
+          "rank": 16,
+          "previous_rank": 12,
+          "points": 161.03928238377824,
+          "previous_points": 160.26156844994236,
+          "games": 3
+        },
+        {
+          "id": "8v0m22vx",
+          "name": "tetrisbit",
+          "rank": 17,
+          "previous_rank": 17,
+          "points": 159.7349707179057,
+          "previous_points": 153.5762585768155,
+          "games": 3
+        },
+        {
+          "id": "j921k2w8",
+          "name": "Zangoose",
+          "rank": 18,
+          "previous_rank": 15,
+          "points": 158.42867316360503,
+          "previous_points": 157.60122787066555,
+          "games": 16
+        },
+        {
+          "id": "x3w7wrqj",
+          "name": "zVypurr",
+          "rank": 19,
+          "previous_rank": 19,
+          "points": 157.92053576020373,
+          "previous_points": 153.42033159426543,
+          "games": 2
+        },
+        {
+          "id": "kjpw6n5x",
+          "name": "Okashi",
+          "rank": 20,
+          "previous_rank": 28,
+          "points": 157.01589220799693,
+          "previous_points": 146.69014146422302,
+          "games": 5
+        }
+      ]
+    },
+    {
+      "name": "top10_25",
+      "alpha": 0.25,
+      "scale": 0.01,
+      "mode": "both",
+      "lower_only": false,
+      "overlap_previous100": 93,
+      "overlap_candidate100": 100,
+      "top20": [
+        {
+          "id": "xk42q97j",
+          "name": "Nolyswag",
+          "rank": 1,
+          "previous_rank": 1,
+          "points": 216.717922830824,
+          "previous_points": 201.65582199251153,
+          "games": 5
+        },
+        {
+          "id": "qjne76wj",
+          "name": "Niftski",
+          "rank": 2,
+          "previous_rank": 3,
+          "points": 203.38796537809623,
+          "previous_points": 183.70449599111495,
+          "games": 3
+        },
+        {
+          "id": "qjor2nj6",
+          "name": "Odme",
+          "rank": 3,
+          "previous_rank": 2,
+          "points": 192.84199821138017,
+          "previous_points": 187.52658100637544,
+          "games": 15
+        },
+        {
+          "id": "18qowewj",
+          "name": "Majoog",
+          "rank": 4,
+          "previous_rank": 4,
+          "points": 187.3162017389926,
+          "previous_points": 181.69302962733877,
+          "games": 8
+        },
+        {
+          "id": "xz7dqv9j",
+          "name": "SlothLord",
+          "rank": 5,
+          "previous_rank": 5,
+          "points": 180.51496634785752,
+          "previous_points": 176.98547462330677,
+          "games": 5
+        },
+        {
+          "id": "u-e4ca3e01-2ef7-55f0-a77b-b87bb1774a62",
+          "name": "mucktro",
+          "rank": 6,
+          "previous_rank": 6,
+          "points": 177.4511841416287,
+          "previous_points": 176.44382223367103,
+          "games": 3
+        },
+        {
+          "id": "qxknn77x",
+          "name": "smythe",
+          "rank": 7,
+          "previous_rank": 9,
+          "points": 175.0691801789441,
+          "previous_points": 163.371217215168,
+          "games": 10
+        },
+        {
+          "id": "kj946vwx",
+          "name": "Cads",
+          "rank": 8,
+          "previous_rank": 13,
+          "points": 171.6681097379269,
+          "previous_points": 159.1921060452489,
+          "games": 7
+        },
+        {
+          "id": "98rky4qx",
+          "name": "BigCheese",
+          "rank": 9,
+          "previous_rank": 10,
+          "points": 171.4851020323449,
+          "previous_points": 163.07533047010622,
+          "games": 10
+        },
+        {
+          "id": "j5pn0oq8",
+          "name": "JesseKola",
+          "rank": 10,
+          "previous_rank": 8,
+          "points": 169.91017425566474,
+          "previous_points": 166.2003102941043,
+          "games": 5
+        },
+        {
+          "id": "8e9pwlpj",
+          "name": "ThinkLater",
+          "rank": 11,
+          "previous_rank": 7,
+          "points": 168.6748490786434,
+          "previous_points": 167.6904209032184,
+          "games": 11
+        },
+        {
+          "id": "qxkvvq2j",
+          "name": "relievedliberty",
+          "rank": 12,
+          "previous_rank": 14,
+          "points": 167.88865199416978,
+          "previous_points": 157.98729989774677,
+          "games": 4
+        },
+        {
+          "id": "5j537vqx",
+          "name": "NorXor",
+          "rank": 13,
+          "previous_rank": 11,
+          "points": 167.79699465221609,
+          "previous_points": 160.33216359468534,
+          "games": 3
+        },
+        {
+          "id": "18qqd7q8",
+          "name": "maibaRTA",
+          "rank": 14,
+          "previous_rank": 16,
+          "points": 165.72593655541635,
+          "previous_points": 154.34645826769986,
+          "games": 3
+        },
+        {
+          "id": "u-4f35e37c-0df0-50dc-bf47-420dedf83c86",
+          "name": "anonymous ",
+          "rank": 15,
+          "previous_rank": 20,
+          "points": 163.54919107741068,
+          "previous_points": 151.4525762615575,
+          "games": 2
+        },
+        {
+          "id": "8v0m22vx",
+          "name": "tetrisbit",
+          "rank": 16,
+          "previous_rank": 17,
+          "points": 161.33677418548783,
+          "previous_points": 153.5762585768155,
+          "games": 3
+        },
+        {
+          "id": "8wk9r2v8",
+          "name": "777haveoursinsbeenforgiven",
+          "rank": 17,
+          "previous_rank": 12,
+          "points": 161.2548806197882,
+          "previous_points": 160.26156844994236,
+          "games": 3
+        },
+        {
+          "id": "kjpw6n5x",
+          "name": "Okashi",
+          "rank": 18,
+          "previous_rank": 28,
+          "points": 159.42977144583077,
+          "previous_points": 146.69014146422302,
+          "games": 5
+        },
+        {
+          "id": "x3w7wrqj",
+          "name": "zVypurr",
+          "rank": 19,
+          "previous_rank": 19,
+          "points": 159.36702986013645,
+          "previous_points": 153.42033159426543,
+          "games": 2
+        },
+        {
+          "id": "xz2904rx",
+          "name": "Inforcer",
+          "rank": 20,
+          "previous_rank": 24,
+          "points": 158.81684076965175,
+          "previous_points": 149.4752088862079,
+          "games": 5
+        }
+      ]
+    },
+    {
+      "name": "inner_pack",
+      "alpha": 0.25,
+      "scale": 0.01,
+      "mode": "inner",
+      "lower_only": false,
+      "overlap_previous100": 93,
+      "overlap_candidate100": 100,
+      "top20": [
+        {
+          "id": "xk42q97j",
+          "name": "Nolyswag",
+          "rank": 1,
+          "previous_rank": 1,
+          "points": 217.03897784339242,
+          "previous_points": 201.65582199251153,
+          "games": 5
+        },
+        {
+          "id": "qjne76wj",
+          "name": "Niftski",
+          "rank": 2,
+          "previous_rank": 3,
+          "points": 204.26101080562844,
+          "previous_points": 183.70449599111495,
+          "games": 3
+        },
+        {
+          "id": "qjor2nj6",
+          "name": "Odme",
+          "rank": 3,
+          "previous_rank": 2,
+          "points": 193.42534484920375,
+          "previous_points": 187.52658100637544,
+          "games": 15
+        },
+        {
+          "id": "18qowewj",
+          "name": "Majoog",
+          "rank": 4,
+          "previous_rank": 4,
+          "points": 187.54434867795115,
+          "previous_points": 181.69302962733877,
+          "games": 8
+        },
+        {
+          "id": "xz7dqv9j",
+          "name": "SlothLord",
+          "rank": 5,
+          "previous_rank": 5,
+          "points": 180.59142693508107,
+          "previous_points": 176.98547462330677,
+          "games": 5
+        },
+        {
+          "id": "u-e4ca3e01-2ef7-55f0-a77b-b87bb1774a62",
+          "name": "mucktro",
+          "rank": 6,
+          "previous_rank": 6,
+          "points": 177.77049483222007,
+          "previous_points": 176.44382223367103,
+          "games": 3
+        },
+        {
+          "id": "qxknn77x",
+          "name": "smythe",
+          "rank": 7,
+          "previous_rank": 9,
+          "points": 176.22854953480655,
+          "previous_points": 163.371217215168,
+          "games": 10
+        },
+        {
+          "id": "98rky4qx",
+          "name": "BigCheese",
+          "rank": 8,
+          "previous_rank": 10,
+          "points": 172.9952159599806,
+          "previous_points": 163.07533047010622,
+          "games": 10
+        },
+        {
+          "id": "kj946vwx",
+          "name": "Cads",
+          "rank": 9,
+          "previous_rank": 13,
+          "points": 172.1716287921576,
+          "previous_points": 159.1921060452489,
+          "games": 7
+        },
+        {
+          "id": "j5pn0oq8",
+          "name": "JesseKola",
+          "rank": 10,
+          "previous_rank": 8,
+          "points": 170.47828589167094,
+          "previous_points": 166.2003102941043,
+          "games": 5
+        },
+        {
+          "id": "8e9pwlpj",
+          "name": "ThinkLater",
+          "rank": 11,
+          "previous_rank": 7,
+          "points": 168.85118363886863,
+          "previous_points": 167.6904209032184,
+          "games": 11
+        },
+        {
+          "id": "qxkvvq2j",
+          "name": "relievedliberty",
+          "rank": 12,
+          "previous_rank": 14,
+          "points": 168.20510695901436,
+          "previous_points": 157.98729989774677,
+          "games": 4
+        },
+        {
+          "id": "5j537vqx",
+          "name": "NorXor",
+          "rank": 13,
+          "previous_rank": 11,
+          "points": 167.98804545870615,
+          "previous_points": 160.33216359468534,
+          "games": 3
+        },
+        {
+          "id": "18qqd7q8",
+          "name": "maibaRTA",
+          "rank": 14,
+          "previous_rank": 16,
+          "points": 166.46138898499458,
+          "previous_points": 154.34645826769986,
+          "games": 3
+        },
+        {
+          "id": "u-4f35e37c-0df0-50dc-bf47-420dedf83c86",
+          "name": "anonymous ",
+          "rank": 15,
+          "previous_rank": 20,
+          "points": 164.88340005586602,
+          "previous_points": 151.4525762615575,
+          "games": 2
+        },
+        {
+          "id": "8v0m22vx",
+          "name": "tetrisbit",
+          "rank": 16,
+          "previous_rank": 17,
+          "points": 162.8711855208543,
+          "previous_points": 153.5762585768155,
+          "games": 3
+        },
+        {
+          "id": "8wk9r2v8",
+          "name": "777haveoursinsbeenforgiven",
+          "rank": 17,
+          "previous_rank": 12,
+          "points": 161.70225671101616,
+          "previous_points": 160.26156844994236,
+          "games": 3
+        },
+        {
+          "id": "o863w4w8",
+          "name": "eddiecatgaming",
+          "rank": 18,
+          "previous_rank": 31,
+          "points": 161.19813424764388,
+          "previous_points": 142.94587398570482,
+          "games": 6
+        },
+        {
+          "id": "x3w7wrqj",
+          "name": "zVypurr",
+          "rank": 19,
+          "previous_rank": 19,
+          "points": 160.72384960859756,
+          "previous_points": 153.42033159426543,
+          "games": 2
+        },
+        {
+          "id": "kjpw6n5x",
+          "name": "Okashi",
+          "rank": 20,
+          "previous_rank": 28,
+          "points": 159.5665965936532,
+          "previous_points": 146.69014146422302,
+          "games": 5
+        }
+      ]
+    },
+    {
+      "name": "bonus10",
+      "alpha": 0.1,
+      "scale": 0.01,
+      "mode": "both",
+      "lower_only": false,
+      "overlap_previous100": 98,
+      "overlap_candidate100": 95,
+      "top20": [
+        {
+          "id": "xk42q97j",
+          "name": "Nolyswag",
+          "rank": 1,
+          "previous_rank": 1,
+          "points": 207.68066232783653,
+          "previous_points": 201.65582199251153,
+          "games": 5
+        },
+        {
+          "id": "qjne76wj",
+          "name": "Niftski",
+          "rank": 2,
+          "previous_rank": 3,
+          "points": 191.57788374590743,
+          "previous_points": 183.70449599111495,
+          "games": 3
+        },
+        {
+          "id": "qjor2nj6",
+          "name": "Odme",
+          "rank": 3,
+          "previous_rank": 2,
+          "points": 189.65274788837732,
+          "previous_points": 187.52658100637544,
+          "games": 15
+        },
+        {
+          "id": "18qowewj",
+          "name": "Majoog",
+          "rank": 4,
+          "previous_rank": 4,
+          "points": 183.9422984720003,
+          "previous_points": 181.69302962733877,
+          "games": 8
+        },
+        {
+          "id": "xz7dqv9j",
+          "name": "SlothLord",
+          "rank": 5,
+          "previous_rank": 5,
+          "points": 178.39727131312705,
+          "previous_points": 176.98547462330677,
+          "games": 5
+        },
+        {
+          "id": "u-e4ca3e01-2ef7-55f0-a77b-b87bb1774a62",
+          "name": "mucktro",
+          "rank": 6,
+          "previous_rank": 6,
+          "points": 176.8467669968541,
+          "previous_points": 176.44382223367103,
+          "games": 3
+        },
+        {
+          "id": "8e9pwlpj",
+          "name": "ThinkLater",
+          "rank": 7,
+          "previous_rank": 7,
+          "points": 168.0841921733884,
+          "previous_points": 167.6904209032184,
+          "games": 11
+        },
+        {
+          "id": "qxknn77x",
+          "name": "smythe",
+          "rank": 8,
+          "previous_rank": 9,
+          "points": 168.05040240067842,
+          "previous_points": 163.371217215168,
+          "games": 10
+        },
+        {
+          "id": "j5pn0oq8",
+          "name": "JesseKola",
+          "rank": 9,
+          "previous_rank": 8,
+          "points": 167.68425587872846,
+          "previous_points": 166.2003102941043,
+          "games": 5
+        },
+        {
+          "id": "98rky4qx",
+          "name": "BigCheese",
+          "rank": 10,
+          "previous_rank": 10,
+          "points": 166.43778549645202,
+          "previous_points": 163.07533047010622,
+          "games": 10
+        },
+        {
+          "id": "kj946vwx",
+          "name": "Cads",
+          "rank": 11,
+          "previous_rank": 13,
+          "points": 164.1825075223201,
+          "previous_points": 159.1921060452489,
+          "games": 7
+        },
+        {
+          "id": "5j537vqx",
+          "name": "NorXor",
+          "rank": 12,
+          "previous_rank": 11,
+          "points": 163.31809601769766,
+          "previous_points": 160.33216359468534,
+          "games": 3
+        },
+        {
+          "id": "qxkvvq2j",
+          "name": "relievedliberty",
+          "rank": 13,
+          "previous_rank": 14,
+          "points": 161.94784073631598,
+          "previous_points": 157.98729989774677,
+          "games": 4
+        },
+        {
+          "id": "8wk9r2v8",
+          "name": "777haveoursinsbeenforgiven",
+          "rank": 14,
+          "previous_rank": 12,
+          "points": 160.65889331788065,
+          "previous_points": 160.26156844994236,
+          "games": 3
+        },
+        {
+          "id": "18qqd7q8",
+          "name": "maibaRTA",
+          "rank": 15,
+          "previous_rank": 16,
+          "points": 158.8982495827865,
+          "previous_points": 154.34645826769986,
+          "games": 3
+        },
+        {
+          "id": "j921k2w8",
+          "name": "Zangoose",
+          "rank": 16,
+          "previous_rank": 15,
+          "points": 158.05232699264624,
+          "previous_points": 157.60122787066555,
+          "games": 16
+        },
+        {
+          "id": "8v0m22vx",
+          "name": "tetrisbit",
+          "rank": 17,
+          "previous_rank": 17,
+          "points": 156.68046482028444,
+          "previous_points": 153.5762585768155,
+          "games": 3
+        },
+        {
+          "id": "u-4f35e37c-0df0-50dc-bf47-420dedf83c86",
+          "name": "anonymous ",
+          "rank": 18,
+          "previous_rank": 20,
+          "points": 156.29122218789877,
+          "previous_points": 151.4525762615575,
+          "games": 2
+        },
+        {
+          "id": "x3w7wrqj",
+          "name": "zVypurr",
+          "rank": 19,
+          "previous_rank": 19,
+          "points": 155.79901090061384,
+          "previous_points": 153.42033159426543,
+          "games": 2
+        },
+        {
+          "id": "18qdq9qx",
+          "name": "M4xD",
+          "rank": 20,
+          "previous_rank": 18,
+          "points": 153.6688385878683,
+          "previous_points": 153.48150564038912,
+          "games": 3
+        }
+      ]
+    },
+    {
+      "name": "bonus50",
+      "alpha": 0.5,
+      "scale": 0.01,
+      "mode": "both",
+      "lower_only": false,
+      "overlap_previous100": 91,
+      "overlap_candidate100": 97,
+      "top20": [
+        {
+          "id": "xk42q97j",
+          "name": "Nolyswag",
+          "rank": 1,
+          "previous_rank": 1,
+          "points": 232.0005758187099,
+          "previous_points": 201.65582199251153,
+          "games": 5
+        },
+        {
+          "id": "qjne76wj",
+          "name": "Niftski",
+          "rank": 2,
+          "previous_rank": 3,
+          "points": 223.07143476507747,
+          "previous_points": 183.70449599111495,
+          "games": 3
+        },
+        {
+          "id": "qjor2nj6",
+          "name": "Odme",
+          "rank": 3,
+          "previous_rank": 2,
+          "points": 198.157415416385,
+          "previous_points": 187.52658100637544,
+          "games": 15
+        },
+        {
+          "id": "18qowewj",
+          "name": "Majoog",
+          "rank": 4,
+          "previous_rank": 4,
+          "points": 192.93937385064638,
+          "previous_points": 181.69302962733877,
+          "games": 8
+        },
+        {
+          "id": "qxknn77x",
+          "name": "smythe",
+          "rank": 5,
+          "previous_rank": 9,
+          "points": 186.76714314272033,
+          "previous_points": 163.371217215168,
+          "games": 10
+        },
+        {
+          "id": "kj946vwx",
+          "name": "Cads",
+          "rank": 6,
+          "previous_rank": 13,
+          "points": 184.14411343060485,
+          "previous_points": 159.1921060452489,
+          "games": 7
+        },
+        {
+          "id": "xz7dqv9j",
+          "name": "SlothLord",
+          "rank": 7,
+          "previous_rank": 5,
+          "points": 184.04445807240825,
+          "previous_points": 176.98547462330677,
+          "games": 5
+        },
+        {
+          "id": "98rky4qx",
+          "name": "BigCheese",
+          "rank": 8,
+          "previous_rank": 10,
+          "points": 179.94277061796603,
+          "previous_points": 163.07533047010622,
+          "games": 10
+        },
+        {
+          "id": "u-e4ca3e01-2ef7-55f0-a77b-b87bb1774a62",
+          "name": "mucktro",
+          "rank": 9,
+          "previous_rank": 6,
+          "points": 178.45854604958635,
+          "previous_points": 176.44382223367103,
+          "games": 3
+        },
+        {
+          "id": "qxkvvq2j",
+          "name": "relievedliberty",
+          "rank": 10,
+          "previous_rank": 14,
+          "points": 177.79000409059282,
+          "previous_points": 157.98729989774677,
+          "games": 4
+        },
+        {
+          "id": "18qqd7q8",
+          "name": "maibaRTA",
+          "rank": 11,
+          "previous_rank": 16,
+          "points": 177.10541484313282,
+          "previous_points": 154.34645826769986,
+          "games": 3
+        },
+        {
+          "id": "u-4f35e37c-0df0-50dc-bf47-420dedf83c86",
+          "name": "anonymous ",
+          "rank": 12,
+          "previous_rank": 20,
+          "points": 175.64580589326386,
+          "previous_points": 151.4525762615575,
+          "games": 2
+        },
+        {
+          "id": "5j537vqx",
+          "name": "NorXor",
+          "rank": 13,
+          "previous_rank": 11,
+          "points": 175.26182570974686,
+          "previous_points": 160.33216359468534,
+          "games": 3
+        },
+        {
+          "id": "j5pn0oq8",
+          "name": "JesseKola",
+          "rank": 14,
+          "previous_rank": 8,
+          "points": 173.62003821722513,
+          "previous_points": 166.2003102941043,
+          "games": 5
+        },
+        {
+          "id": "kjpw6n5x",
+          "name": "Okashi",
+          "rank": 15,
+          "previous_rank": 28,
+          "points": 172.1694014274385,
+          "previous_points": 146.69014146422302,
+          "games": 5
+        },
+        {
+          "id": "o863w4w8",
+          "name": "eddiecatgaming",
+          "rank": 16,
+          "previous_rank": 31,
+          "points": 170.6870712890077,
+          "previous_points": 142.94587398570482,
+          "games": 6
+        },
+        {
+          "id": "8e9pwlpj",
+          "name": "ThinkLater",
+          "rank": 17,
+          "previous_rank": 7,
+          "points": 169.6592772540684,
+          "previous_points": 167.6904209032184,
+          "games": 11
+        },
+        {
+          "id": "8v0m22vx",
+          "name": "tetrisbit",
+          "rank": 18,
+          "previous_rank": 17,
+          "points": 169.0972897941602,
+          "previous_points": 153.5762585768155,
+          "games": 3
+        },
+        {
+          "id": "xz2904rx",
+          "name": "Inforcer",
+          "rank": 19,
+          "previous_rank": 24,
+          "points": 168.1584726530956,
+          "previous_points": 149.4752088862079,
+          "games": 5
+        },
+        {
+          "id": "kjprmwk8",
+          "name": "Weegee",
+          "rank": 20,
+          "previous_rank": 22,
+          "points": 165.32389975910496,
+          "previous_points": 150.15034648900385,
+          "games": 8
+        }
+      ]
+    },
+    {
+      "name": "scale005",
+      "alpha": 0.25,
+      "scale": 0.005,
+      "mode": "both",
+      "lower_only": false,
+      "overlap_previous100": 95,
+      "overlap_candidate100": 98,
+      "top20": [
+        {
+          "id": "xk42q97j",
+          "name": "Nolyswag",
+          "rank": 1,
+          "previous_rank": 1,
+          "points": 212.22439664032314,
+          "previous_points": 201.65582199251153,
+          "games": 5
+        },
+        {
+          "id": "qjne76wj",
+          "name": "Niftski",
+          "rank": 2,
+          "previous_rank": 3,
+          "points": 198.2745306191399,
+          "previous_points": 183.70449599111495,
+          "games": 3
+        },
+        {
+          "id": "qjor2nj6",
+          "name": "Odme",
+          "rank": 3,
+          "previous_rank": 2,
+          "points": 190.41388694588298,
+          "previous_points": 187.52658100637544,
+          "games": 15
+        },
+        {
+          "id": "18qowewj",
+          "name": "Majoog",
+          "rank": 4,
+          "previous_rank": 4,
+          "points": 184.77598132322566,
+          "previous_points": 181.69302962733877,
+          "games": 8
+        },
+        {
+          "id": "xz7dqv9j",
+          "name": "SlothLord",
+          "rank": 5,
+          "previous_rank": 5,
+          "points": 178.8768107386541,
+          "previous_points": 176.98547462330677,
+          "games": 5
+        },
+        {
+          "id": "u-e4ca3e01-2ef7-55f0-a77b-b87bb1774a62",
+          "name": "mucktro",
+          "rank": 6,
+          "previous_rank": 6,
+          "points": 176.95844787679619,
+          "previous_points": 176.44382223367103,
+          "games": 3
+        },
+        {
+          "id": "qxknn77x",
+          "name": "smythe",
+          "rank": 7,
+          "previous_rank": 9,
+          "points": 170.98713454021157,
+          "previous_points": 163.371217215168,
+          "games": 10
+        },
+        {
+          "id": "j5pn0oq8",
+          "name": "JesseKola",
+          "rank": 8,
+          "previous_rank": 8,
+          "points": 168.52845774239518,
+          "previous_points": 166.2003102941043,
+          "games": 5
+        },
+        {
+          "id": "8e9pwlpj",
+          "name": "ThinkLater",
+          "rank": 9,
+          "previous_rank": 7,
+          "points": 168.21737252891865,
+          "previous_points": 167.6904209032184,
+          "games": 11
+        },
+        {
+          "id": "98rky4qx",
+          "name": "BigCheese",
+          "rank": 10,
+          "previous_rank": 10,
+          "points": 168.1723896474722,
+          "previous_points": 163.07533047010622,
+          "games": 10
+        },
+        {
+          "id": "kj946vwx",
+          "name": "Cads",
+          "rank": 11,
+          "previous_rank": 13,
+          "points": 167.01190720131396,
+          "previous_points": 159.1921060452489,
+          "games": 7
+        },
+        {
+          "id": "5j537vqx",
+          "name": "NorXor",
+          "rank": 12,
+          "previous_rank": 11,
+          "points": 164.78908499737918,
+          "previous_points": 160.33216359468534,
+          "games": 3
+        },
+        {
+          "id": "qxkvvq2j",
+          "name": "relievedliberty",
+          "rank": 13,
+          "previous_rank": 14,
+          "points": 164.324007253057,
+          "previous_points": 157.98729989774677,
+          "games": 4
+        },
+        {
+          "id": "18qqd7q8",
+          "name": "maibaRTA",
+          "rank": 14,
+          "previous_rank": 16,
+          "points": 161.19956690435612,
+          "previous_points": 154.34645826769986,
+          "games": 3
+        },
+        {
+          "id": "8wk9r2v8",
+          "name": "777haveoursinsbeenforgiven",
+          "rank": 15,
+          "previous_rank": 12,
+          "points": 160.7679756863717,
+          "previous_points": 160.26156844994236,
+          "games": 3
+        },
+        {
+          "id": "u-4f35e37c-0df0-50dc-bf47-420dedf83c86",
+          "name": "anonymous ",
+          "rank": 16,
+          "previous_rank": 20,
+          "points": 159.12243194406562,
+          "previous_points": 151.4525762615575,
+          "games": 2
+        },
+        {
+          "id": "j921k2w8",
+          "name": "Zangoose",
+          "rank": 17,
+          "previous_rank": 15,
+          "points": 158.2350675359253,
+          "previous_points": 157.60122787066555,
+          "games": 16
+        },
+        {
+          "id": "8v0m22vx",
+          "name": "tetrisbit",
+          "rank": 18,
+          "previous_rank": 17,
+          "points": 158.07555742880024,
+          "previous_points": 153.5762585768155,
+          "games": 3
+        },
+        {
+          "id": "x3w7wrqj",
+          "name": "zVypurr",
+          "rank": 19,
+          "previous_rank": 19,
+          "points": 156.67881033530904,
+          "previous_points": 153.42033159426543,
+          "games": 2
+        },
+        {
+          "id": "xz2904rx",
+          "name": "Inforcer",
+          "rank": 20,
+          "previous_rank": 24,
+          "points": 155.32810854265833,
+          "previous_points": 149.4752088862079,
+          "games": 5
+        }
+      ]
+    },
+    {
+      "name": "scale02",
+      "alpha": 0.25,
+      "scale": 0.02,
+      "mode": "both",
+      "lower_only": false,
+      "overlap_previous100": 93,
+      "overlap_candidate100": 100,
+      "top20": [
+        {
+          "id": "xk42q97j",
+          "name": "Nolyswag",
+          "rank": 1,
+          "previous_rank": 1,
+          "points": 221.3406660411379,
+          "previous_points": 201.65582199251153,
+          "games": 5
+        },
+        {
+          "id": "qjne76wj",
+          "name": "Niftski",
+          "rank": 2,
+          "previous_rank": 3,
+          "points": 208.21307924242984,
+          "previous_points": 183.70449599111495,
+          "games": 3
+        },
+        {
+          "id": "qjor2nj6",
+          "name": "Odme",
+          "rank": 3,
+          "previous_rank": 2,
+          "points": 196.73940426965228,
+          "previous_points": 187.52658100637544,
+          "games": 15
+        },
+        {
+          "id": "18qowewj",
+          "name": "Majoog",
+          "rank": 4,
+          "previous_rank": 4,
+          "points": 191.2833859422536,
+          "previous_points": 181.69302962733877,
+          "games": 8
+        },
+        {
+          "id": "xz7dqv9j",
+          "name": "SlothLord",
+          "rank": 5,
+          "previous_rank": 5,
+          "points": 183.23488455360038,
+          "previous_points": 176.98547462330677,
+          "games": 5
+        },
+        {
+          "id": "qxknn77x",
+          "name": "smythe",
+          "rank": 6,
+          "previous_rank": 9,
+          "points": 179.5302496487329,
+          "previous_points": 163.371217215168,
+          "games": 10
+        },
+        {
+          "id": "u-e4ca3e01-2ef7-55f0-a77b-b87bb1774a62",
+          "name": "mucktro",
+          "rank": 7,
+          "previous_rank": 6,
+          "points": 178.37680106735704,
+          "previous_points": 176.44382223367103,
+          "games": 3
+        },
+        {
+          "id": "kj946vwx",
+          "name": "Cads",
+          "rank": 8,
+          "previous_rank": 13,
+          "points": 177.22859765105025,
+          "previous_points": 159.1921060452489,
+          "games": 7
+        },
+        {
+          "id": "98rky4qx",
+          "name": "BigCheese",
+          "rank": 9,
+          "previous_rank": 10,
+          "points": 175.92308729961988,
+          "previous_points": 163.07533047010622,
+          "games": 10
+        },
+        {
+          "id": "qxkvvq2j",
+          "name": "relievedliberty",
+          "rank": 10,
+          "previous_rank": 14,
+          "points": 172.0676277836364,
+          "previous_points": 157.98729989774677,
+          "games": 4
+        },
+        {
+          "id": "j5pn0oq8",
+          "name": "JesseKola",
+          "rank": 11,
+          "previous_rank": 8,
+          "points": 171.85770280601642,
+          "previous_points": 166.2003102941043,
+          "games": 5
+        },
+        {
+          "id": "5j537vqx",
+          "name": "NorXor",
+          "rank": 12,
+          "previous_rank": 11,
+          "points": 171.7488939190649,
+          "previous_points": 160.33216359468534,
+          "games": 3
+        },
+        {
+          "id": "18qqd7q8",
+          "name": "maibaRTA",
+          "rank": 13,
+          "previous_rank": 16,
+          "points": 171.4884093639352,
+          "previous_points": 154.34645826769986,
+          "games": 3
+        },
+        {
+          "id": "8e9pwlpj",
+          "name": "ThinkLater",
+          "rank": 14,
+          "previous_rank": 7,
+          "points": 169.47804339864766,
+          "previous_points": 167.6904209032184,
+          "games": 11
+        },
+        {
+          "id": "u-4f35e37c-0df0-50dc-bf47-420dedf83c86",
+          "name": "anonymous ",
+          "rank": 15,
+          "previous_rank": 20,
+          "points": 168.56650269834884,
+          "previous_points": 151.4525762615575,
+          "games": 2
+        },
+        {
+          "id": "8v0m22vx",
+          "name": "tetrisbit",
+          "rank": 16,
+          "previous_rank": 17,
+          "points": 165.85134752778407,
+          "previous_points": 153.5762585768155,
+          "games": 3
+        },
+        {
+          "id": "kjpw6n5x",
+          "name": "Okashi",
+          "rank": 17,
+          "previous_rank": 28,
+          "points": 164.44155782234097,
+          "previous_points": 146.69014146422302,
+          "games": 5
+        },
+        {
+          "id": "x3w7wrqj",
+          "name": "zVypurr",
+          "rank": 18,
+          "previous_rank": 19,
+          "points": 163.55452831275707,
+          "previous_points": 153.42033159426543,
+          "games": 2
+        },
+        {
+          "id": "xz2904rx",
+          "name": "Inforcer",
+          "rank": 19,
+          "previous_rank": 24,
+          "points": 162.9611336426862,
+          "previous_points": 149.4752088862079,
+          "games": 5
+        },
+        {
+          "id": "8wk9r2v8",
+          "name": "777haveoursinsbeenforgiven",
+          "rank": 20,
+          "previous_rank": 12,
+          "points": 162.17468819124383,
+          "previous_points": 160.26156844994236,
+          "games": 3
+        }
+      ]
+    },
+    {
+      "name": "lower_better_only",
+      "alpha": 0.25,
+      "scale": 0.01,
+      "mode": "both",
+      "lower_only": true,
+      "overlap_previous100": 93,
+      "overlap_candidate100": 100,
+      "top20": [
+        {
+          "id": "xk42q97j",
+          "name": "Nolyswag",
+          "rank": 1,
+          "previous_rank": 1,
+          "points": 216.717922830824,
+          "previous_points": 201.65582199251153,
+          "games": 5
+        },
+        {
+          "id": "qjne76wj",
+          "name": "Niftski",
+          "rank": 2,
+          "previous_rank": 3,
+          "points": 203.38796537809623,
+          "previous_points": 183.70449599111495,
+          "games": 3
+        },
+        {
+          "id": "qjor2nj6",
+          "name": "Odme",
+          "rank": 3,
+          "previous_rank": 2,
+          "points": 192.84199821138017,
+          "previous_points": 187.52658100637544,
+          "games": 15
+        },
+        {
+          "id": "18qowewj",
+          "name": "Majoog",
+          "rank": 4,
+          "previous_rank": 4,
+          "points": 187.3162017389926,
+          "previous_points": 181.69302962733877,
+          "games": 8
+        },
+        {
+          "id": "xz7dqv9j",
+          "name": "SlothLord",
+          "rank": 5,
+          "previous_rank": 5,
+          "points": 180.51496634785752,
+          "previous_points": 176.98547462330677,
+          "games": 5
+        },
+        {
+          "id": "u-e4ca3e01-2ef7-55f0-a77b-b87bb1774a62",
+          "name": "mucktro",
+          "rank": 6,
+          "previous_rank": 6,
+          "points": 177.4511841416287,
+          "previous_points": 176.44382223367103,
+          "games": 3
+        },
+        {
+          "id": "qxknn77x",
+          "name": "smythe",
+          "rank": 7,
+          "previous_rank": 9,
+          "points": 175.0691801789441,
+          "previous_points": 163.371217215168,
+          "games": 10
+        },
+        {
+          "id": "kj946vwx",
+          "name": "Cads",
+          "rank": 8,
+          "previous_rank": 13,
+          "points": 171.6681097379269,
+          "previous_points": 159.1921060452489,
+          "games": 7
+        },
+        {
+          "id": "98rky4qx",
+          "name": "BigCheese",
+          "rank": 9,
+          "previous_rank": 10,
+          "points": 171.4851020323449,
+          "previous_points": 163.07533047010622,
+          "games": 10
+        },
+        {
+          "id": "j5pn0oq8",
+          "name": "JesseKola",
+          "rank": 10,
+          "previous_rank": 8,
+          "points": 169.91017425566474,
+          "previous_points": 166.2003102941043,
+          "games": 5
+        },
+        {
+          "id": "8e9pwlpj",
+          "name": "ThinkLater",
+          "rank": 11,
+          "previous_rank": 7,
+          "points": 168.6748490786434,
+          "previous_points": 167.6904209032184,
+          "games": 11
+        },
+        {
+          "id": "qxkvvq2j",
+          "name": "relievedliberty",
+          "rank": 12,
+          "previous_rank": 14,
+          "points": 167.88865199416978,
+          "previous_points": 157.98729989774677,
+          "games": 4
+        },
+        {
+          "id": "5j537vqx",
+          "name": "NorXor",
+          "rank": 13,
+          "previous_rank": 11,
+          "points": 167.79699465221609,
+          "previous_points": 160.33216359468534,
+          "games": 3
+        },
+        {
+          "id": "18qqd7q8",
+          "name": "maibaRTA",
+          "rank": 14,
+          "previous_rank": 16,
+          "points": 165.72593655541635,
+          "previous_points": 154.34645826769986,
+          "games": 3
+        },
+        {
+          "id": "u-4f35e37c-0df0-50dc-bf47-420dedf83c86",
+          "name": "anonymous ",
+          "rank": 15,
+          "previous_rank": 20,
+          "points": 163.54919107741068,
+          "previous_points": 151.4525762615575,
+          "games": 2
+        },
+        {
+          "id": "8v0m22vx",
+          "name": "tetrisbit",
+          "rank": 16,
+          "previous_rank": 17,
+          "points": 161.33677418548783,
+          "previous_points": 153.5762585768155,
+          "games": 3
+        },
+        {
+          "id": "8wk9r2v8",
+          "name": "777haveoursinsbeenforgiven",
+          "rank": 17,
+          "previous_rank": 12,
+          "points": 161.2548806197882,
+          "previous_points": 160.26156844994236,
+          "games": 3
+        },
+        {
+          "id": "kjpw6n5x",
+          "name": "Okashi",
+          "rank": 18,
+          "previous_rank": 28,
+          "points": 159.42977144583077,
+          "previous_points": 146.69014146422302,
+          "games": 5
+        },
+        {
+          "id": "x3w7wrqj",
+          "name": "zVypurr",
+          "rank": 19,
+          "previous_rank": 19,
+          "points": 159.36702986013645,
+          "previous_points": 153.42033159426543,
+          "games": 2
+        },
+        {
+          "id": "xz2904rx",
+          "name": "Inforcer",
+          "rank": 20,
+          "previous_rank": 24,
+          "points": 158.81684076965175,
+          "previous_points": 149.4752088862079,
+          "games": 5
+        }
+      ]
+    }
+  ],
+  "profiles": [
+    {
+      "id": "xk42q97j",
+      "name": "Nolyswag",
+      "rank": 1,
+      "previous_rank": 1,
+      "points": 216.717922830824,
+      "previous_points": 201.65582199251153,
+      "games": 5,
+      "contributions": [
+        {
+          "game": "ROBLOX: Speed Run 4",
+          "scope_id": "558304c63f7b2359894e2ee8900eda37",
+          "scope": "ROBLOX: Speed Run 4 · Main World · Levels=5 Levels, Route=No Skips, Game Version=Pre-Sept 2024, Levels=5 Levels · Все платформы · time",
+          "place": 1,
+          "ties": 1,
+          "n": 4784,
+          "base_game_points": 99.16892111768753,
+          "density": 0.5637159927635863,
+          "multiplier": 1.1409289981908965,
+          "weight": 1.0,
+          "contribution": 113.14469782247528
+        },
+        {
+          "game": "Eternal Towers of Hell",
+          "scope_id": "2b966a978a742bad8ca85d629b5128ff",
+          "scope": "Eternal Towers of Hell · Old Tower Versions · Tower=ToAST(C), Category=Glitchless · Все платформы · igt",
+          "place": 2,
+          "ties": 1,
+          "n": 223,
+          "base_game_points": 63.9614899720885,
+          "density": 0.05804719865301478,
+          "multiplier": 1.0145117996632538,
+          "weight": 0.9,
+          "contribution": 58.400717670654004
+        },
+        {
+          "game": "Find the Markers",
+          "scope_id": "d2f8d4e78640a93a391fcc46eb19f570",
+          "scope": "Find the Markers · 5 Markers · 5 Marker Versions=Post-Scented · Все платформы · time",
+          "place": 2,
+          "ties": 1,
+          "n": 40,
+          "base_game_points": 28.8165682803425,
+          "density": 0.009996018048746199,
+          "multiplier": 1.0024990045121867,
+          "weight": 0.81,
+          "contribution": 23.39975062174566
+        },
+        {
+          "game": "Roblox: DOORS",
+          "scope_id": "e26225b6a01d61a44d4c83760820abd8",
+          "scope": "Roblox: DOORS · The Hotel · Seed (Old)=Random Seed, Version=Legacy (Hotel-), Players=Solo, Shop=No Shop, Players (Global) (Old)=Solo · Все платформы · time",
+          "place": 55,
+          "ties": 1,
+          "n": 2035,
+          "base_game_points": 22.030567478941226,
+          "density": 0.1582894821370049,
+          "multiplier": 1.0119189689565615,
+          "weight": 0.7290000000000001,
+          "contribution": 16.251705714908443
+        },
+        {
+          "game": "Red Ball",
+          "scope_id": "996b5b4fe25a45d1aed8326d449c113b",
+          "scope": "Red Ball · 12 Levels · Все платформы · time",
+          "place": 145,
+          "ties": 1,
+          "n": 1164,
+          "base_game_points": 8.413131993169898,
+          "density": 0.10523255802088316,
+          "multiplier": 1.0002165093334583,
+          "weight": 0.6561,
+          "contribution": 5.521051001040622
+        }
+      ]
+    },
+    {
+      "id": "qjne76wj",
+      "name": "Niftski",
+      "rank": 2,
+      "previous_rank": 3,
+      "points": 203.38796537809623,
+      "previous_points": 183.70449599111495,
+      "games": 3,
+      "contributions": [
+        {
+          "game": "Super Mario Bros.",
+          "scope_id": "3bdbfeeed92f46ede11247498cbc90b0",
+          "scope": "Super Mario Bros. · Any% · Version=NTSC · Все платформы · time",
+          "place": 1,
+          "ties": 1,
+          "n": 1933,
+          "base_game_points": 97.96131752217147,
+          "density": 0.6008224630721435,
+          "multiplier": 1.1502056157680358,
+          "weight": 1.0,
+          "contribution": 112.67565754203731
+        },
+        {
+          "game": "Red Ball",
+          "scope_id": "996b5b4fe25a45d1aed8326d449c113b",
+          "scope": "Red Ball · 12 Levels · Все платформы · time",
+          "place": 4,
+          "ties": 1,
+          "n": 1164,
+          "base_game_points": 62.416964408783706,
+          "density": 0.10523255802088316,
+          "multiplier": 1.0263081395052207,
+          "weight": 0.9,
+          "contribution": 57.653134754348144
+        },
+        {
+          "game": "Super Mario Bros. 3",
+          "scope_id": "a1c2d44349e8a479ea9b759a0baa890e",
+          "scope": "Super Mario Bros. 3 · Any% (No Wrong Warp) · Все платформы · time",
+          "place": 11,
+          "ties": 1,
+          "n": 594,
+          "base_game_points": 36.503593211158204,
+          "density": 0.47230426790557534,
+          "multiplier": 1.1180760669763938,
+          "weight": 0.81,
+          "contribution": 33.059173081710746
+        }
+      ]
+    },
+    {
+      "id": "qjor2nj6",
+      "name": "Odme",
+      "rank": 3,
+      "previous_rank": 2,
+      "points": 192.84199821138017,
+      "previous_points": 187.52658100637544,
+      "games": 15,
+      "contributions": [
+        {
+          "game": "Super Mario 64",
+          "scope_id": "3f0e7971c00dd6244a2e446f403d1186",
+          "scope": "Super Mario 64 · 120 Star · Platform=VC · Все платформы · time",
+          "place": 2,
+          "ties": 2,
+          "n": 207,
+          "base_game_points": 56.985257875538984,
+          "density": 0.15134960953685161,
+          "multiplier": 1.037837402384213,
+          "weight": 1.0,
+          "contribution": 59.141432007743894
+        },
+        {
+          "game": "Super Mario Galaxy 2",
+          "scope_id": "f6685229c7864aa6c12c4d3a23d22a65",
+          "scope": "Super Mario Galaxy 2 · 242 Stars · Mode=1P, Release=Original · Все платформы · time",
+          "place": 3,
+          "ties": 1,
+          "n": 177,
+          "base_game_points": 50.03748200122096,
+          "density": 0.12235793911908133,
+          "multiplier": 1.0305894847797703,
+          "weight": 0.9,
+          "contribution": 46.411292515783806
+        },
+        {
+          "game": "Super Mario Galaxy",
+          "scope_id": "1be836c8e8320cbb2db920f509d91b58",
+          "scope": "Super Mario Galaxy · 120 Stars · Mode=2P, Character=Luigi, Mode=1P · Все платформы · time",
+          "place": 5,
+          "ties": 1,
+          "n": 197,
+          "base_game_points": 39.81372953412174,
+          "density": 0.09874886547816814,
+          "multiplier": 1.024687216369542,
+          "weight": 0.81,
+          "contribution": 33.04526194858332
+        },
+        {
+          "game": "Super Mario Sunshine",
+          "scope_id": "325f5ff81278ee755b23c48c28210552",
+          "scope": "Super Mario Sunshine · 120 Shines · Game Version=GCN · Все платформы · time",
+          "place": 14,
+          "ties": 2,
+          "n": 349,
+          "base_game_points": 26.393973074796396,
+          "density": 0.13518987557220435,
+          "multiplier": 1.0337974688930511,
+          "weight": 0.7290000000000001,
+          "contribution": 19.891510445333022
+        },
+        {
+          "game": "Super Mario 3D World + Bowser's Fury",
+          "scope_id": "962864604c98c5d45a41b6c98aa52061",
+          "scope": "Super Mario 3D World + Bowser's Fury · Super Mario 3D World · Categories=Any% · Все платформы · time",
+          "place": 18,
+          "ties": 1,
+          "n": 317,
+          "base_game_points": 21.944973744142008,
+          "density": 0.07627523659100094,
+          "multiplier": 1.0190688091477502,
+          "weight": 0.6561,
+          "contribution": 14.672651842531288
+        },
+        {
+          "game": "Super Mario Odyssey",
+          "scope_id": "977d9e922879cbfcb24537049a886e95",
+          "scope": "Super Mario Odyssey · Any% · Player=1P · Все платформы · time",
+          "place": 93,
+          "ties": 1,
+          "n": 5014,
+          "base_game_points": 21.729054835885485,
+          "density": 0.19645852290494342,
+          "multiplier": 1.0032354142378344,
+          "weight": 0.5904900000000001,
+          "contribution": 12.8723025093643
+        },
+        {
+          "game": "Sonic Adventure DX: Director's Cut",
+          "scope_id": "5699af2d18b1f7ebda1321353ee7fd9b",
+          "scope": "Sonic Adventure DX: Director's Cut · Sonic's Story · System=PC · Все платформы · igt",
+          "place": 67,
+          "ties": 1,
+          "n": 282,
+          "base_game_points": 5.65549916455536,
+          "density": 0.11724148245315535,
+          "multiplier": 1.0054626903103874,
+          "weight": 0.531441,
+          "contribution": 3.0219825975689156
+        },
+        {
+          "game": "Mario Kart 8 Deluxe",
+          "scope_id": "92ea2cc6940f0eff523ccf3547bad0c0",
+          "scope": "Mario Kart 8 Deluxe · 48 Tracks · Items=Items, Platform=Nintendo Switch, cc=200cc · Все платформы · time",
+          "place": 151,
+          "ties": 1,
+          "n": 400,
+          "base_game_points": 2.3973661886525,
+          "density": 0.23538493823133427,
+          "multiplier": 1.0003809557120065,
+          "weight": 0.4782969000000001,
+          "contribution": 1.147089640137325
+        },
+        {
+          "game": "Super Mario World",
+          "scope_id": "6a761e11218d6b49af81ba91f4d7649b",
+          "scope": "Super Mario World · 11 Exit · 11 Exit Run Type=Glitchless · Все платформы · time",
+          "place": 599,
+          "ties": 2,
+          "n": 1716,
+          "base_game_points": 1.9481652625164472,
+          "density": 0.4811852005071658,
+          "multiplier": 1.0000000000125941,
+          "weight": 0.4304672100000001,
+          "contribution": 0.8386212651849345
+        },
+        {
+          "game": "Sonic Adventure 2: Battle",
+          "scope_id": "43ecbbabc066ab6f886daafaf38eb95f",
+          "scope": "Sonic Adventure 2: Battle · Hero Story · Game Version=HD, Run type=New Game · Все платформы · time",
+          "place": 109,
+          "ties": 1,
+          "n": 245,
+          "base_game_points": 1.8514910372759887,
+          "density": 0.1255301042862561,
+          "multiplier": 1.0010900801694358,
+          "weight": 0.3874204890000001,
+          "contribution": 0.7180874836102775
+        },
+        {
+          "game": "New Super Mario Bros. U Deluxe",
+          "scope_id": "5089de611e1c9320702860beb16e1e5a",
+          "scope": "New Super Mario Bros. U Deluxe · NSMBU · Character=Normal, Run Type=Any%, Category=Any% · Все платформы · time",
+          "place": 103,
+          "ties": 1,
+          "n": 217,
+          "base_game_points": 1.607105310550332,
+          "density": 0.22830074773231548,
+          "multiplier": 1.0025202786419893,
+          "weight": 0.3486784401000001,
+          "contribution": 0.5617752435911224
+        },
+        {
+          "game": "Celeste",
+          "scope_id": "b07129e954966eb86cfac7a4af78787e",
+          "scope": "Celeste · Any% · Все платформы · igt",
+          "place": 2852,
+          "ties": 1,
+          "n": 7041,
+          "base_game_points": 1.0346514400837588,
+          "density": 0.1466250030062325,
+          "multiplier": 1.0,
+          "weight": 0.31381059609000006,
+          "contribution": 0.3246845851580613
+        },
+        {
+          "game": "Super Mario Bros. 3",
+          "scope_id": "9332a3d0321a54c891f3870642ed0352",
+          "scope": "Super Mario Bros. 3 · Any% · Все платформы · time",
+          "place": 395,
+          "ties": 10,
+          "n": 643,
+          "base_game_points": 0.5095081655031672,
+          "density": 0.18618216428395756,
+          "multiplier": 1.0000000145260235,
+          "weight": 0.2824295364810001,
+          "contribution": 0.14390015710664125
+        },
+        {
+          "game": "Super Mario 64 DS",
+          "scope_id": "c415699ac887b322312d05969e57944b",
+          "scope": "Super Mario 64 DS · 150 Star · Все платформы · timeWithLoads",
+          "place": 50,
+          "ties": 1,
+          "n": 61,
+          "base_game_points": 0.13161614485688744,
+          "density": 0.0397439789876335,
+          "multiplier": 1.003655248194975,
+          "weight": 0.2541865828329001,
+          "contribution": 0.0335773446475699
+        },
+        {
+          "game": "Super Mario Bros.",
+          "scope_id": "3bdbfeeed92f46ede11247498cbc90b0",
+          "scope": "Super Mario Bros. · Any% · Version=NTSC · Все платформы · time",
+          "place": 1558,
+          "ties": 8,
+          "n": 1933,
+          "base_game_points": 0.07793323767245508,
+          "density": 0.6008224630721435,
+          "multiplier": 1.0,
+          "weight": 0.2287679245496101,
+          "contribution": 0.017828625035759035
+        }
+      ]
+    },
+    {
+      "id": "18qowewj",
+      "name": "Majoog",
+      "rank": 4,
+      "previous_rank": 4,
+      "points": 187.3162017389926,
+      "previous_points": 181.69302962733877,
+      "games": 8,
+      "contributions": [
+        {
+          "game": "Undertale",
+          "scope_id": "7ee8d484fc4df72c9051275e5a7971ab",
+          "scope": "Undertale · Genocide · Version Subcategory=1.02+ · Все платформы · time",
+          "place": 1,
+          "ties": 1,
+          "n": 397,
+          "base_game_points": 90.61575443786981,
+          "density": 0.1718745987593523,
+          "multiplier": 1.042968649689838,
+          "weight": 1.0,
+          "contribution": 94.50939104669102
+        },
+        {
+          "game": "Super Mario 64",
+          "scope_id": "8f700c765b672eb63c8cd1377a3f51e0",
+          "scope": "Super Mario 64 · 1 Star · Platform=VC · Все платформы · time",
+          "place": 2,
+          "ties": 1,
+          "n": 113,
+          "base_game_points": 52.42872773884145,
+          "density": 0.0896847738203406,
+          "multiplier": 1.022421193455085,
+          "weight": 0.9,
+          "contribution": 48.2438181474702
+        },
+        {
+          "game": "Celeste",
+          "scope_id": "b07129e954966eb86cfac7a4af78787e",
+          "scope": "Celeste · Any% · Все платформы · igt",
+          "place": 38,
+          "ties": 1,
+          "n": 7041,
+          "base_game_points": 34.544369426421696,
+          "density": 0.1466250030062325,
+          "multiplier": 1.0217928942833492,
+          "weight": 0.81,
+          "contribution": 28.5907248861075
+        },
+        {
+          "game": "Super Mario Galaxy 2",
+          "scope_id": "7de7ff31c01f7888fef94177dcd57bf5",
+          "scope": "Super Mario Galaxy 2 · Any% · Mode=1P, Release=Original · Все платформы · time",
+          "place": 69,
+          "ties": 1,
+          "n": 415,
+          "base_game_points": 8.060514457825391,
+          "density": 0.1492989375857251,
+          "multiplier": 1.0064215288464655,
+          "weight": 0.7290000000000001,
+          "contribution": 5.913848681987646
+        },
+        {
+          "game": "Super Mario Bros.",
+          "scope_id": "3bdbfeeed92f46ede11247498cbc90b0",
+          "scope": "Super Mario Bros. · Any% · Version=NTSC · Все платформы · time",
+          "place": 283,
+          "ties": 1,
+          "n": 1933,
+          "base_game_points": 6.316173984084827,
+          "density": 0.6008224630721435,
+          "multiplier": 1.0000049518458507,
+          "weight": 0.6561,
+          "contribution": 4.144062271614005
+        },
+        {
+          "game": "Wii Sports Resort",
+          "scope_id": "cfd29d08860f2c76a926973f9a0a36e6",
+          "scope": "Wii Sports Resort · All Sports · Все платформы · time",
+          "place": 65,
+          "ties": 1,
+          "n": 263,
+          "base_game_points": 5.431597225313592,
+          "density": 0.1484533936028815,
+          "multiplier": 1.007493055813228,
+          "weight": 0.5904900000000001,
+          "contribution": 3.2313363523003007
+        },
+        {
+          "game": "Super Mario Odyssey",
+          "scope_id": "977d9e922879cbfcb24537049a886e95",
+          "scope": "Super Mario Odyssey · Any% · Player=1P · Все платформы · time",
+          "place": 785,
+          "ties": 4,
+          "n": 5014,
+          "base_game_points": 4.689552279357981,
+          "density": 0.19645852290494342,
+          "multiplier": 1.0000000000000029,
+          "weight": 0.531441,
+          "contribution": 2.492220352894292
+        },
+        {
+          "game": "Jump King",
+          "scope_id": "9057d585247031325d8ae31f7d3fed86",
+          "scope": "Jump King · Main Babe · Все платформы · time",
+          "place": 895,
+          "ties": 1,
+          "n": 1425,
+          "base_game_points": 0.3989154015583118,
+          "density": 0.2974516641540116,
+          "multiplier": 1.0,
+          "weight": 0.4782969000000001,
+          "contribution": 0.19079999992759572
+        }
+      ]
+    },
+    {
+      "id": "xz7dqv9j",
+      "name": "SlothLord",
+      "rank": 5,
+      "previous_rank": 5,
+      "points": 180.51496634785752,
+      "previous_points": 176.98547462330677,
+      "games": 5,
+      "contributions": [
+        {
+          "game": "Brawl Stars",
+          "scope_id": "61716a4e6086295d3d65a6f2bbcb8cb2",
+          "scope": "Brawl Stars · Tutorial · Co-op=Solo · Все платформы · time",
+          "place": 1,
+          "ties": 1,
+          "n": 790,
+          "base_game_points": 95.11674135689195,
+          "density": 0.11807935133505282,
+          "multiplier": 1.029519837833763,
+          "weight": 1.0,
+          "contribution": 97.92457213702339
+        },
+        {
+          "game": "Hypixel BedWars",
+          "scope_id": "faf5857c1eb472430a96beda77bdd607",
+          "scope": "Hypixel BedWars · 4v4 Win · 4v4=Win Without Party · Все платформы · time",
+          "place": 1,
+          "ties": 1,
+          "n": 80,
+          "base_game_points": 63.67717579838792,
+          "density": 0.04596133789866229,
+          "multiplier": 1.0114903344746655,
+          "weight": 0.9,
+          "contribution": 57.967963062042124
+        },
+        {
+          "game": "Minecraft (Classic)",
+          "scope_id": "0e159bf84f9eb3f3b35e77d5b4e63a25",
+          "scope": "Minecraft (Classic) · Reach Bedrock · Все платформы · time",
+          "place": 44,
+          "ties": 7,
+          "n": 1210,
+          "base_game_points": 20.26394047872071,
+          "density": 0.019123178909676786,
+          "multiplier": 1.001982991957191,
+          "weight": 0.81,
+          "contribution": 16.44634020486592
+        },
+        {
+          "game": "Geometry Dash",
+          "scope_id": "dbe1e802bafa8893b6fc09dda62b5eec",
+          "scope": "Geometry Dash · Rated Levels · Ruleset=No Major Glitches, Rated Level Type=Platformer, Category=5 Rated Levels, Game Type / OS=Platformer/PC · Все платформы · time",
+          "place": 4,
+          "ties": 1,
+          "n": 26,
+          "base_game_points": 10.187016018415715,
+          "density": 0.016486024481067063,
+          "multiplier": 1.0041215061202668,
+          "weight": 0.7290000000000001,
+          "contribution": 7.456942361249214
+        },
+        {
+          "game": "Minecraft: Java Edition",
+          "scope_id": "f2d172047c9e4f535676d79d9adcbbbf",
+          "scope": "Minecraft: Java Edition · Any% Glitchless · Seed Type (Any% Glitchless)=Random Seed, Version Range (Any% Glitchless)=1.16-1.19 · Все платформы · igt",
+          "place": 2675,
+          "ties": 1,
+          "n": 6752,
+          "base_game_points": 1.0960959955446852,
+          "density": 0.08518170399723476,
+          "multiplier": 1.0,
+          "weight": 0.6561,
+          "contribution": 0.719148582676868
+        }
+      ]
+    },
+    {
+      "id": "u-e4ca3e01-2ef7-55f0-a77b-b87bb1774a62",
+      "name": "mucktro",
+      "rank": 6,
+      "previous_rank": 6,
+      "points": 177.4511841416287,
+      "previous_points": 176.44382223367103,
+      "games": 3,
+      "contributions": [
+        {
+          "game": "Minecraft (Classic)",
+          "scope_id": "51690723c765129984640c595a537b86",
+          "scope": "Minecraft (Classic) · Destroy A Tree · Все платформы · time",
+          "place": 1,
+          "ties": 1,
+          "n": 228,
+          "base_game_points": 84.4613089871986,
+          "density": 0.031162283902413684,
+          "multiplier": 1.0077905709756034,
+          "weight": 1.0,
+          "contribution": 85.11931080955574
+        },
+        {
+          "game": "Seterra (Old Version)",
+          "scope_id": "6678059a160d31d672167df35425d6ec",
+          "scope": "Seterra (Old Version) · Oceania: Countries · Mode=Pin, Version=Website · Все платформы · igt",
+          "place": 1,
+          "ties": 4,
+          "n": 235,
+          "base_game_points": 58.77420562785114,
+          "density": 0.004170815597274821,
+          "multiplier": 1.0010427038993186,
+          "weight": 0.9,
+          "contribution": 52.95194074911479
+        },
+        {
+          "game": "Seterra (Geoguessr Version)",
+          "scope_id": "85b41ebfb4b33bfb82806526283e4909",
+          "scope": "Seterra (Geoguessr Version) · Europe: Countries (with Kosovo) · Mode=Pin, Platform=Website · Все платформы · igt",
+          "place": 6,
+          "ties": 1,
+          "n": 582,
+          "base_game_points": 48.253985409143695,
+          "density": 0.0301086268815335,
+          "multiplier": 1.0075271567203834,
+          "weight": 0.81,
+          "contribution": 39.37993258295815
+        }
+      ]
+    },
+    {
+      "id": "qxknn77x",
+      "name": "smythe",
+      "rank": 7,
+      "previous_rank": 9,
+      "points": 175.0691801789441,
+      "previous_points": 163.371217215168,
+      "games": 10,
+      "contributions": [
+        {
+          "game": "Refunct",
+          "scope_id": "5aadc7e1e30d81561da01db633eca651",
+          "scope": "Refunct · Any% · New Game Glitch=Normal · Все платформы · igt",
+          "place": 1,
+          "ties": 1,
+          "n": 1658,
+          "base_game_points": 97.62901139944864,
+          "density": 0.41542629558808936,
+          "multiplier": 1.1038565738970223,
+          "weight": 1.0,
+          "contribution": 107.76842603634871
+        },
+        {
+          "game": "There Is No Game",
+          "scope_id": "6bd1517902134c9cd5d895b03dc717c5",
+          "scope": "There Is No Game · Web · Category=Glitchless · Все платформы · time",
+          "place": 33,
+          "ties": 1,
+          "n": 1634,
+          "base_game_points": 27.148276744663246,
+          "density": 0.14663303167316413,
+          "multiplier": 1.026619358688166,
+          "weight": 0.9,
+          "contribution": 25.083851814985533
+        },
+        {
+          "game": "Super Mario Bros.",
+          "scope_id": "3bdbfeeed92f46ede11247498cbc90b0",
+          "scope": "Super Mario Bros. · Any% · Version=NTSC · Все платформы · time",
+          "place": 61,
+          "ties": 2,
+          "n": 1933,
+          "base_game_points": 20.338025056566412,
+          "density": 0.6008224630721435,
+          "multiplier": 1.0348831926494582,
+          "weight": 0.81,
+          "contribution": 17.048459045206542
+        },
+        {
+          "game": "Super Mario Bros. 3",
+          "scope_id": "a1c2d44349e8a479ea9b759a0baa890e",
+          "scope": "Super Mario Bros. 3 · Any% (No Wrong Warp) · Все платформы · time",
+          "place": 50,
+          "ties": 12,
+          "n": 594,
+          "base_game_points": 12.891088215323931,
+          "density": 0.47230426790557534,
+          "multiplier": 1.0348596169631719,
+          "weight": 0.7290000000000001,
+          "contribution": 9.725200160693717
+        },
+        {
+          "game": "Portal",
+          "scope_id": "6092e786836a425e0d73b6a0c6684ff7",
+          "scope": "Portal · Glitchless · PC/Console=PC · Все платформы · time",
+          "place": 214,
+          "ties": 1,
+          "n": 1996,
+          "base_game_points": 8.464128408464799,
+          "density": 0.15251990047250202,
+          "multiplier": 1.000019860960089,
+          "weight": 0.6561,
+          "contribution": 5.553424942954355
+        },
+        {
+          "game": "The Legend of Zelda: A Link to the Past",
+          "scope_id": "68e922295cc9fb45cac3306735bbe293",
+          "scope": "The Legend of Zelda: A Link to the Past · Major Glitches · Sub Category=Any% · Все платформы · time",
+          "place": 128,
+          "ties": 42,
+          "n": 1151,
+          "base_game_points": 8.15493003953735,
+          "density": 0.0469060533436106,
+          "multiplier": 1.0000838984932259,
+          "weight": 0.5904900000000001,
+          "contribution": 4.815808644239899
+        },
+        {
+          "game": "Cuphead",
+          "scope_id": "8a0fd8de789087f3e5342ab1b11559c7",
+          "scope": "Cuphead · Version 1.1+ · Difficulty=Regular, ILs - Players=Solo, Players=Solo, Category=Any% · Все платформы · time",
+          "place": 201,
+          "ties": 1,
+          "n": 770,
+          "base_game_points": 3.879130168252397,
+          "density": 0.2044444581855116,
+          "multiplier": 1.0000447798050807,
+          "weight": 0.531441,
+          "contribution": 2.0616211306047596
+        },
+        {
+          "game": "Terraria",
+          "scope_id": "1c9aec7ccc6da2fb7d4eab91bee914f3",
+          "scope": "Terraria · Night's Edge · Patch/Game mode=1.4 NMA, Seeds=Random, Special Seeds=None, Patch/Game mode=1.4 NMA · Все платформы · time",
+          "place": 33,
+          "ties": 1,
+          "n": 87,
+          "base_game_points": 3.1015024932348956,
+          "density": 0.019618928514044322,
+          "multiplier": 1.0035615665122226,
+          "weight": 0.4782969000000001,
+          "contribution": 1.4887223946210597
+        },
+        {
+          "game": "Getting Over It With Bennett Foddy",
+          "scope_id": "8af5bb55d8421d2a462278f4d16256bf",
+          "scope": "Getting Over It With Bennett Foddy · Glitchless · Все платформы · time",
+          "place": 1309,
+          "ties": 1,
+          "n": 4384,
+          "base_game_points": 2.058736842490403,
+          "density": 0.1124422475691707,
+          "multiplier": 1.0,
+          "weight": 0.4304672100000001,
+          "contribution": 0.8862187047110534
+        },
+        {
+          "game": "Super Mario 64",
+          "scope_id": "bc884038e77db8333c8e58607f0364f7",
+          "scope": "Super Mario 64 · 16 Star · Platform=N64 · Все платформы · time",
+          "place": 810,
+          "ties": 13,
+          "n": 2211,
+          "base_game_points": 1.645362913623588,
+          "density": 0.23623699864061842,
+          "multiplier": 1.000000000000001,
+          "weight": 0.3874204890000001,
+          "contribution": 0.6374473045785161
+        }
+      ]
+    },
+    {
+      "id": "kj946vwx",
+      "name": "Cads",
+      "rank": 8,
+      "previous_rank": 13,
+      "points": 171.6681097379269,
+      "previous_points": 159.1921060452489,
+      "games": 7,
+      "contributions": [
+        {
+          "game": "New Super Mario Bros. Wii",
+          "scope_id": "76d30a084f5f5fb2defd954a2135cebb",
+          "scope": "New Super Mario Bros. Wii · Any% · Platform=Physical · Все платформы · time",
+          "place": 1,
+          "ties": 1,
+          "n": 92,
+          "base_game_points": 67.21045369694018,
+          "density": 0.44885498056417183,
+          "multiplier": 1.112213745141043,
+          "weight": 1.0,
+          "contribution": 74.7523904189025
+        },
+        {
+          "game": "New Super Mario Bros.",
+          "scope_id": "11a1b91176b36bb9b3d49b46c47168aa",
+          "scope": "New Super Mario Bros. · Any% · Release=Official Releases · Все платформы · timeWithLoads",
+          "place": 3,
+          "ties": 1,
+          "n": 308,
+          "base_game_points": 57.58347470712627,
+          "density": 0.29654349764911625,
+          "multiplier": 1.074135874412279,
+          "weight": 0.9,
+          "contribution": 55.66722836061279
+        },
+        {
+          "game": "New Super Mario Bros. U Deluxe",
+          "scope_id": "5ee080211d77726f7aa092b48587daae",
+          "scope": "New Super Mario Bros. U Deluxe · NSMBU · Character=Nabbit, Run Type=Any%, Category=Any% · Все платформы · time",
+          "place": 3,
+          "ties": 1,
+          "n": 92,
+          "base_game_points": 38.518986600506786,
+          "density": 0.13987313772771498,
+          "multiplier": 1.0349682844319288,
+          "weight": 0.81,
+          "contribution": 32.2914028787862
+        },
+        {
+          "game": "Minecraft (Classic)",
+          "scope_id": "6e0a5ec3acb8280eb16602072ee620f1",
+          "scope": "Minecraft (Classic) · Minerals · Mineral=Gold · Все платформы · time",
+          "place": 13,
+          "ties": 3,
+          "n": 84,
+          "base_game_points": 10.618754122027129,
+          "density": 0.0004867441946585818,
+          "multiplier": 1.0001216860486646,
+          "weight": 0.7290000000000001,
+          "contribution": 7.742013735392067
+        },
+        {
+          "game": "Super Mario World",
+          "scope_id": "6a761e11218d6b49af81ba91f4d7649b",
+          "scope": "Super Mario World · 11 Exit · 11 Exit Run Type=Glitchless · Все платформы · time",
+          "place": 858,
+          "ties": 1,
+          "n": 1716,
+          "base_game_points": 0.8463107998059253,
+          "density": 0.4811852005071658,
+          "multiplier": 1.0000000000000004,
+          "weight": 0.6561,
+          "contribution": 0.5552645157526678
+        },
+        {
+          "game": "Super Mario Bros. 3",
+          "scope_id": "a1c2d44349e8a479ea9b759a0baa890e",
+          "scope": "Super Mario Bros. 3 · Any% (No Wrong Warp) · Все платформы · time",
+          "place": 344,
+          "ties": 2,
+          "n": 594,
+          "base_game_points": 0.680866026997885,
+          "density": 0.47230426790557534,
+          "multiplier": 1.0000003325664235,
+          "weight": 0.5904900000000001,
+          "contribution": 0.40204471398850933
+        },
+        {
+          "game": "Super Mario Bros.",
+          "scope_id": "3bdbfeeed92f46ede11247498cbc90b0",
+          "scope": "Super Mario Bros. · Any% · Version=NTSC · Все платформы · time",
+          "place": 1126,
+          "ties": 19,
+          "n": 1933,
+          "base_game_points": 0.4850305386527548,
+          "density": 0.6008224630721435,
+          "multiplier": 1.0,
+          "weight": 0.531441,
+          "contribution": 0.25776511449215866
+        }
+      ]
+    },
+    {
+      "id": "98rky4qx",
+      "name": "BigCheese",
+      "rank": 9,
+      "previous_rank": 10,
+      "points": 171.4851020323449,
+      "previous_points": 163.07533047010622,
+      "games": 10,
+      "contributions": [
+        {
+          "game": "Super Mario 64",
+          "scope_id": "6f172b6f19142d8df8d4abf0046525e6",
+          "scope": "Super Mario 64 · 16 Star · Platform=VC · Все платформы · time",
+          "place": 4,
+          "ties": 1,
+          "n": 881,
+          "base_game_points": 60.51042989851162,
+          "density": 0.13799638865844915,
+          "multiplier": 1.0344990971646122,
+          "weight": 1.0,
+          "contribution": 62.59798509905283
+        },
+        {
+          "game": "New Super Mario Bros. Wii",
+          "scope_id": "76d30a084f5f5fb2defd954a2135cebb",
+          "scope": "New Super Mario Bros. Wii · Any% · Platform=Physical · Все платформы · time",
+          "place": 2,
+          "ties": 1,
+          "n": 92,
+          "base_game_points": 48.184316604938374,
+          "density": 0.44885498056417183,
+          "multiplier": 1.112213745141043,
+          "weight": 0.9,
+          "contribution": 48.23213330541623
+        },
+        {
+          "game": "New Super Mario Bros. U Deluxe",
+          "scope_id": "5ee080211d77726f7aa092b48587daae",
+          "scope": "New Super Mario Bros. U Deluxe · NSMBU · Character=Nabbit, Run Type=Any%, Category=Any% · Все платформы · time",
+          "place": 4,
+          "ties": 1,
+          "n": 92,
+          "base_game_points": 32.31679848802156,
+          "density": 0.13987313772771498,
+          "multiplier": 1.0349682844319288,
+          "weight": 0.81,
+          "contribution": 27.091957806478824
+        },
+        {
+          "game": "Super Mario Galaxy 2",
+          "scope_id": "7de7ff31c01f7888fef94177dcd57bf5",
+          "scope": "Super Mario Galaxy 2 · Any% · Mode=1P, Release=Original · Все платформы · time",
+          "place": 24,
+          "ties": 1,
+          "n": 415,
+          "base_game_points": 20.34196017979599,
+          "density": 0.1492989375857251,
+          "multiplier": 1.0373247343964314,
+          "weight": 0.7290000000000001,
+          "contribution": 15.382788243204441
+        },
+        {
+          "game": "Super Mario Odyssey",
+          "scope_id": "977d9e922879cbfcb24537049a886e95",
+          "scope": "Super Mario Odyssey · Any% · Player=1P · Все платформы · time",
+          "place": 99,
+          "ties": 2,
+          "n": 5014,
+          "base_game_points": 20.998983820158777,
+          "density": 0.19645852290494342,
+          "multiplier": 1.0024946712788136,
+          "weight": 0.6561,
+          "contribution": 13.811803451516553
+        },
+        {
+          "game": "Super Mario Galaxy",
+          "scope_id": "d094751ac511d0564d656155de517e46",
+          "scope": "Super Mario Galaxy · Any% · Mode=2P, Character=Luigi, Mode=1P · Все платформы · time",
+          "place": 148,
+          "ties": 1,
+          "n": 437,
+          "base_game_points": 2.8992037374740622,
+          "density": 0.12820058134517373,
+          "multiplier": 1.0002339382044683,
+          "weight": 0.5904900000000001,
+          "contribution": 1.7123513056408446
+        },
+        {
+          "game": "Super Mario Bros.",
+          "scope_id": "3bdbfeeed92f46ede11247498cbc90b0",
+          "scope": "Super Mario Bros. · Any% · Version=NTSC · Все платформы · time",
+          "place": 572,
+          "ties": 2,
+          "n": 1933,
+          "base_game_points": 2.5332408254298806,
+          "density": 0.6008224630721435,
+          "multiplier": 1.000000000046306,
+          "weight": 0.531441,
+          "contribution": 1.3462680375696217
+        },
+        {
+          "game": "Super Mario 3D World + Bowser's Fury",
+          "scope_id": "962864604c98c5d45a41b6c98aa52061",
+          "scope": "Super Mario 3D World + Bowser's Fury · Super Mario 3D World · Categories=Any% · Все платформы · time",
+          "place": 133,
+          "ties": 1,
+          "n": 317,
+          "base_game_points": 2.0119100650010493,
+          "density": 0.07627523659100094,
+          "multiplier": 1.0002536129409583,
+          "weight": 0.4782969000000001,
+          "contribution": 0.9625343964538018
+        },
+        {
+          "game": "Super Mario Bros. 3",
+          "scope_id": "9332a3d0321a54c891f3870642ed0352",
+          "scope": "Super Mario Bros. 3 · Any% · Все платформы · time",
+          "place": 367,
+          "ties": 8,
+          "n": 643,
+          "base_game_points": 0.6836368766277556,
+          "density": 0.18618216428395756,
+          "multiplier": 1.000000046337046,
+          "weight": 0.4304672100000001,
+          "contribution": 0.2942832725712811
+        },
+        {
+          "game": "Celeste",
+          "scope_id": "b07129e954966eb86cfac7a4af78787e",
+          "scope": "Celeste · Any% · Все платформы · igt",
+          "place": 5069,
+          "ties": 1,
+          "n": 7041,
+          "base_game_points": 0.1367948158273252,
+          "density": 0.1466250030062325,
+          "multiplier": 1.0,
+          "weight": 0.3874204890000001,
+          "contribution": 0.05299711444048728
+        }
+      ]
+    },
+    {
+      "id": "j5pn0oq8",
+      "name": "JesseKola",
+      "rank": 10,
+      "previous_rank": 8,
+      "points": 169.91017425566474,
+      "previous_points": 166.2003102941043,
+      "games": 5,
+      "contributions": [
+        {
+          "game": "Pou",
+          "scope_id": "96a6db4193c01ec1eaa7888fece47a93",
+          "scope": "Pou · Achievements · Game-mode=Sky Hop, Emulator (Achievements)=Mobile, Achievement=1st Achievement · Все платформы · time",
+          "place": 4,
+          "ties": 1,
+          "n": 711,
+          "base_game_points": 58.871240109229795,
+          "density": 0.03240631330827626,
+          "multiplier": 1.008101578327069,
+          "weight": 1.0,
+          "contribution": 59.34819007218641
+        },
+        {
+          "game": "Roblox: DOORS",
+          "scope_id": "cd48a145273d50635204806afb6724d5",
+          "scope": "Roblox: DOORS · The Hotel · Seed (Old)=Random Seed, Version=Outdoors Update, Players=Solo, Shop=Shop, Players (Global) (Old)=Solo · Все платформы · time",
+          "place": 1,
+          "ties": 1,
+          "n": 55,
+          "base_game_points": 53.250547845142435,
+          "density": 0.06765497845768724,
+          "multiplier": 1.0169137446144219,
+          "weight": 0.9,
+          "contribution": 48.736092610775906
+        },
+        {
+          "game": "Roblox: Grace",
+          "scope_id": "4923d0e09decd82369a1a5b23ee84dc4",
+          "scope": "Roblox: Grace · rOT · Glitches=Glitchless, Goal=mutter, Version=Grace But Evil [CURRENT], Platform=Mobile, Platform=PC · Все платформы · time",
+          "place": 1,
+          "ties": 1,
+          "n": 32,
+          "base_game_points": 36.94732795078815,
+          "density": 0.01473135066051281,
+          "multiplier": 1.0036828376651281,
+          "weight": 0.81,
+          "contribution": 30.037553159050837
+        },
+        {
+          "game": "ROBLOX: Speed Run 4",
+          "scope_id": "64a0a156a1bb959e3d307bc41b64b950",
+          "scope": "ROBLOX: Speed Run 4 · Main World · Levels=5 Levels, Route=No Skips, Game Version=Current, Levels=5 Levels · Все платформы · time",
+          "place": 20,
+          "ties": 1,
+          "n": 484,
+          "base_game_points": 24.494920555028106,
+          "density": 0.46983647470430523,
+          "multiplier": 1.1174591186760763,
+          "weight": 0.7290000000000001,
+          "contribution": 19.954240732551956
+        },
+        {
+          "game": "Poppy Playtime: Chapter 1",
+          "scope_id": "b286347c86c80b3cdb483fc2e085fd19",
+          "scope": "Poppy Playtime: Chapter 1 · PC · Patch=1.3, First Chapter=Current Patch NMG, Route=Restricted, Category=Any% · Все платформы · time",
+          "place": 40,
+          "ties": 1,
+          "n": 672,
+          "base_game_points": 17.709868007151975,
+          "density": 0.1346445721618407,
+          "multiplier": 1.01847362698483,
+          "weight": 0.6561,
+          "contribution": 11.834097681099607
+        }
+      ]
+    },
+    {
+      "id": "8e9pwlpj",
+      "name": "ThinkLater",
+      "rank": 11,
+      "previous_rank": 7,
+      "points": 168.6748490786434,
+      "previous_points": 167.6904209032184,
+      "games": 11,
+      "contributions": [
+        {
+          "game": "Minecraft (Classic)",
+          "scope_id": "1e10e5df6bf156d366c81be597571172",
+          "scope": "Minecraft (Classic) · Build Limit · Все платформы · time",
+          "place": 1,
+          "ties": 1,
+          "n": 220,
+          "base_game_points": 83.96386617881339,
+          "density": 0.021370424515725454,
+          "multiplier": 1.0053426061289314,
+          "weight": 1.0,
+          "contribution": 84.4124520448691
+        },
+        {
+          "game": "Minecraft: Java Edition",
+          "scope_id": "340ddc2ad678d8e408f56b5bb81d71cd",
+          "scope": "Minecraft: Java Edition · Any% · Seed Type (Any%)=Set Seed, Internal/External (Any%)=External, Version Range (Any%)=1.9+ · Все платформы · igt",
+          "place": 4,
+          "ties": 1,
+          "n": 80,
+          "base_game_points": 29.760468506668314,
+          "density": 0.031530284685863996,
+          "multiplier": 1.007882571171466,
+          "weight": 0.9,
+          "contribution": 26.995551765991472
+        },
+        {
+          "game": "Pou",
+          "scope_id": "c75ef0adf6852f8266b5dc712e7473a9",
+          "scope": "Pou · Achievements · Game-mode=Sad Tap, Emulator (Achievements)=Mobile, Achievement=1st Achievement · Все платформы · time",
+          "place": 1,
+          "ties": 1,
+          "n": 25,
+          "base_game_points": 29.752066115702476,
+          "density": 0.006409183316685099,
+          "multiplier": 1.0016022958291713,
+          "weight": 0.81,
+          "contribution": 24.137787558990606
+        },
+        {
+          "game": "Crossy Road",
+          "scope_id": "769d2bdb0f691998d6949c59327c9115",
+          "scope": "Crossy Road · 25 Hops · Platform=Mobile · Все платформы · time",
+          "place": 32,
+          "ties": 7,
+          "n": 1451,
+          "base_game_points": 25.468942109120285,
+          "density": 0.07315907743852837,
+          "multiplier": 1.0122599990391299,
+          "weight": 0.7290000000000001,
+          "contribution": 18.794488468566296
+        },
+        {
+          "game": "ROBLOX: Speed Run 4",
+          "scope_id": "558304c63f7b2359894e2ee8900eda37",
+          "scope": "ROBLOX: Speed Run 4 · Main World · Levels=5 Levels, Route=No Skips, Game Version=Pre-Sept 2024, Levels=5 Levels · Все платформы · time",
+          "place": 413,
+          "ties": 4,
+          "n": 4784,
+          "base_game_points": 8.264114483998396,
+          "density": 0.5637159927635863,
+          "multiplier": 1.0000000241375027,
+          "weight": 0.6561,
+          "contribution": 5.422085643826952
+        },
+        {
+          "game": "Geometry Dash",
+          "scope_id": "508337354c91114f3a1b3e113ef4cefc",
+          "scope": "Geometry Dash · 1-8 · Ruleset=No Major Glitches, Category=Any%, Game Type / OS=Platformer/PC · Все платформы · time",
+          "place": 71,
+          "ties": 1,
+          "n": 373,
+          "base_game_points": 7.06770520741096,
+          "density": 0.30787454626391053,
+          "multiplier": 1.0122239607503676,
+          "weight": 0.5904900000000001,
+          "contribution": 4.224424838765943
+        },
+        {
+          "game": "Jump King",
+          "scope_id": "9057d585247031325d8ae31f7d3fed86",
+          "scope": "Jump King · Main Babe · Все платформы · time",
+          "place": 332,
+          "ties": 1,
+          "n": 1425,
+          "base_game_points": 3.9136050233249975,
+          "density": 0.2974516641540116,
+          "multiplier": 1.000000345318761,
+          "weight": 0.531441,
+          "contribution": 2.079850885412143
+        },
+        {
+          "game": "Cuphead",
+          "scope_id": "f367b81ad73b3a7ab03dd3bcc5d4cd02",
+          "scope": "Cuphead · Version 1.1+ · Difficulty=Simple, ILs - Players=Solo, Players=Solo, Category=Any% · Все платформы · time",
+          "place": 64,
+          "ties": 1,
+          "n": 179,
+          "base_game_points": 3.177045368602518,
+          "density": 0.08028568374009418,
+          "multiplier": 1.0042177295387027,
+          "weight": 0.4782969000000001,
+          "contribution": 1.5259800902479685
+        },
+        {
+          "game": "Refunct",
+          "scope_id": "5aadc7e1e30d81561da01db633eca651",
+          "scope": "Refunct · Any% · New Game Glitch=Normal · Все платформы · igt",
+          "place": 660,
+          "ties": 2,
+          "n": 1658,
+          "base_game_points": 1.5047798235281937,
+          "density": 0.41542629558808936,
+          "multiplier": 1.0000000000009477,
+          "weight": 0.4304672100000001,
+          "contribution": 0.647758372299088
+        },
+        {
+          "game": "Getting Over It With Bennett Foddy",
+          "scope_id": "8af5bb55d8421d2a462278f4d16256bf",
+          "scope": "Getting Over It With Bennett Foddy · Glitchless · Все платформы · time",
+          "place": 2187,
+          "ties": 1,
+          "n": 4384,
+          "base_game_points": 0.6815112620949421,
+          "density": 0.1124422475691707,
+          "multiplier": 1.0,
+          "weight": 0.3874204890000001,
+          "contribution": 0.2640314264198297
+        },
+        {
+          "game": "Poppy Playtime: Chapter 1",
+          "scope_id": "ea2516ba24765bc27fa550b2620b3439",
+          "scope": "Poppy Playtime: Chapter 1 · PC · Patch=<1.1, First Chapter=Current Patch NMG, Route=Unrestricted, Category=Any% · Все платформы · time",
+          "place": 43,
+          "ties": 1,
+          "n": 63,
+          "base_game_points": 0.48582022831898775,
+          "density": 0.05059554378693061,
+          "multiplier": 1.0061568737699524,
+          "weight": 0.3486784401000001,
+          "contribution": 0.17043798325400494
+        }
+      ]
+    },
+    {
+      "id": "qxkvvq2j",
+      "name": "relievedliberty",
+      "rank": 12,
+      "previous_rank": 14,
+      "points": 167.88865199416978,
+      "previous_points": 157.98729989774677,
+      "games": 4,
+      "contributions": [
+        {
+          "game": "ROBLOX: Speed Run 4",
+          "scope_id": "6cfb200f4346ef9484e8f36d6705a48e",
+          "scope": "ROBLOX: Speed Run 4 · Main World · Levels=5 Levels, Route=No Skips, Game Version=Pre-Sept 2024, Levels=16 Levels · Все платформы · time",
+          "place": 1,
+          "ties": 1,
+          "n": 271,
+          "base_game_points": 86.68252080856124,
+          "density": 0.41867711570775323,
+          "multiplier": 1.1046692789269383,
+          "weight": 1.0,
+          "contribution": 95.75551775716266
+        },
+        {
+          "game": "Super Mario 64 DS",
+          "scope_id": "0dc33447b146c11a2f6d894bbd96fb0e",
+          "scope": "Super Mario 64 DS · 80 Star · Все платформы · timeWithLoads",
+          "place": 1,
+          "ties": 1,
+          "n": 142,
+          "base_game_points": 76.69842984452761,
+          "density": 0.047995124763996325,
+          "multiplier": 1.0119987811909992,
+          "weight": 0.9,
+          "contribution": 69.85684576973276
+        },
+        {
+          "game": "Super Mario Bros.",
+          "scope_id": "3bdbfeeed92f46ede11247498cbc90b0",
+          "scope": "Super Mario Bros. · Any% · Version=NTSC · Все платформы · time",
+          "place": 620,
+          "ties": 1,
+          "n": 1933,
+          "base_game_points": 2.212233847180263,
+          "density": 0.6008224630721435,
+          "multiplier": 1.000000000006926,
+          "weight": 0.81,
+          "contribution": 1.7919094162284241
+        },
+        {
+          "game": "Minecraft: Java Edition",
+          "scope_id": "cd6e9d821ebfe944e9f06111c8178c5e",
+          "scope": "Minecraft: Java Edition · Any% Glitchless · Seed Type (Any% Glitchless)=Set Seed, Version Range (Any% Glitchless)=1.8 · Все платформы · igt",
+          "place": 119,
+          "ties": 1,
+          "n": 191,
+          "base_game_points": 0.6643111287992437,
+          "density": 0.03413936655580924,
+          "multiplier": 1.0001987230368623,
+          "weight": 0.7290000000000001,
+          "contribution": 0.4843790510459274
+        }
+      ]
+    },
+    {
+      "id": "5j537vqx",
+      "name": "NorXor",
+      "rank": 13,
+      "previous_rank": 11,
+      "points": 167.79699465221609,
+      "previous_points": 160.33216359468534,
+      "games": 3,
+      "contributions": [
+        {
+          "game": "Geometry Dash",
+          "scope_id": "508337354c91114f3a1b3e113ef4cefc",
+          "scope": "Geometry Dash · 1-8 · Ruleset=No Major Glitches, Category=Any%, Game Type / OS=Platformer/PC · Все платформы · time",
+          "place": 1,
+          "ties": 1,
+          "n": 373,
+          "base_game_points": 90.05622657226156,
+          "density": 0.30787454626391053,
+          "multiplier": 1.0769686365659776,
+          "weight": 1.0,
+          "contribution": 96.9877315458053
+        },
+        {
+          "game": "Red Ball",
+          "scope_id": "f58879475a268759a1a7ce0949f26e12",
+          "scope": "Red Ball · 12 Levels (Glitchless) · Все платформы · time",
+          "place": 1,
+          "ties": 1,
+          "n": 100,
+          "base_game_points": 69.21121389732365,
+          "density": 0.027993995072414825,
+          "multiplier": 1.0069984987681038,
+          "weight": 0.9,
+          "contribution": 62.72602964327073
+        },
+        {
+          "game": "Wii Sports Resort",
+          "scope_id": "d187e3e40c5528fc5cb7ffad4263cd00",
+          "scope": "Wii Sports Resort · Golf · Course=18 Holes · Все платформы · time",
+          "place": 50,
+          "ties": 2,
+          "n": 354,
+          "base_game_points": 9.859067302262353,
+          "density": 0.13527862758303807,
+          "multiplier": 1.0121951971550005,
+          "weight": 0.81,
+          "contribution": 8.083233463140068
+        }
+      ]
+    },
+    {
+      "id": "18qqd7q8",
+      "name": "maibaRTA",
+      "rank": 14,
+      "previous_rank": 16,
+      "points": 165.72593655541635,
+      "previous_points": 154.34645826769986,
+      "games": 3,
+      "contributions": [
+        {
+          "game": "Super Mario World",
+          "scope_id": "b3044e4ae89b9fb371c5f863d85db255",
+          "scope": "Super Mario World · 96 Exit · Все платформы · time",
+          "place": 1,
+          "ties": 1,
+          "n": 325,
+          "base_game_points": 88.71011357490536,
+          "density": 0.262188198936881,
+          "multiplier": 1.0655470497342203,
+          "weight": 1.0,
+          "contribution": 94.52479980132802
+        },
+        {
+          "game": "Super Mario Bros. 3",
+          "scope_id": "337d459c045e12e31a24afbd2194a8e4",
+          "scope": "Super Mario Bros. 3 · 100% · Все платформы · time",
+          "place": 2,
+          "ties": 1,
+          "n": 211,
+          "base_game_points": 63.16918351810179,
+          "density": 0.3276193485604766,
+          "multiplier": 1.0819048371401192,
+          "weight": 0.9,
+          "contribution": 61.50874068578361
+        },
+        {
+          "game": "Super Mario Bros.",
+          "scope_id": "3ebd4def7ed2665785aad59887185c16",
+          "scope": "Super Mario Bros. · Warpless All-Stars · Все платформы · time",
+          "place": 20,
+          "ties": 1,
+          "n": 127,
+          "base_game_points": 10.844542625312211,
+          "density": 0.4136194528117874,
+          "multiplier": 1.103404863202947,
+          "weight": 0.81,
+          "contribution": 9.692396068304731
+        }
+      ]
+    },
+    {
+      "id": "u-4f35e37c-0df0-50dc-bf47-420dedf83c86",
+      "name": "anonymous ",
+      "rank": 15,
+      "previous_rank": 20,
+      "points": 163.54919107741068,
+      "previous_points": 151.4525762615575,
+      "games": 2,
+      "contributions": [
+        {
+          "game": "Refunct",
+          "scope_id": "5aadc7e1e30d81561da01db633eca651",
+          "scope": "Refunct · Any% · New Game Glitch=Normal · Все платформы · igt",
+          "place": 2,
+          "ties": 1,
+          "n": 1658,
+          "base_game_points": 80.22594712997419,
+          "density": 0.41542629558808936,
+          "multiplier": 1.1038565738970223,
+          "weight": 1.0,
+          "contribution": 88.55793913653696
+        },
+        {
+          "game": "Super Mario 64",
+          "scope_id": "87ec01cc73f878ad0c677b8bc01c5981",
+          "scope": "Super Mario 64 · 70 Star · Platform=N64 · Все платформы · time",
+          "place": 2,
+          "ties": 1,
+          "n": 1299,
+          "base_game_points": 79.14069903509258,
+          "density": 0.21141659265304635,
+          "multiplier": 1.0528541481632616,
+          "weight": 0.9,
+          "contribution": 74.99125194087371
+        }
+      ]
+    },
+    {
+      "id": "8v0m22vx",
+      "name": "tetrisbit",
+      "rank": 16,
+      "previous_rank": 17,
+      "points": 161.33677418548783,
+      "previous_points": 153.5762585768155,
+      "games": 3,
+      "contributions": [
+        {
+          "game": "Undertale",
+          "scope_id": "1436b99b18655d23c1f451676de34908",
+          "scope": "Undertale · Genocide · Version Subcategory=1.00-1.001 · Все платформы · time",
+          "place": 1,
+          "ties": 1,
+          "n": 551,
+          "base_game_points": 93.10557094490612,
+          "density": 0.2805809778802332,
+          "multiplier": 1.0701452444700583,
+          "weight": 1.0,
+          "contribution": 99.63648398036092
+        },
+        {
+          "game": "Roblox: DOORS",
+          "scope_id": "fc10b94fb18b687390fe1d1b413b7d10",
+          "scope": "Roblox: DOORS · Retro Mode · Players=Solo, Players (Global) (Old)=Solo · Все платформы · time",
+          "place": 2,
+          "ties": 1,
+          "n": 56,
+          "base_game_points": 36.85178150204103,
+          "density": 0.061662378808141585,
+          "multiplier": 1.0154155947020354,
+          "weight": 0.9,
+          "contribution": 33.67788626675201
+        },
+        {
+          "game": "Red Ball",
+          "scope_id": "996b5b4fe25a45d1aed8326d449c113b",
+          "scope": "Red Ball · 12 Levels · Все платформы · time",
+          "place": 18,
+          "ties": 1,
+          "n": 1164,
+          "base_game_points": 33.70874602478079,
+          "density": 0.10523255802088316,
+          "multiplier": 1.0263081395052207,
+          "weight": 0.81,
+          "contribution": 28.02240393837489
+        }
+      ]
+    },
+    {
+      "id": "8wk9r2v8",
+      "name": "777haveoursinsbeenforgiven",
+      "rank": 17,
+      "previous_rank": 12,
+      "points": 161.2548806197882,
+      "previous_points": 160.26156844994236,
+      "games": 3,
+      "contributions": [
+        {
+          "game": "Seterra (Geoguessr Version)",
+          "scope_id": "85b41ebfb4b33bfb82806526283e4909",
+          "scope": "Seterra (Geoguessr Version) · Europe: Countries (with Kosovo) · Mode=Pin, Platform=Website · Все платформы · igt",
+          "place": 1,
+          "ties": 1,
+          "n": 582,
+          "base_game_points": 93.4551676213521,
+          "density": 0.0301086268815335,
+          "multiplier": 1.0075271567203834,
+          "weight": 1.0,
+          "contribution": 94.15861931436773
+        },
+        {
+          "game": "Seterra (Old Version)",
+          "scope_id": "b05a16802e8a2faef1a37ee266e013a3",
+          "scope": "Seterra (Old Version) · Europe: Countries · Mode=Pin, Version=Website · Все платформы · igt",
+          "place": 3,
+          "ties": 1,
+          "n": 1693,
+          "base_game_points": 70.94138999359197,
+          "density": 0.01815780931112618,
+          "multiplier": 1.0045394523277815,
+          "weight": 0.9,
+          "contribution": 64.137082546381
+        },
+        {
+          "game": "Minecraft: Java Edition",
+          "scope_id": "77d06efee7bc7dfa70979c1ef1206b8b",
+          "scope": "Minecraft: Java Edition · Any% Glitchless · Seed Type (Any% Glitchless)=Random Seed, Version Range (Any% Glitchless)=1.13-1.15 · Все платформы · igt",
+          "place": 208,
+          "ties": 1,
+          "n": 765,
+          "base_game_points": 3.653271400441318,
+          "density": 0.05904691822966347,
+          "multiplier": 1.0000097746594852,
+          "weight": 0.81,
+          "contribution": 2.9591787590394643
+        }
+      ]
+    },
+    {
+      "id": "kjpw6n5x",
+      "name": "Okashi",
+      "rank": 18,
+      "previous_rank": 28,
+      "points": 159.42977144583077,
+      "previous_points": 146.69014146422302,
+      "games": 5,
+      "contributions": [
+        {
+          "game": "Super Mario World",
+          "scope_id": "2267104d62d9b3e9c8dc07e8fb949f81",
+          "scope": "Super Mario World · 11 Exit, No Cape · 11NC Run Type=Glitchless · Все платформы · time",
+          "place": 1,
+          "ties": 1,
+          "n": 219,
+          "base_game_points": 83.89944212979309,
+          "density": 0.4896861975909196,
+          "multiplier": 1.1224215493977299,
+          "weight": 1.0,
+          "contribution": 94.17054182892753
+        },
+        {
+          "game": "Undertale",
+          "scope_id": "7ee8d484fc4df72c9051275e5a7971ab",
+          "scope": "Undertale · Genocide · Version Subcategory=1.02+ · Все платформы · time",
+          "place": 3,
+          "ties": 1,
+          "n": 397,
+          "base_game_points": 60.397162031353055,
+          "density": 0.1718745987593523,
+          "multiplier": 1.042968649689838,
+          "weight": 0.9,
+          "contribution": 56.69311187604479
+        },
+        {
+          "game": "Super Mario Bros.",
+          "scope_id": "d9996bdc45cc394ae7fbea9ea42d6fdf",
+          "scope": "Super Mario Bros. · Any% All-Stars · Все платформы · time",
+          "place": 51,
+          "ties": 9,
+          "n": 221,
+          "base_game_points": 5.5780028964968125,
+          "density": 0.3601338468352804,
+          "multiplier": 1.0271175575451155,
+          "weight": 0.81,
+          "contribution": 4.6407044159338025
+        },
+        {
+          "game": "Super Mario Bros. 3",
+          "scope_id": "a1c2d44349e8a479ea9b759a0baa890e",
+          "scope": "Super Mario Bros. 3 · Any% (No Wrong Warp) · Все платформы · time",
+          "place": 167,
+          "ties": 7,
+          "n": 594,
+          "base_game_points": 3.5907220837552454,
+          "density": 0.47230426790557534,
+          "multiplier": 1.0003574817568897,
+          "weight": 0.7290000000000001,
+          "contribution": 2.6185721563164077
+        },
+        {
+          "game": "Deltarune",
+          "scope_id": "faa4fb7ae904c352c309ea35787dacbf",
+          "scope": "Deltarune · All Chapters · Run Type=Main Route, Glitches=Glitched · Все платформы · igt",
+          "place": 4,
+          "ties": 1,
+          "n": 11,
+          "base_game_points": 1.9774954442801258,
+          "density": 0.029000017261280524,
+          "multiplier": 1.00725000431532,
+          "weight": 0.6561,
+          "contribution": 1.3068411686082302
+        }
+      ]
+    },
+    {
+      "id": "x3w7wrqj",
+      "name": "zVypurr",
+      "rank": 19,
+      "previous_rank": 19,
+      "points": 159.36702986013645,
+      "previous_points": 153.42033159426543,
+      "games": 2,
+      "contributions": [
+        {
+          "game": "Hollow Knight",
+          "scope_id": "7bf8443d0d9222b87606377efe721240",
+          "scope": "Hollow Knight · Any% · Any% Glitch=No Major Glitches · Все платформы · time",
+          "place": 1,
+          "ties": 1,
+          "n": 1103,
+          "base_game_points": 96.46671178599458,
+          "density": 0.16001341915876938,
+          "multiplier": 1.0400033547896923,
+          "weight": 1.0,
+          "contribution": 100.3257038829647
+        },
+        {
+          "game": "Celeste",
+          "scope_id": "b07129e954966eb86cfac7a4af78787e",
+          "scope": "Celeste · Any% · Все платформы · igt",
+          "place": 6,
+          "ties": 1,
+          "n": 7041,
+          "base_game_points": 63.28179978696761,
+          "density": 0.1466250030062325,
+          "multiplier": 1.0366562507515582,
+          "weight": 0.9,
+          "contribution": 59.041325977171745
+        }
+      ]
+    },
+    {
+      "id": "xz2904rx",
+      "name": "Inforcer",
+      "rank": 20,
+      "previous_rank": 24,
+      "points": 158.81684076965175,
+      "previous_points": 149.4752088862079,
+      "games": 5,
+      "contributions": [
+        {
+          "game": "New Super Mario Bros. U Deluxe",
+          "scope_id": "5089de611e1c9320702860beb16e1e5a",
+          "scope": "New Super Mario Bros. U Deluxe · NSMBU · Character=Normal, Run Type=Any%, Category=Any% · Все платформы · time",
+          "place": 1,
+          "ties": 1,
+          "n": 217,
+          "base_game_points": 83.76903188738868,
+          "density": 0.22830074773231548,
+          "multiplier": 1.0570751869330788,
+          "weight": 1.0,
+          "contribution": 88.55016504156443
+        },
+        {
+          "game": "New Super Mario Bros. Wii",
+          "scope_id": "76d30a084f5f5fb2defd954a2135cebb",
+          "scope": "New Super Mario Bros. Wii · Any% · Platform=Physical · Все платформы · time",
+          "place": 3,
+          "ties": 1,
+          "n": 92,
+          "base_game_points": 38.518986600506786,
+          "density": 0.44885498056417183,
+          "multiplier": 1.112213745141043,
+          "weight": 0.9,
+          "contribution": 38.557211711388575
+        },
+        {
+          "game": "Crossy Road",
+          "scope_id": "769d2bdb0f691998d6949c59327c9115",
+          "scope": "Crossy Road · 25 Hops · Platform=Mobile · Все платформы · time",
+          "place": 31,
+          "ties": 1,
+          "n": 1451,
+          "base_game_points": 27.155693927783236,
+          "density": 0.07315907743852837,
+          "multiplier": 1.014387242150768,
+          "weight": 0.81,
+          "contribution": 22.31257547239646
+        },
+        {
+          "game": "New Super Mario Bros.",
+          "scope_id": "11a1b91176b36bb9b3d49b46c47168aa",
+          "scope": "New Super Mario Bros. · Any% · Release=Official Releases · Все платформы · timeWithLoads",
+          "place": 39,
+          "ties": 1,
+          "n": 308,
+          "base_game_points": 11.464199230316755,
+          "density": 0.29654349764911625,
+          "multiplier": 1.0423470834206512,
+          "weight": 0.7290000000000001,
+          "contribution": 8.711312806344505
+        },
+        {
+          "game": "Minecraft (Classic)",
+          "scope_id": "1a943e9c28c9ef27d5cf595523cf6e15",
+          "scope": "Minecraft (Classic) · Meme Categories · Meme Category=Break Dirt · Все платформы · time",
+          "place": 1,
+          "ties": 1491,
+          "n": 1601,
+          "base_game_points": 1.0449256789480355,
+          "density": 0.0,
+          "multiplier": 1.0,
+          "weight": 0.6561,
+          "contribution": 0.6855757379578061
+        }
+      ]
+    },
+    {
+      "id": "8go2ml2x",
+      "name": "the_splurt",
+      "rank": 555,
+      "previous_rank": 754,
+      "points": 74.24371649855786,
+      "previous_points": 65.07303838913877,
+      "games": 1,
+      "contributions": [
+        {
+          "game": "ROBLOX: Speed Run 4",
+          "scope_id": "558304c63f7b2359894e2ee8900eda37",
+          "scope": "ROBLOX: Speed Run 4 · Main World · Levels=5 Levels, Route=No Skips, Game Version=Pre-Sept 2024, Levels=5 Levels · Все платформы · time",
+          "place": 5,
+          "ties": 1,
+          "n": 4784,
+          "base_game_points": 65.07303838913877,
+          "density": 0.5637159927635863,
+          "multiplier": 1.1409289981908965,
+          "weight": 1.0,
+          "contribution": 74.24371649855786
+        }
+      ]
+    },
+    {
+      "id": "j06zonmj",
+      "name": "Jakeww",
+      "rank": 759,
+      "previous_rank": 690,
+      "points": 67.12622067462463,
+      "previous_points": 66.94214876033058,
+      "games": 1,
+      "contributions": [
+        {
+          "game": "Pou",
+          "scope_id": "58b2fab1e52b7c7d1502c87d79a627e9",
+          "scope": "Pou · High Score · Game-mode=Find Pou, Emulator (High Score)=Mobile · Все платформы · time",
+          "place": 1,
+          "ties": 1,
+          "n": 91,
+          "base_game_points": 66.94214876033058,
+          "density": 0.01099886500226143,
+          "multiplier": 1.0027497162505654,
+          "weight": 1.0,
+          "contribution": 67.12622067462463
+        }
+      ]
+    },
+    {
+      "id": "pj0l4p9j",
+      "name": "falex",
+      "rank": 763,
+      "previous_rank": 965,
+      "points": 66.920688555781,
+      "previous_points": 59.706597733418185,
+      "games": 1,
+      "contributions": [
+        {
+          "game": "Outlast",
+          "scope_id": "6c7c27e0c8d366e764b25710214e6ea0",
+          "scope": "Outlast · Glitchless · Category=Default, Main Game / Whistleblower=Main Game, Platform (Sub Category)=PC, No S+Q/S+Q=No S+Q · Все платформы · time",
+          "place": 4,
+          "ties": 1,
+          "n": 791,
+          "base_game_points": 59.706597733418185,
+          "density": 0.4833027568961632,
+          "multiplier": 1.120825689224041,
+          "weight": 1.0,
+          "contribution": 66.920688555781
+        }
+      ]
+    },
+    {
+      "id": "8e9q6w2j",
+      "name": "tama_RTA",
+      "rank": 801,
+      "previous_rank": 996,
+      "points": 65.75881873501866,
+      "previous_points": 58.75676779203987,
+      "games": 1,
+      "contributions": [
+        {
+          "game": "Super Mario World",
+          "scope_id": "3d7f64aae53ca9fc1787a571b8ddde4b",
+          "scope": "Super Mario World · No Starworld · Все платформы · time",
+          "place": 3,
+          "ties": 1,
+          "n": 341,
+          "base_game_points": 58.75676779203987,
+          "density": 0.4766804714487657,
+          "multiplier": 1.1191701178621913,
+          "weight": 1.0,
+          "contribution": 65.75881873501866
+        }
+      ]
+    },
+    {
+      "id": "qxko6zm8",
+      "name": "Luticar",
+      "rank": 818,
+      "previous_rank": 747,
+      "points": 65.3538092336913,
+      "previous_points": 65.23668639053255,
+      "games": 1,
+      "contributions": [
+        {
+          "game": "Pou",
+          "scope_id": "1330b6e3c36e35356dfbb3b2ac423173",
+          "scope": "Pou · High Score · Game-mode=Pou Popper, Emulator (High Score)=Mobile · Все платформы · time",
+          "place": 1,
+          "ties": 1,
+          "n": 85,
+          "base_game_points": 65.23668639053255,
+          "density": 0.0071814097029758535,
+          "multiplier": 1.001795352425744,
+          "weight": 1.0,
+          "contribution": 65.3538092336913
+        }
+      ]
+    },
+    {
+      "id": "8dym6g98",
+      "name": "zboop",
+      "rank": 822,
+      "previous_rank": 747,
+      "points": 65.32341720879577,
+      "previous_points": 65.23668639053255,
+      "games": 1,
+      "contributions": [
+        {
+          "game": "Pou",
+          "scope_id": "c00b97702e568151690aaa2df27b803a",
+          "scope": "Pou · High Score · Game-mode=Cloud Pass, Emulator (High Score)=Mobile · Все платформы · time",
+          "place": 1,
+          "ties": 1,
+          "n": 85,
+          "base_game_points": 65.23668639053255,
+          "density": 0.005317916838633866,
+          "multiplier": 1.0013294792096585,
+          "weight": 1.0,
+          "contribution": 65.32341720879577
+        }
+      ]
+    },
+    {
+      "id": "8r2go4dx",
+      "name": "adz3th",
+      "rank": 907,
+      "previous_rank": 1109,
+      "points": 63.129072187690355,
+      "previous_points": 56.35033533588,
+      "games": 1,
+      "contributions": [
+        {
+          "game": "Super Mario World",
+          "scope_id": "6a761e11218d6b49af81ba91f4d7649b",
+          "scope": "Super Mario World · 11 Exit · 11 Exit Run Type=Glitchless · Все платформы · time",
+          "place": 6,
+          "ties": 1,
+          "n": 1716,
+          "base_game_points": 56.35033533588,
+          "density": 0.4811852005071658,
+          "multiplier": 1.1202963001267914,
+          "weight": 1.0,
+          "contribution": 63.129072187690355
+        }
+      ]
+    },
+    {
+      "id": "xzylgrej",
+      "name": "MonsterouzPanda",
+      "rank": 942,
+      "previous_rank": 1159,
+      "points": 62.00695696195133,
+      "previous_points": 55.48923976334351,
+      "games": 1,
+      "contributions": [
+        {
+          "game": "ROBLOX: Speed Run 4",
+          "scope_id": "64a0a156a1bb959e3d307bc41b64b950",
+          "scope": "ROBLOX: Speed Run 4 · Main World · Levels=5 Levels, Route=No Skips, Game Version=Current, Levels=5 Levels · Все платформы · time",
+          "place": 4,
+          "ties": 1,
+          "n": 484,
+          "base_game_points": 55.48923976334351,
+          "density": 0.46983647470430523,
+          "multiplier": 1.1174591186760763,
+          "weight": 1.0,
+          "contribution": 62.00695696195133
+        }
+      ]
+    },
+    {
+      "id": "j52qeqwj",
+      "name": "EsuoM",
+      "rank": 1062,
+      "previous_rank": 986,
+      "points": 59.065252085471535,
+      "previous_points": 58.9385768660908,
+      "games": 1,
+      "contributions": [
+        {
+          "game": "Google Minesweeper",
+          "scope_id": "bdd401e9e943b8745ea8f17126585d89",
+          "scope": "Google Minesweeper · Any% · Difficulty=Medium, Version=Web · Все платформы · time",
+          "place": 3,
+          "ties": 3,
+          "n": 717,
+          "base_game_points": 58.9385768660908,
+          "density": 0.008597100650634484,
+          "multiplier": 1.0021492751626586,
+          "weight": 1.0,
+          "contribution": 59.065252085471535
+        }
+      ]
+    },
+    {
+      "id": "jmprwpnj",
+      "name": "turkeyboy2012",
+      "rank": 1062,
+      "previous_rank": 986,
+      "points": 59.065252085471535,
+      "previous_points": 58.9385768660908,
+      "games": 1,
+      "contributions": [
+        {
+          "game": "Google Minesweeper",
+          "scope_id": "bdd401e9e943b8745ea8f17126585d89",
+          "scope": "Google Minesweeper · Any% · Difficulty=Medium, Version=Web · Все платформы · time",
+          "place": 3,
+          "ties": 3,
+          "n": 717,
+          "base_game_points": 58.9385768660908,
+          "density": 0.008597100650634484,
+          "multiplier": 1.0021492751626586,
+          "weight": 1.0,
+          "contribution": 59.065252085471535
+        }
+      ]
+    }
+  ],
+  "seconds": 13.407,
+  "limitation": "Static density is not recent activity or validated intrinsic difficulty",
+  "examples": [
+    {
+      "scope_id": "3bdbfeeed92f46ede11247498cbc90b0",
+      "game": "Super Mario Bros.",
+      "scope": "Super Mario Bros. · Any% · Version=NTSC · Все платформы · time",
+      "n": 1933,
+      "direction": 1,
+      "metrics": {
+        "10": {
+          "spread": 0.003384993277295825,
+          "ratio_pct": 0.33907288368237004,
+          "unique_fraction": 0.8888888888888888,
+          "distinct": 9,
+          "participants": 10,
+          "median_step": 0.00016955532461294769
+        },
+        "25": {
+          "spread": 0.004681007454297904,
+          "ratio_pct": 0.46919804846227997,
+          "unique_fraction": 0.7916666666666666,
+          "distinct": 20,
+          "participants": 25,
+          "median_step": 8.462957654636178e-05
+        },
+        "inner10": {
+          "spread": 0.0032728812738897772,
+          "ratio_pct": 0.3278242997638963,
+          "unique_fraction": 0.875,
+          "distinct": 8,
+          "participants": 9,
+          "median_step": 0.00016969902532864507
+        },
+        "inner25": {
+          "spread": 0.004568895450891857,
+          "ratio_pct": 0.457934876768637,
+          "unique_fraction": 0.782608695652174,
+          "distinct": 19,
+          "participants": 24,
+          "median_step": 5.754489772984454e-05
+        }
+      },
+      "density": 0.6008224630721435,
+      "first_second_gap_pct": 0.011211828819156597,
+      "top25_gap_pct": [
+        0.0,
+        0.011211828819156597,
+        0.028199448242121148,
+        0.05639889648424228,
+        0.18074827066034274,
+        0.19773589008330725,
+        0.20928747129092318,
+        0.2147235095062718,
+        0.2147235095062718,
+        0.33907288368237004,
+        0.35062446488999,
+        0.35062446488999,
+        0.35062446488999,
+        0.35606050310534004,
+        0.36727233192449,
+        0.3730481225283,
+        0.39003574195126994,
+        0.41823519019339006,
+        0.44643463843551,
+        0.44643463843551,
+        0.45221042903931996,
+        0.45798621964312,
+        0.45798621964312,
+        0.46342225785847,
+        0.46919804846227997
+      ]
+    },
+    {
+      "scope_id": "5aadc7e1e30d81561da01db633eca651",
+      "game": "Refunct",
+      "scope": "Refunct · Any% · New Game Glitch=Normal · Все платформы · igt",
+      "n": 1658,
+      "direction": 1,
+      "metrics": {
+        "10": {
+          "spread": 0.009476982570941764,
+          "ratio_pct": 0.9522031366691601,
+          "unique_fraction": 0.8888888888888888,
+          "distinct": 9,
+          "participants": 10,
+          "median_step": 0.0008634513919950227
+        },
+        "25": {
+          "spread": 0.015439076509572738,
+          "ratio_pct": 1.5558874782175798,
+          "unique_fraction": 0.9583333333333334,
+          "distinct": 24,
+          "participants": 25,
+          "median_step": 0.00036944713903677446
+        },
+        "inner10": {
+          "spread": 0.007798034317206044,
+          "ratio_pct": 0.7828518173345799,
+          "unique_fraction": 0.875,
+          "distinct": 8,
+          "participants": 9,
+          "median_step": 0.0008354148152156252
+        },
+        "inner25": {
+          "spread": 0.013760128255837016,
+          "ratio_pct": 1.3855234544889763,
+          "unique_fraction": 0.9565217391304348,
+          "distinct": 23,
+          "participants": 24,
+          "median_step": 0.00036907178865145523
+        }
+      },
+      "density": 0.41542629558808936,
+      "first_second_gap_pct": 0.16803584764749815,
+      "top25_gap_pct": [
+        0.0,
+        0.16803584764749815,
+        0.24894199651481005,
+        0.31740104555639,
+        0.5103310928553599,
+        0.6410256410256401,
+        0.6721433905899901,
+        0.6721433905899901,
+        0.86507343788897,
+        0.9522031366691601,
+        0.9895444361463801,
+        1.0331092855364699,
+        1.05800348518795,
+        1.1575802837938802,
+        1.1949215832711,
+        1.28205128205128,
+        1.2882748319641502,
+        1.30694548170276,
+        1.3256161314413701,
+        1.3629574309185999,
+        1.38785163057008,
+        1.4065222803086899,
+        1.4189693801344299,
+        1.53721682847896,
+        1.5558874782175798
+      ]
+    },
+    {
+      "scope_id": "b07129e954966eb86cfac7a4af78787e",
+      "game": "Celeste",
+      "scope": "Celeste · Any% · Все платформы · igt",
+      "n": 7041,
+      "direction": 1,
+      "metrics": {
+        "10": {
+          "spread": 0.045742343180177905,
+          "ratio_pct": 4.68046598471918,
+          "unique_fraction": 1.0,
+          "distinct": 10,
+          "participants": 10,
+          "median_step": 0.0016015448455150155
+        },
+        "25": {
+          "spread": 0.07688764232791383,
+          "ratio_pct": 7.992073219624508,
+          "unique_fraction": 1.0,
+          "distinct": 25,
+          "participants": 25,
+          "median_step": 0.0015626731255978868
+        },
+        "inner10": {
+          "spread": 0.03253087876622477,
+          "ratio_pct": 3.306579244856432,
+          "unique_fraction": 1.0,
+          "distinct": 9,
+          "participants": 9,
+          "median_step": 0.0015626731255978868
+        },
+        "inner25": {
+          "spread": 0.06367617791396069,
+          "ratio_pct": 6.574723038661546,
+          "unique_fraction": 1.0,
+          "distinct": 24,
+          "participants": 24,
+          "median_step": 0.001523801405680758
+        }
+      },
+      "density": 0.1466250030062325,
+      "first_second_gap_pct": 1.3299121410325403,
+      "top25_gap_pct": [
+        0.0,
+        1.3299121410325403,
+        3.4078282683650403,
+        3.65983573695002,
+        3.81791314906242,
+        3.9118432055350003,
+        4.341401390623031,
+        4.508642710683969,
+        4.60944569811796,
+        4.68046598471918,
+        5.018385090321771,
+        5.03213095224458,
+        5.07795049198731,
+        6.0939987857822,
+        6.4674280346853905,
+        6.57166748760009,
+        6.686216336956899,
+        6.84543923756286,
+        7.06422753983436,
+        7.080264378744321,
+        7.08255535573145,
+        7.26239704922164,
+        7.378091387072019,
+        7.712574027193901,
+        7.992073219624508
+      ]
+    }
+  ],
+  "tied10_with_nonzero25": 3
+}

@@ -1,0 +1,18 @@
+{
+  "variants": 8,
+  "behavior_checks_passed": true,
+  "local_links_valid": true,
+  "known_secret_matches": 0,
+  "sha256": {
+    "analyze.py": "dd96c3e2be749a76ff0e328ad3c78ba2205b5d125afeecd6de34817c494233e3",
+    "extract.py": "f726e99178b2c820b5351b701243ecd90d18c868680e2749beca4fd78ea079c8",
+    "extract.sql": "ce966f8b21a3cae2248af3619e2656138e35301c540e27eb8762b365315ddef9",
+    "README.md": "41eb545c172537dce9064b5614dc04166d13290fb0b73cdcf0b539667dda6641",
+    "render.py": "f87c373f89d087173d3b1c895dbb872f05360768e74d2fd181de7a2b1f4754e2",
+    "replay.py": "2126b60b2c31354b0242df78b00dcc983b9e0d1d3a4c3be81c9124ec2a98f992",
+    "evidence\\results.json": "4f4fe88e3bef5475522d08c79a4f4c9104092e774304ac877c5bc2ed77eb3558",
+    "evidence\\retained_bonus.png": "02facd32cd0655b780d31616e86b4c497dd1a1db3d680a2fd23bd1ad57f42c4a",
+    "evidence\\retained_bonus.svg": "2c5cd317985365e3a676ad9b0c06c94a707bf971ea8478cacc93b105ba0ac449",
+    "evidence\\top20_comparison.csv": "0012cc5cec1a3c9c206560da5b2d11eebc650d05d14f48b1a3d7bed4f3dbc567"
+  }
+}
