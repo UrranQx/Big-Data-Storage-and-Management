@@ -346,6 +346,9 @@ def synchronize():
             "player",
         ],
         "pb": ["run"],
+        "runner_field": ["pb", "scope", "run", "context"],
+        "runner_tenure": ["run", "pb", "runner_field", "context"],
+        "runner_result": ["pb", "runner_field", "runner_tenure"],
         "field": ["scope", "pb"],
         "target": ["field", "pb"],
         "goal": ["pb", "target"],
@@ -393,6 +396,8 @@ def synchronize():
             "cohort_survival",
             "cohort_member",
             "coverage",
+            "runner_result",
+            "runner_field",
         ],
     }
     for destination, sources in dependencies.items():
@@ -402,6 +407,18 @@ def synchronize():
                 "speedrun_marts." + destination,
             )
     for source, destination, mappings, formula in (
+        (
+            "speedrun_marts.runner_tenure",
+            "speedrun_marts.runner_result",
+            [
+                (
+                    ["quality_days"],
+                    "tenure_points",
+                    "25*quality_days/(quality_days+365); unknown history remains NULL",
+                )
+            ],
+            "Retained lifetime podium achievement, by verified_at and historical field size >=10.",
+        ),
         (
             "entity_v3.checks",
             "speedrun_3nf.leaderboard_observation",

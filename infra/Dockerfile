@@ -9,6 +9,7 @@ COPY --chown=airflow:root sql /opt/project/sql
 COPY --chown=airflow:root tests /opt/project/tests
 COPY --chown=airflow:root infra/*.py /opt/project/infra/
 COPY --chown=airflow:root infra/runner_ranking.sql /opt/project/infra/runner_ranking.sql
+COPY --chown=airflow:root infra/runner_contributions.sql /opt/project/infra/runner_contributions.sql
 COPY --chown=airflow:root infra/init.py /opt/project/init.py
 COPY --chown=airflow:root infra/maintenance.py infra/scheduler.sh /opt/project/
 COPY --chown=airflow:root dags /opt/airflow/dags

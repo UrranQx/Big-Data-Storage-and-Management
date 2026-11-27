@@ -11,7 +11,7 @@ from verify_lab3_ui import local_environment
 
 def main():
     output = (
-        Path(__file__).resolve().parents[1] / "reports/lab3/runner_ranking10_20261127"
+        Path(__file__).resolve().parents[1] / "reports/lab3/runner_ranking_v2_20261128"
     )
     output.mkdir(parents=True, exist_ok=True)
     evidence = {}
@@ -75,7 +75,8 @@ def main():
             responses.clear()
             page.get_by_role("button", name="Apply filters", exact=True).click()
 
-        portfolio = chart("Универсальность · до десяти разных игр · топ-100")
+        portfolio = chart("Универсальность · все игры · топ-100")
+        contributions = chart("Вклад каждой игры · выберите раннера")
         coverage = chart("Охват аналитического среза")
         initial = rows(portfolio)
         base_coverage = rows(coverage)
@@ -85,6 +86,17 @@ def main():
         selected = rows(portfolio)
         assert selected == [chosen] and selected[0]["portfolio_rank"] > 1
         evidence["runner_preserves_global_rank"] = selected
+        parts = rows(contributions)
+        assert len(parts) == chosen["eligible_games"]
+        assert (
+            abs(
+                sum(float(row["weighted_points"]) for row in parts)
+                - float(chosen["portfolio_points"])
+            )
+            < 1e-6
+        )
+        assert len({row["game_name"] for row in parts}) == len(parts)
+        evidence["game_contributions_match_portfolio"] = parts
         page.screenshot(path=str(output / "selected_runner.png"), full_page=True)
         responses.clear()
         page.get_by_role("button", name="Clear all", exact=True).click()
@@ -98,6 +110,17 @@ def main():
             "default": base_coverage,
             "minimum_100": changed,
         }
+        page.get_by_role("button", name="Clear all", exact=True).click()
+        rows(portfolio)
+        select("minimum_field_size", "10")
+        select("runner", "Niftski [qjne76wj]")
+        apply()
+        niftski = rows(contributions)
+        retained = next(row for row in niftski if row["game_name"] == "Red Ball")
+        assert retained["solo_place"] > 3 and float(retained["tenure_points"]) > 0
+        assert any(row["tenure_points"] is None for row in niftski)
+        evidence["retained_podium_and_unknown_history"] = niftski
+        page.screenshot(path=str(output / "retained_history.png"), full_page=True)
         browser.close()
     (output / "filter_validation.json").write_text(
         json.dumps(evidence, ensure_ascii=False, indent=2), encoding="utf-8"

@@ -2,11 +2,13 @@
 
 import os
 import unittest
+from decimal import Decimal
 from pathlib import Path
 
 from psycopg.rows import dict_row
 
 from speedrun_etl.connections import pg_connect
+from speedrun_etl.runner_tenure import build_tenure
 
 QUERY = (Path(__file__).resolve().parents[1] / "infra/runner_ranking.sql").read_text(
     encoding="utf-8"
@@ -28,6 +30,8 @@ class RunnerRankingTests(unittest.TestCase):
                 scope_name text,direction integer,timer text,field_platform text);
             CREATE TEMP TABLE pb(holder_id text,scope_id text,run_id text,seconds numeric,
                 score numeric,participant_ids text[]);
+            CREATE TEMP TABLE run(holder_id text,scope_id text,run_id text,score numeric,
+                participant_ids text[],verified_at timestamptz);
         """)
 
     def field(self, name, times, *, game=None, direction=1, platform="all"):
@@ -42,10 +46,36 @@ class RunnerRankingTests(unittest.TestCase):
             )
             self.conn.execute(
                 "INSERT INTO pb VALUES (%s,%s,%s,%s,%s,%s)",
-                (person, name, name + person, seconds, seconds * direction, [person]),
+                (
+                    person,
+                    name,
+                    name + person,
+                    seconds,
+                    int(Decimal(str(seconds)) * 10**9) * direction,
+                    [person],
+                ),
+            )
+            self.conn.execute(
+                "INSERT INTO run VALUES (%s,%s,%s,%s,%s,'2026-10-30')",
+                (
+                    person,
+                    name,
+                    name + person,
+                    int(Decimal(str(seconds)) * 10**9) * direction,
+                    [person],
+                ),
             )
 
     def rankings(self, minimum=2):
+        self.conn.execute(
+            "DROP TABLE IF EXISTS pg_temp.runner_result,pg_temp.runner_tenure,pg_temp.runner_field,pg_temp._ranking_pb"
+        )
+        root = Path(__file__).resolve().parents[1]
+        first = (root / "sql/marts/06_runner_ranking.sql").read_text(encoding="utf-8")
+        self.conn.execute(first.replace("CREATE TABLE ", "CREATE TEMP TABLE "))
+        build_tenure(self.conn)
+        last = (root / "sql/marts/07_runner_results.sql").read_text(encoding="utf-8")
+        self.conn.execute(last.replace("CREATE TABLE ", "CREATE TEMP TABLE "))
         query = QUERY.replace("speedrun_marts.", "").replace(
             "VALUES (10)", f"VALUES ({minimum})"
         )
@@ -109,9 +139,63 @@ class RunnerRankingTests(unittest.TestCase):
             self.field(f"other{i}", [("a", 1), ("b", 2)])
         after = self.rankings()["a"]
         self.assertAlmostEqual(
-            float(after["portfolio_points"]), 10 * float(before["result_points"])
+            float(after["portfolio_points"]),
+            sum(0.9**i for i in range(13)) * float(before["result_points"]),
         )
         self.assertEqual(after["eligible_games"], 13)
+
+    def test_density_rewards_tight_top_without_infinite_tie_bonus(self):
+        self.field("tight", [(f"t{i}", 100 + i / 100) for i in range(25)])
+        self.field("wide", [(f"w{i}", 100 + i) for i in range(25)])
+        self.field("ties", [(f"e{i}", 100) for i in range(25)])
+        result = self.rankings(10)
+        self.assertGreater(
+            result["t0"]["density_points"], result["w0"]["density_points"]
+        )
+        self.assertEqual(result["e0"]["density_points"], 0)
+        self.assertEqual(result["e0"]["result_points"], result["e24"]["result_points"])
+        self.assertLessEqual(
+            result["t0"]["density_points"],
+            result["t0"]["quality_points"] * Decimal(".25"),
+        )
+
+    def test_past_podium_retained_and_unknown_history_is_null(self):
+        self.field("history", [(f"p{i}", 100 + i * 10) for i in range(10)])
+        self.conn.execute("UPDATE run SET verified_at='2026-10-01'")
+        for i, seconds in [(3, 90), (4, 80), (5, 70)]:
+            self.conn.execute(
+                "INSERT INTO run VALUES (%s,'history',%s,%s,%s,'2026-10-11')",
+                (f"p{i}", f"new{i}", seconds * 10**9, [f"p{i}"]),
+            )
+            self.conn.execute(
+                "UPDATE pb SET score=%s,seconds=%s WHERE holder_id=%s",
+                (seconds * 10**9, seconds, f"p{i}"),
+            )
+        result = self.rankings(10)
+        self.assertEqual(result["p0"]["solo_place"], 4)
+        self.assertEqual(result["p0"]["days_first"], 10)
+        self.assertGreater(result["p0"]["tenure_points"], 0)
+        self.conn.execute("UPDATE run SET verified_at=NULL WHERE run_id='historyp9'")
+        result = self.rankings(10)
+        self.assertIsNone(result["p0"]["tenure_points"])
+        self.assertIn("неизвестна", result["p0"]["history_note"])
+
+    def test_game_contributions_sum_to_global_portfolio(self):
+        for game in range(12):
+            self.field(str(game), [("a", 10), ("b", 20)])
+        ranking = self.rankings(2)
+        query = (
+            Path(__file__).resolve().parents[1] / "infra/runner_contributions.sql"
+        ).read_text(encoding="utf-8")
+        query = query.replace("speedrun_marts.", "").replace(
+            "VALUES (10)", "VALUES (2)"
+        )
+        total = self.conn.execute(
+            "SELECT sum(weighted_points) FROM (" + query + ") x WHERE holder_id='a'"
+        ).fetchone()[0]
+        self.assertAlmostEqual(
+            float(total), float(ranking["a"]["portfolio_points"]), places=7
+        )
 
 
 if __name__ == "__main__":

@@ -23,7 +23,7 @@ def local_environment():
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--output", default="reports/lab3/runner_ranking10_20261127/screenshots"
+        "--output", default="reports/lab3/runner_ranking_v2_20261128/screenshots"
     )
     parser.add_argument("--dashboard", choices=[*DASHBOARDS, "all"], default="all")
     args = parser.parse_args()

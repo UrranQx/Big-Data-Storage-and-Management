@@ -4,7 +4,10 @@
 `sql/marts/` содержит расчёты витрин, `dags/marts/` — обновление и синхронизацию
 каталога. `infra/provision_superset.py` и `superset_assets.py` задают три
 исходных дашборда; `infra/runner_ranking.sql` добавляет четвёртый — рейтинг
-универсальности по десяти играм. `src/speedrun_etl/analytics_metadata.py` публикует lineage.
+универсальности. В экспериментальной ветке рейтинг использует все игры,
+`06_runner_ranking.sql` / `07_runner_results.sql` и `runner_tenure.py` готовят
+качество, плотность и историю; `infra/runner_contributions.sql` объясняет вклад игр.
+`src/speedrun_etl/analytics_metadata.py` публикует lineage.
 Текущая документация — [reports/lab3](../reports/lab3/README.md).
 
 После сдачи ЛР1 основной Compose использует PostgreSQL. `settings.py` выбирает

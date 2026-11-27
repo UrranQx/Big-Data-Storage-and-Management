@@ -3,16 +3,19 @@
 from pathlib import Path
 
 
-def runner_ranking_query():
-    query = Path(__file__).with_name("runner_ranking.sql").read_text(encoding="utf-8")
+def runner_ranking_query(filename="runner_ranking.sql"):
+    query = Path(__file__).with_name(filename).read_text(encoding="utf-8")
     query = query.replace(
         "VALUES (10)", "VALUES ({{ minimums[0]|int if minimums else 10 }})"
     )
+    empty_selection = "false" if filename == "runner_contributions.sql" else "true"
     return (
         "{% set minimums = filter_values('minimum_field_size', remove_filter=True) %}\n"
         "{% set people = filter_values('runner', remove_filter=True) %}\n"
         "SELECT * FROM (" + query + ") ranked_people WHERE "
-        "{% if people %} runner IN {{ people|where_in|replace('%%', '%') }} {% else %} true {% endif %}"
+        "{% if people %} runner IN {{ people|where_in|replace('%%', '%') }} {% else %} "
+        + empty_selection
+        + " {% endif %}"
     )
 
 
@@ -312,6 +315,7 @@ def datasets():
             "|where_in", "|where_in|replace('%%', '%')"
         )
     rendered["runner_ranking"] = runner_ranking_query()
+    rendered["runner_contributions"] = runner_ranking_query("runner_contributions.sql")
     rendered["ranking_selector"] = (
         "SELECT player_name || ' [' || player_id || ']' AS runner FROM speedrun_marts.player"
     )
@@ -321,7 +325,8 @@ def datasets():
     rendered["ranking_coverage"] = (
         "SELECT count(*) AS archive_people,count(*) FILTER(WHERE ranking_status='Ранжирован') AS ranked_people,"
         "count(*) FILTER(WHERE solo_fields=0) AS people_without_solo_pb,"
-        "count(*) FILTER(WHERE ranking_status='Поле меньше порога') AS people_below_minimum "
+        "count(*) FILTER(WHERE ranking_status='Поле меньше порога') AS people_below_minimum,"
+        "count(*) FILTER(WHERE unknown_history_games>0) AS people_with_unknown_history "
         "FROM (" + runner_ranking_query() + ") population"
     )
     return rendered
@@ -357,9 +362,15 @@ def charts():
                 "allow_rearrange_columns": True,
                 "show_cell_bars": False,
                 "column_config": {
-                    column: {"d3NumberFormat": ",.2f"}
+                    column: {
+                        "d3NumberFormat": ",.3f"
+                        if column.endswith("_points")
+                        else ",.2f"
+                    }
                     for column in cols
-                    if column.endswith(("_seconds", "_pct"))
+                    if column.endswith(("_seconds", "_pct", "_points"))
+                    or column
+                    in ("game_weight", "days_first", "days_second", "days_third")
                     or column in ("recommendation_score", "strength", "median_gap")
                 },
             },
@@ -694,21 +705,26 @@ def charts():
                 "game_name",
                 "solo_place",
                 "solo_field_size",
-                "rank_k5",
-                "rank_k50",
+                "quality_points",
+                "density_points",
+                "tenure_points",
+                "history_note",
                 "ranking_status",
             ],
             "best_rank",
         ),
         (
             "ranking_portfolio",
-            "Универсальность · до десяти разных игр · топ-100",
+            "Универсальность · все игры · топ-100",
             [
                 "portfolio_rank",
                 "runner",
                 "portfolio_points",
+                "portfolio_quality",
+                "portfolio_density",
+                "portfolio_tenure",
                 "eligible_games",
-                "portfolio_games",
+                "unknown_history_games",
                 "ranking_status",
             ],
             "portfolio_rank",
@@ -744,6 +760,8 @@ def charts():
                 "wr_gap_pct",
                 "near_wr_people",
                 "leader_top10_gap_pct",
+                "leader_top25_gap_pct",
+                "history_note",
                 "completion_median_seconds",
                 "run_url",
             ],
@@ -768,6 +786,33 @@ def charts():
             }
         )
         result.append(tuple(item))
+    contribution_chart = list(
+        table(
+            "ranking_games",
+            "Вклад каждой игры · выберите раннера",
+            [
+                "runner",
+                "game_order",
+                "game_name",
+                "scope_name",
+                "solo_place",
+                "solo_field_size",
+                "quality_points",
+                "density_points",
+                "tenure_points",
+                "game_weight",
+                "weighted_points",
+                "days_first",
+                "days_second",
+                "days_third",
+                "history_note",
+            ],
+            ("game_order", True),
+        )
+    )
+    contribution_chart[2] = "runner_contributions"
+    contribution_chart[4]["row_limit"] = 10000
+    result.append(tuple(contribution_chart))
     result.append(
         table(
             "ranking_coverage",
@@ -777,6 +822,7 @@ def charts():
                 "ranked_people",
                 "people_without_solo_pb",
                 "people_below_minimum",
+                "people_with_unknown_history",
             ],
         )
     )
@@ -823,13 +869,14 @@ DASHBOARDS = {
             "ranking_best",
             "ranking_medals",
             "ranking_evidence",
+            "ranking_games",
             "ranking_coverage",
         ],
     ),
 }
 
 NOTES = {
-    "ranking": "Исследовательский рейтинг текущих сольных PB в архиве. Баллы = 100 × (обойдённые + половина соперников с равным результатом) / (N − 1 + 20); поправка 20 — выбранная политика, рядом места при 5 и 50. Универсальность: сумма лучших результатов максимум в десяти разных играх (0–1000). Расчётные медали используют RANK с ничьими внутри сольного поля; больше подкатегорий может давать больше медалей. Платформенные копии исключены. Размер поля, длительность и плотность не доказывают трудность игры; длительность и плотность не дают скрытых бонусов. В категориях «больше лучше» таймер может кодировать очки. Поиск раннера сохраняет глобальные места; смена минимального поля пересчитывает их. На таблицу выводятся первые 100 строк; остальные доступны через фильтр раннера. Охват относится к завершённым цепочкам текущей витрины, а не ко всем профилям ODS или всему сайту.",
+    "ranking": "Все подходящие игры учитываются: лучший зачёт каждой игры, веса 100%, 90%, 81%… Баллы складываются из качества результата, плотности топ-10/25 и накопленных заслуг за топ-3. Прошлое удержание сохраняется после потери места; собственные улучшения не обнуляют срок. Неизвестная история отмечена отдельно: отсутствие начисленного бонуса не означает отсутствие заслуг. Итог — исследовательская оценка до 1500 баллов, а не доказанная шкала мастерства. Выберите раннера, чтобы увидеть вклад каждой игры; его глобальное место сохранится. Минимум участников меняет отбор текущих зачётов; история всегда начисляется с десяти участников в соответствующий момент. Рейтинг использует сохранённый срез; плотность не означает текущую активность, длительность не даёт бонуса. В таблицах топа первые 100 строк; остальные раннеры доступны через фильтр. Медали показаны отдельно и зависят от числа категорий.",
     "runner": "Архивный срез, не текущий сайт. Время в секундах. Цели рассчитаны по всему сопоставимому полю до выбора раннера. Линия PB относится к опубликованным успешным ранам. Когорты: календарные дни, минимум 30 наблюдений; пустая оценка означает недостаточно данных. Рекомендации — наблюдаемые переходы, не доказательство переноса навыка. Профиль: средний лучший перцентиль по игре. Паутинка строится только при наличии всех 6 осей; иначе смотрите таблицу оценок рядом — неизвестные значения не равны нулю. Соперники: минимум 5 публикаций за выбранное окно, максимум 10 на человека.",
     "records": "История реконструирована по ранам, верифицированным в архивном срезе. Одновременные результаты обработаны вместе. Предполагаемый скип или баг требует датированного внешнего подтверждения. В таблице плато отдельно показаны участники до, в день и после WR. Разбор видео показывает крупнейший скачок выбранной категории. Активность измеряется относительно даты среза.",
     "countries": "Медали: источник подтверждает места 1–3, один run × страна; международная команда даёт вклад каждой стране. Итог упорядочен по золоту, серебру, бронзе. Баллы G×B²+S×B+Br, B=1+max(S,Br) в выбранном поле. Фильтры игры и категории пересчитывают зачёт, фильтр страны только выбирает строку после расчёта. Неизвестная страна вынесена отдельно.",

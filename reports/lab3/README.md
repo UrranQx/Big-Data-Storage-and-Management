@@ -2,6 +2,9 @@
 
 [Отчёт](REPORT.md) · [Запуск и демонстрация](DEMO.md)
 
+[Короткая памятка для защиты](DEFENSE_SHORT.md) ·
+[Формула экспериментальной ветки](../../docs/analytics/RUNNER_RANKING.md)
+
 [Приёмка 26 ноября](acceptance_20261126/checks.json) ·
 [Перенос секретов и состояния](../../docs/LAB3_TRANSFER.md)
 

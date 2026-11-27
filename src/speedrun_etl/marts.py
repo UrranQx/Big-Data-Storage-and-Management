@@ -101,6 +101,7 @@ def build_marts(collection=DEFAULT_COLLECTION, as_of=None):
     from .analytics_quality import quality_key, validate_dds
     from .cohort_survival import build_survival
     from .record_history import build_history
+    from .runner_tenure import build_tenure
 
     batches = collection_batches(collection)
     quality = validate_dds(batches)
@@ -115,6 +116,7 @@ def build_marts(collection=DEFAULT_COLLECTION, as_of=None):
                 "cohort_survival.py",
                 "analytics_dds.py",
                 "marts.py",
+                "runner_tenure.py",
             )
         ]
     )
@@ -189,6 +191,9 @@ def build_marts(collection=DEFAULT_COLLECTION, as_of=None):
             if script.name == "01_base.sql":
                 LOG.info("Reconstructing record events")
                 build_history(conn)
+            if script.name == "06_runner_ranking.sql":
+                LOG.info("Reconstructing audited solo podium tenure")
+                build_tenure(conn)
         build_survival(conn)
         # Planner statistics must be available before readers see the new build.
         # In particular, context is one row, not the default estimate of 610.
@@ -214,6 +219,9 @@ def validate_build(conn):
         "invalid_survival": "SELECT count(*) FROM cohort_survival WHERE reached_pct NOT BETWEEN 0 AND 100 OR at_risk<reached_people+censored_people",
         "medal_order": "SELECT count(*) FROM (SELECT overall_rank,rank() OVER (ORDER BY medal_score DESC) r FROM country_medals) q WHERE r<>overall_rank",
         "missing_manifest": "SELECT count(*) FROM _snapshots s LEFT JOIN speedrun_3nf.snapshot_coverage c USING(snapshot_id) WHERE c.snapshot_id IS NULL OR c.source_coverage='[]'::jsonb",
+        "ranking_bounds": "SELECT count(*) FROM runner_result WHERE result_points NOT BETWEEN 0 AND 150 OR quality_points NOT BETWEEN 0 AND 100 OR tenure_points NOT BETWEEN 0 AND 25",
+        "ranking_history": "SELECT count(*) FROM runner_result WHERE (history_status='known')<>(tenure_points IS NOT NULL)",
+        "ranking_pending": "SELECT count(*) FROM runner_field WHERE history_status='pending' OR density NOT BETWEEN 0 AND 1",
     }
     results = {
         name: int(conn.execute(query).fetchone()[0]) for name, query in checks.items()

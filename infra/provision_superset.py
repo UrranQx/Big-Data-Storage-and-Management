@@ -16,9 +16,25 @@ def uid(kind, name):
 LABELS = {
     "runner": "Раннер",
     "best_rank": "Место по лучшему результату",
-    "result_points": "Баллы результата (0–100)",
+    "result_points": "Баллы зачёта (0–150)",
     "portfolio_rank": "Место по универсальности",
-    "portfolio_points": "Баллы до десяти игр (0–1000)",
+    "portfolio_points": "Общие баллы (0–1500)",
+    "portfolio_quality": "За качество",
+    "portfolio_density": "За плотность",
+    "portfolio_tenure": "За прошлое удержание",
+    "unknown_history_games": "Игр с неизвестной историей",
+    "quality_points": "Качество, баллы",
+    "density_points": "Плотность, баллы",
+    "tenure_points": "Удержание, баллы (пусто = неизвестно)",
+    "history_note": "Статус истории",
+    "quality_days": "Условные дни с учётом качества",
+    "days_first": "Дней на 1-м месте",
+    "days_second": "Дней на 2-м месте",
+    "days_third": "Дней на 3-м месте",
+    "game_order": "Порядок вклада",
+    "game_weight": "Вес игры",
+    "weighted_points": "Вклад в общую сумму",
+    "people_with_unknown_history": "Раннеров с неполной историей",
     "portfolio_games": "Игры и вклад в баллы",
     "rank_k5": "Место при поправке 5",
     "rank_k50": "Место при поправке 50",
@@ -40,6 +56,7 @@ LABELS = {
     "timer": "Таймер источника",
     "near_wr_people": "В пределах 1% от WR",
     "leader_top10_gap_pct": "Разрыв топ-10 и WR, %",
+    "leader_top25_gap_pct": "Разрыв топ-25 и WR, %",
     "completion_median_seconds": "Медиана завершений, с (меньше лучше)",
     "archive_people": "Профилей в аналитическом срезе",
     "ranked_people": "Раннеров с оценкой",
@@ -191,7 +208,13 @@ def layout(title, chart_list, note):
     }
     groups = [chart_list[i : i + 2] for i in range(0, len(chart_list), 2)]
     if title == "Рейтинг раннеров":
-        groups = [chart_list[:1], chart_list[1:3], chart_list[3:4], chart_list[4:]]
+        groups = [
+            chart_list[:1],
+            chart_list[1:3],
+            chart_list[3:4],
+            chart_list[4:5],
+            chart_list[5:],
+        ]
     for i, group in enumerate(groups):
         row = "ROW-" + str(i)
         pos["GRID_ID"]["children"].append(row)
