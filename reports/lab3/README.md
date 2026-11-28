@@ -3,6 +3,7 @@
 [Отчёт](REPORT.md) · [Запуск и демонстрация](DEMO.md)
 
 [Короткая памятка для защиты](DEFENSE_SHORT.md) ·
+[Подробный гайд по защите](DEFENSE_GUIDE.md) ·
 [Формула экспериментальной ветки](../../docs/analytics/RUNNER_RANKING.md)
 
 [Приёмка 26 ноября](acceptance_20261126/checks.json) ·
